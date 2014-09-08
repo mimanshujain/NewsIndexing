@@ -43,15 +43,11 @@ public class Parser {
 		
 		try
 		{			
-//			docParser.setField(FieldNames.FILEID,parsingOp.getName());
-//			docParser.setField(FieldNames.CATEGORY, parsingOp.getParentFile().getName());
-			//InputStream in=new FileInputStream();
 			
 			InputStream openStream=new FileInputStream(parsingOp);
 			readFile=new BufferedReader(new InputStreamReader(openStream));		
 			
 			List<String> regexValues=new ArrayList<String>();
-			//regexValues.add("(?i:\\<AUTHOR\\>)");
 			regexValues.add("(?i:\\<AUTHOR\\>)(\\s+\\w+\\s+)(.*)(,)(\\s+)(\\w+)");
 			regexValues.add("(?i:\\<AUTHOR\\>\\s+)(?i:by\\s+)(\\w.*)(\\<)");
 			regexValues.add("(.*)(,\\s+)(\\w+\\s+\\d{1,2})(\\s+\\-\\s+)(.*)");
@@ -73,7 +69,6 @@ public class Parser {
 			
 			String lineValue=readFile.readLine();
 			
-			//Pattern parsePattern=Pattern.compile(parseRegex);
 			Pattern checkAuthor=Pattern.compile("AUTHOR", Pattern.CASE_INSENSITIVE);
 			
 			while(lineValue != null)
