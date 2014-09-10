@@ -75,7 +75,6 @@ public class Parser {
 			{
 				if(!lineValue.isEmpty())
 				{		
-					//String trimText=lineValue.replaceAll("^\\s+", "");
 					String trimText=lineValue.trim();
 					if(count==0)						
 					{	
