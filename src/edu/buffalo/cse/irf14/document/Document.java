@@ -35,6 +35,7 @@ public class Document {
 	 * @return The associated value, null if not found
 	 */
 	public String[] getField(FieldNames fn) {
+	//public String[] getField(String key) {
 		return map.get(fn);
 	}
 }

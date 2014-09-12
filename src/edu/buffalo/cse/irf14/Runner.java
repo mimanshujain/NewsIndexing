@@ -30,6 +30,7 @@ public class Runner {
 	 */
 	public static void main(String[] args) {
 		String ipDir = args[0];
+		//.out.println(ipDir);
 		String indexDir = args[1];
 //		more? idk!
 		//This is taking all the directories in File variable
@@ -42,6 +43,7 @@ public class Runner {
 		
 		Document d = null;
 		IndexWriter writer = new IndexWriter(indexDir);
+		System.out.println(writer);
 		
 		try {
 			//Traversing all the sub directories
@@ -58,7 +60,7 @@ public class Runner {
 					try {
 						d = Parser.parse(dir.getAbsolutePath() + File.separator +f);	
 						d.setField(FieldNames.FILEID, f);
-						d.setField(FieldNames.CATEGORY, cat);
+						d.setField(FieldNames.CATEGORY, cat);						
 						writer.addDocument(d);
 					} catch (ParserException e) {
 						// TODO Auto-generated catch block

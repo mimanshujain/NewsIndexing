@@ -5,8 +5,10 @@ package edu.buffalo.cse.irf14.document;
 
 import java.util.Iterator;
 import java.util.List;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -38,11 +40,17 @@ public class Parser {
 		File parsingOp=new File(filename);
 		Document docParser=new Document();
 		
-		//Properties regex = new Properties();
-		
+		File saveData=new File("E:"+File.separator+"Dropbox"+File.separator+"Master"+File.separator+"Results.txt");
 		
 		try
 		{			
+			if(!saveData.exists())
+			{
+				saveData.createNewFile();
+			}
+
+			FileWriter fw=new FileWriter(saveData.getAbsoluteFile(),true);
+			BufferedWriter bw=new BufferedWriter(fw);
 			
 			InputStream openStream=new FileInputStream(parsingOp);
 			readFile=new BufferedReader(new InputStreamReader(openStream));		
@@ -79,9 +87,12 @@ public class Parser {
 					if(count==0)						
 					{	
 						parsePattern=Pattern.compile((String)regexValues.get(4));
-						parseMatch.reset();
+						//parseMatch.reset();
 						parseMatch=parsePattern.matcher(trimText);
 						docParser.setField(FieldNames.TITLE,trimText.toLowerCase());
+						bw.newLine();
+						bw.write("Title:: " +trimText);
+						bw.newLine();
 						count++;
 					}
 					else if(contentFlag==0)
@@ -102,12 +113,15 @@ public class Parser {
 									docParser.setField(FieldNames.AUTHOR, parseMatch.group(2));
 									docParser.setField(FieldNames.AUTHORORG, parseMatch.group(5));		
 									authorFlag=1;
+									bw.write("Author:: "+docParser.getField(FieldNames.AUTHOR));bw.newLine();
+									bw.write("Author Org:: "+docParser.getField(FieldNames.AUTHORORG));bw.newLine();
 									break;
 								}
 								else if(count==2 && parseMatch.find())
 								{
 									docParser.setField(FieldNames.AUTHOR, parseMatch.group(2));
 									authorFlag=1;
+									bw.write("Author:: "+docParser.getField(FieldNames.AUTHOR));bw.newLine();
 									break;
 								}
 								else if(count>2)
@@ -128,6 +142,10 @@ public class Parser {
 									contentStart=parseMatch.group(5);
 									contentDump.add(contentStart);
 									
+									bw.write("Place:: "+docParser.getField(FieldNames.PLACE));bw.newLine();
+									bw.write("Date:: "+docParser.getField(FieldNames.NEWSDATE));bw.newLine();
+									bw.write("Content:: "+contentStart);bw.newLine();
+									
 									contentNumber.addAll(findNumber(contentStart,(String)regexValues.get(3)));
 
 									placeFlag=1;
@@ -139,12 +157,16 @@ public class Parser {
 								contentDump.add(trimText);
 								
 								contentNumber.addAll(findNumber(trimText,(String)regexValues.get(3)));
+								
+								bw.write(trimText);bw.newLine();
 							}
 							else
 							{
 								contentDump.add(trimText);
 
 								contentNumber.addAll(findNumber(trimText,(String)regexValues.get(3)));
+								
+								bw.write(trimText);bw.newLine();
 							}
 						}
 	
@@ -152,6 +174,8 @@ public class Parser {
 					else if(contentFlag==1)
 					{
 						contentDump.add(trimText);
+						
+						bw.write(trimText);bw.newLine();
 					}
 				}
 				lineValue=readFile.readLine();
@@ -159,6 +183,8 @@ public class Parser {
 
 			docParser.setField(FieldNames.NUMBERS, contentNumber.toArray(new String[contentNumber.size()]));
 			docParser.setField(FieldNames.CONTENT, contentDump.toArray(new String[contentDump.size()]));
+			bw.close();
+			System.out.println("Parser Ended");
 		}
 		catch(Exception ex)
 		{
