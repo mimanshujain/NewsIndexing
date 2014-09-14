@@ -3,7 +3,11 @@
  */
 package edu.buffalo.cse.irf14.document;
 
+import java.awt.List;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author nikhillo
@@ -18,6 +22,10 @@ public class Document {
 	 */
 	public Document() {
 		map = new HashMap<FieldNames, String[]>();
+		for(FieldNames fn : map.keySet())
+		{
+			setField(fn, "");
+		}
 	}
 	
 	/**
@@ -34,7 +42,32 @@ public class Document {
 	 * @param fn : The field name to query
 	 * @return The associated value, null if not found
 	 */
-	public String[] getField(FieldNames fn) {
+	public String[] getField(FieldNames fn) {		
 		return map.get(fn);
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb=new StringBuilder();
+//		Iterator it=map.entrySet().iterator();
+//		while(it.hasNext())
+//		{
+//			sb.append(map.get(it.next()));
+//		}
+//		
+		for(FieldNames fn : map.keySet())
+		{
+			if (map.get(fn).length>0)
+			{
+				sb.append(map.get(fn)[0]);
+			}
+		}
+//		for(int i=0;i<map.size();i++)
+//		{
+//			sb.append(map.get(fn.));
+//		}
+		//sb.append(map.keySet().toString());
+		return sb.toString();
 	}
 }
