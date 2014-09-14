@@ -14,12 +14,6 @@ package edu.buffalo.cse.irf14.analysis;
 public class Token {
 	//The backing string representation -- can contain extraneous information
 	private String termText;
-	
-	//Newely Added
-	private int termId;
-	private int docFrequency;
-	private int totalFrequency;
-	
 	//The char array backing termText
 	private char[] termBuffer;
 	

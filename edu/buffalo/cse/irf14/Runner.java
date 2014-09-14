@@ -3,12 +3,8 @@
  */
 package edu.buffalo.cse.irf14;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
-import edu.buffalo.cse.irf14.analysis.TokenizerException;
 import edu.buffalo.cse.irf14.document.Document;
 import edu.buffalo.cse.irf14.document.FieldNames;
 import edu.buffalo.cse.irf14.document.Parser;
@@ -60,53 +56,21 @@ public class Runner {
 				
 				for (String f : files) {
 					try {
+						d = Parser.parse(dir.getAbsolutePath() + File.separator +f);	
 						d.setField(FieldNames.FILEID, f);
-						d.setField(FieldNames.CATEGORY, cat);	
-						
-						d = Parser.parse(dir.getAbsolutePath() + File.separator +f);
-						if(d==null)
-							throw new ParserException();
-
-						writeToFile(d);
+						d.setField(FieldNames.CATEGORY, cat);
 						writer.addDocument(d);
 					} catch (ParserException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} 
-					catch(TokenizerException tEx)
-					{
-						tEx.printStackTrace();
-					}
+					
 				}
 				
 			}
 			
 			writer.close();
 		} catch (IndexerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	private static void writeToFile(Document d)
-	{
-		try 
-		{
-			File saveData=new File("E:"+File.separator+"Dropbox"+File.separator+"Master"+File.separator+"Results.txt");
-			FileWriter fw;
-			
-			fw = new FileWriter(saveData.getAbsoluteFile(),true);
-			BufferedWriter bw=new BufferedWriter(fw);
-			
-			if(!saveData.exists())
-			{
-				saveData.createNewFile();
-			}
-			bw.write(d.toString());
-			bw.newLine();bw.newLine();
-			bw.close();
-		} 
-		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

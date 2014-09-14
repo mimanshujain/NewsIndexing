@@ -3,22 +3,16 @@
  */
 package edu.buffalo.cse.irf14.analysis;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author nikhillo
  * Class that converts a given string into a {@link TokenStream} instance
  */
 public class Tokenizer {
-	private String delimeterString;
 	/**
 	 * Default constructor. Assumes tokens are whitespace delimited
 	 */
 	public Tokenizer() {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD
-		delimeterString= " ";
 	}
 	
 	/**
@@ -27,7 +21,6 @@ public class Tokenizer {
 	 */
 	public Tokenizer(String delim) {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD
-		delimeterString=delim;
 	}
 	
 	/**
@@ -46,10 +39,6 @@ public class Tokenizer {
 	 */
 	public TokenStream consume(String str) throws TokenizerException {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD
-		TokenStream tokenStream=new TokenStream();
-		Map<Token, ArrayList<String>> tokenMap=new HashMap<Token, ArrayList<String>>();
-		tokenStream.setTokenMap(tokenMap);
-		
 		return null;
 	}
 }
