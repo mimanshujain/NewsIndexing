@@ -33,18 +33,19 @@ public class IndexWriter {
 	 */
 	public void addDocument(Document d) throws IndexerException, TokenizerException {
 		//TODO : YOU MUST IMPLEMENT THIS
-		Tokenizer newToken=new Tokenizer();
-		String[] termString=
-			{d.getField(FieldNames.TITLE)[0],
-				d.getField(FieldNames.CONTENT)[0]};
-		TokenStream termStream=new TokenStream();
-		for(String term : termString)
-		{
-			termStream=newToken.consume(term);
-			
-		}
-		//For Dictionary
-		//List<List<String>> super2dArray = new ArrayList<ArrayList<String>>()
+				Tokenizer newToken=new Tokenizer();
+				String[] termString=
+					{d.getField(FieldNames.TITLE)[0],
+						d.getField(FieldNames.CONTENT)[0]};
+				TokenStream termStream=new TokenStream();
+				for(String term : termString)
+				{
+					termStream=newToken.consume(term);
+					
+				}
+				//For Dictionary
+				//List<List<String>> super2dArray = new ArrayList<ArrayList<String>>()
+
 	}
 
 	
