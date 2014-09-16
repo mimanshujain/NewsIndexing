@@ -3,7 +3,9 @@
  */
 package edu.buffalo.cse.irf14.analysis;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author nikhillo
@@ -12,7 +14,8 @@ import java.util.Iterator;
  * behavior
  */
 public class TokenStream implements Iterator<Token>{
-	
+	//Added Later
+	private Map<Token, ArrayList<String>> tokenMap;
 	/**
 	 * Method that checks if there is any Token left in the stream
 	 * with regards to the current pointer.
@@ -83,6 +86,14 @@ public class TokenStream implements Iterator<Token>{
 	public Token getCurrent() {
 		//TODO: YOU MUST IMPLEMENT THIS
 		return null;
+	}
+//Added later
+	private Map<Token, ArrayList<String>> getTokenMap() {
+		return tokenMap;
+	}
+
+	public void setTokenMap(Map<Token, ArrayList<String>> tokenMap) {
+		this.tokenMap = tokenMap;
 	}
 	
 }
