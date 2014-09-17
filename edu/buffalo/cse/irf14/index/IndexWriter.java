@@ -22,6 +22,7 @@ public class IndexWriter {
 		//TODO : YOU MUST IMPLEMENT THIS
 	}
 	//test//
+	
 	/**
 	 * Method to add the given Document to the index
 	 * This method should take care of reading the filed values, passing
