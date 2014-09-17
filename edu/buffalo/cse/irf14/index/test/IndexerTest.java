@@ -50,7 +50,12 @@ public class IndexerTest {
 			d = new Document();
 			d.setField(FieldNames.FILEID, "0000"+(i+1));
 			d.setField(FieldNames.CONTENT, strs[i]);
-			writer.addDocument(d);
+			try {
+				writer.addDocument(d);
+			} catch (TokenizerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		writer.close();

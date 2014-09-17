@@ -3,47 +3,95 @@
  */
 package edu.buffalo.cse.irf14.analysis;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * @author nikhillo
- * Class that converts a given string into a {@link TokenStream} instance
+ * @author nikhillo Class that converts a given string into a
+ *         {@link TokenStream} instance
  */
 public class Tokenizer {
+	private String delimeterString;
+
 	/**
 	 * Default constructor. Assumes tokens are whitespace delimited
 	 */
 	public Tokenizer() {
-		//TODO : YOU MUST IMPLEMENT THIS METHOD
+		// TODO : YOU MUST IMPLEMENT THIS METHOD
+		delimeterString = " ";
 	}
-	
+
 	/**
 	 * Overloaded constructor. Creates the tokenizer with the given delimiter
-	 * @param delim : The delimiter to be used
+	 * 
+	 * @param delim
+	 *            : The delimiter to be used
 	 */
 	public Tokenizer(String delim) {
-		//TODO : YOU MUST IMPLEMENT THIS METHOD
+		// TODO : YOU MUST IMPLEMENT THIS METHOD
+		delimeterString = delim;
 	}
-	
+
 	/**
-	 * Method to convert the given string into a TokenStream instance.
-	 * This must only break it into tokens and initialize the stream.
-	 * No other processing must be performed. Also the number of tokens
-	 * would be determined by the string and the delimiter.
-	 * So if the string were "hello world" with a whitespace delimited
-	 * tokenizer, you would get two tokens in the stream. But for the same
-	 * text used with lets say "~" as a delimiter would return just one
-	 * token in the stream.
-	 * @param str : The string to be consumed
+	 * Method to convert the given string into a TokenStream instance. This must
+	 * only break it into tokens and initialize the stream. No other processing
+	 * must be performed. Also the number of tokens would be determined by the
+	 * string and the delimiter. So if the string were "hello world" with a
+	 * whitespace delimited tokenizer, you would get two tokens in the stream.
+	 * But for the same text used with lets say "~" as a delimiter would return
+	 * just one token in the stream.
+	 * 
+	 * @param str
+	 *            : The string to be consumed
 	 * @return : The converted TokenStream as defined above
-	 * @throws TokenizerException : In case any exception occurs during
-	 * tokenization
+	 * @throws TokenizerException
+	 *             : In case any exception occurs during tokenization
 	 */
 	public TokenStream consume(String str) throws TokenizerException {
-		//TODO : YOU MUST IMPLEMENT THIS METHOD
-				TokenStream tokenStream=new TokenStream();
-				Map<Token, ArrayList<String>> tokenMap=new HashMap<Token, ArrayList<String>>();
-				tokenStream.setTokenMap(tokenMap);
-				
-				return null;
+
+		// TODO : YOU MUST IMPLEMENT THIS METHOD
+		/*
+		 * TokenStream tokenStream=new TokenStream(); Map<Token,
+		 * ArrayList<String>> tokenMap=new HashMap<Token, ArrayList<String>>();
+		 * tokenStream.setTokenMap(tokenMap);
+		 */
+		// Jagvir
+		// Token token = new Token();
+		String singleSpaceStr;
+		String[] strArray;
+		TokenStream stream = new TokenStream();
+
+		singleSpaceStr = str.replaceAll("\\s+", " ");
+		System.out.println(singleSpaceStr);
+		strArray = singleSpaceStr.split(delimeterString);
+		for (String string : strArray) {
+			Token token = new Token();
+			stream.setTokenStreamList(token);
+			// System.out.println(string);
+			stream.hasNext();
+			stream.next();
+
+		}
+		System.out.println(stream.next());
+
+		// System.out.println(strArray);
+
+		// Jagvir
+
+		return null;
+	}
+
+	/* Jagvir Start */
+	public static void main(String[] args) {
+		Tokenizer tokenizer = new Tokenizer();
+		try {
+			tokenizer.consume("     This is a                 test String");
+		} catch (TokenizerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
+	/* Jagvir Stop */
 }
