@@ -91,6 +91,6 @@ public class Token {
 	public String toString() {
 		//TODO: YOU MUST IMPLEMENT THIS METHOD
 		
-		return null;
+		return termText;
 	}
 }

@@ -47,10 +47,10 @@ public class SymbolFilter extends TokenFilter {
 	@Override
 	public boolean increment() throws TokenizerException {
 
-		tStream.reset();
+		//tStream.reset();
 		try
 		{
-			while (tStream.hasNext()) {
+			if (tStream.hasNext()) {
 				Token tk = tStream.next();
 
 				if (tk.getTermText() != "" || tk.getTermText() != null) {

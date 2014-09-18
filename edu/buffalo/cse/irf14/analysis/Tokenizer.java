@@ -50,14 +50,6 @@ public class Tokenizer {
 	 */
 	public TokenStream consume(String str) throws TokenizerException {
 
-		// TODO : YOU MUST IMPLEMENT THIS METHOD
-		/*
-		 * TokenStream tokenStream=new TokenStream(); Map<Token,
-		 * ArrayList<String>> tokenMap=new HashMap<Token, ArrayList<String>>();
-		 * tokenStream.setTokenMap(tokenMap);
-		 */
-		// Jagvir
-		// Token token = new Token();
 		String singleSpaceStr;
 		String[] strArray;
 		TokenStream stream = new TokenStream();
@@ -69,18 +61,9 @@ public class Tokenizer {
 			Token token = new Token();
 			token.setTermText(tokenString);
 			stream.setTokenStreamList(token);
-			// System.out.println(string);
-//			stream.hasNext();
-//			stream.next();
-
 		}
-		System.out.println(stream.next());
-
-		// System.out.println(strArray);
-
-		// Jagvir
-
-		return null;
+		//System.out.println(stream.next());
+		return stream;
 	}
 
 	/* Jagvir Start */

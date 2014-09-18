@@ -86,12 +86,12 @@ public class TokenStream implements Iterator<Token> {
 		//		}
 		if(hasNext())
 		{
-			currentIndex=index+1;
-			return tokenStreamList.get(currentIndex);
+			//			currentIndex=(index)+1;
+			return (Token)tokenStreamList.get(++index);
 		}
 		else
 			return null;
-		
+
 
 		//		System.out.println("Test");
 		//		return null;
@@ -105,9 +105,10 @@ public class TokenStream implements Iterator<Token> {
 	@Override
 	public void remove() {
 		//		index = tokenStreamList.size();
-		if(index<=-1 &&  index>=tokenStreamList.size())
+		if(index>-1&&index<tokenStreamList.size())
 		{
-			tokenStreamList.remove((index-1));
+			tokenStreamList.remove((index));
+			index--;
 		}
 	}
 
@@ -137,7 +138,8 @@ public class TokenStream implements Iterator<Token> {
 	 *            : The stream to be appended
 	 */
 	public void append(TokenStream stream) {
-		// TODO : YOU MUST IMPLEMENT THIS
+		if(stream!=null)
+			tokenStreamList.addAll(stream.getTokenStreamList());
 	}
 
 	/**
@@ -152,7 +154,7 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	public Token getCurrent() {
 		// TODO: YOU MUST IMPLEMENT THIS
-		if(index!=-1 || index!=tokenStreamList.size())
+		if(index>-1 && index<tokenStreamList.size())
 			return  (Token)tokenStreamList.get(index);
 		else
 			return null;

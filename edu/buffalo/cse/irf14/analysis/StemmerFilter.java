@@ -18,7 +18,7 @@ public class StemmerFilter extends TokenFilter {
 	@Override
 	public boolean increment() throws TokenizerException {
 
-		tStream.reset();
+		//tStream.reset();
 		try
 		{
 			while (tStream.hasNext()) 
