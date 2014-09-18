@@ -13,7 +13,7 @@ public class SymbolFilter extends TokenFilter {
 	public SymbolFilter(TokenStream stream) {
 		super(stream);
 	}
-//Few words are taken from Wikipedia
+	//Few words are taken from Wikipedia
 	String[][] chameleonSmallWords = { { "ain't", "am not" }, { "can't", "cannot" },
 			{ "won't", "will not" }, { "how's", "hows is" },
 			{ "it's", "it is" }, { "shan't", "shall not" },
@@ -31,7 +31,7 @@ public class SymbolFilter extends TokenFilter {
 			{ "When's", "When is" }, { "Who's", "Who is" },
 			{ "why's", "why is" }, { "ma'am", "madam" },
 			{ "Y'all", "You all" }, { "Y'all'd've", "You all should have" } };
-	
+
 	private static final String removePunc = "(.*)(\\b)";
 	private static final String expandApos = "(.*)(\\'.*)";
 	private static final String alphaAlpha = "^([A-Za-z]+)([-])([A-Za-z]+)$";
@@ -46,91 +46,98 @@ public class SymbolFilter extends TokenFilter {
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		// TODO Auto-generated method stub
-		while (tStream.hasNext()) {
-			Token tk = tStream.next();
 
-			if (tk.getTermText() != "" || tk.getTermText() != null) {
-				String tempToken = tk.getTermText();
-				String contractionWord = "";
+		tStream.reset();
+		try
+		{
+			while (tStream.hasNext()) {
+				Token tk = tStream.next();
 
-				checkSymbol = Pattern.compile(removePunc);
-				matchSymbol = checkSymbol.matcher(tempToken.trim());
+				if (tk.getTermText() != "" || tk.getTermText() != null) {
+					String tempToken = tk.getTermText();
+					String contractionWord = "";
 
-				if (matchSymbol.groupCount() > 0) {
-					tempToken = matchSymbol.group(1);
-				}
-
-				boolean smallWordMatch = false;
-				int i = 0;
-				for (String[] str : chameleonSmallWords) {
-					if (tempToken.equals(str[0])) {
-						smallWordMatch = true;
-						tempToken = chameleonSmallWords[i][0];
-					}
-					i++;
-				}
-				boolean bigWordMatch = false;
-				for (String[] str : chameleonBigWords) {
-					if (tempToken.equals(str[0])) {
-						bigWordMatch = true;
-						tempToken = chameleonSmallWords[i][0];
-					}
-					i++;
-				}
-				if (!smallWordMatch || !bigWordMatch) {
-					checkSymbol = Pattern.compile(expandWithN);
+					checkSymbol = Pattern.compile(removePunc);
 					matchSymbol = checkSymbol.matcher(tempToken.trim());
 
-					if (matchSymbol.find()) {
+					if (matchSymbol.groupCount() > 0) {
 						tempToken = matchSymbol.group(1);
-						contractionWord = matchSymbol.group(3);
-						tempToken = (tempToken + expandContractWord(contractionWord));
-					} else if ((matchSymbol = (checkSymbol = Pattern
-							.compile(expandApos)).matcher(tempToken.trim()))
-							.find()) {
-						checkSymbol = Pattern.compile(expandApos);
+					}
+
+					boolean smallWordMatch = false;
+					int i = 0;
+					for (String[] str : chameleonSmallWords) {
+						if (tempToken.equals(str[0])) {
+							smallWordMatch = true;
+							tempToken = chameleonSmallWords[i][0];
+						}
+						i++;
+					}
+					boolean bigWordMatch = false;
+					for (String[] str : chameleonBigWords) {
+						if (tempToken.equals(str[0])) {
+							bigWordMatch = true;
+							tempToken = chameleonSmallWords[i][0];
+						}
+						i++;
+					}
+					if (!smallWordMatch || !bigWordMatch) {
+						checkSymbol = Pattern.compile(expandWithN);
 						matchSymbol = checkSymbol.matcher(tempToken.trim());
 
 						if (matchSymbol.find()) {
 							tempToken = matchSymbol.group(1);
+							contractionWord = matchSymbol.group(3);
+							tempToken = (tempToken + expandContractWord(contractionWord));
+						} else if ((matchSymbol = (checkSymbol = Pattern
+								.compile(expandApos)).matcher(tempToken.trim()))
+								.find()) {
+							checkSymbol = Pattern.compile(expandApos);
+							matchSymbol = checkSymbol.matcher(tempToken.trim());
+
+							if (matchSymbol.find()) {
+								tempToken = matchSymbol.group(1);
+								contractionWord = matchSymbol.group(2);
+								tempToken = (tempToken + expandContractWord(contractionWord))
+										.trim();
+							}
+						} else if ((matchSymbol = (checkSymbol = Pattern
+								.compile(doubleAposwithN))
+								.matcher(tempToken.trim())).find()) {
+							String extraContration;
+							tempToken = matchSymbol.group(1);
 							contractionWord = matchSymbol.group(2);
-							tempToken = (tempToken + expandContractWord(contractionWord))
+							extraContration = matchSymbol.group(4);
+							tempToken = (tempToken
+									+ expandContractWord(contractionWord) + expandContractWord(extraContration))
+									.trim();
+						} else if ((matchSymbol = (checkSymbol = Pattern
+								.compile(doubleAposwithD))
+								.matcher(tempToken.trim())).find()) {
+							String extraContration;
+							tempToken = matchSymbol.group(1);
+							contractionWord = matchSymbol.group(2);
+							extraContration = matchSymbol.group(4);
+							tempToken = (tempToken
+									+ expandContractWord(contractionWord) + expandContractWord(extraContration))
 									.trim();
 						}
-					} else if ((matchSymbol = (checkSymbol = Pattern
-							.compile(doubleAposwithN))
-							.matcher(tempToken.trim())).find()) {
-						String extraContration;
-						tempToken = matchSymbol.group(1);
-						contractionWord = matchSymbol.group(2);
-						extraContration = matchSymbol.group(4);
-						tempToken = (tempToken
-								+ expandContractWord(contractionWord) + expandContractWord(extraContration))
-								.trim();
-					} else if ((matchSymbol = (checkSymbol = Pattern
-							.compile(doubleAposwithD))
-							.matcher(tempToken.trim())).find()) {
-						String extraContration;
-						tempToken = matchSymbol.group(1);
-						contractionWord = matchSymbol.group(2);
-						extraContration = matchSymbol.group(4);
-						tempToken = (tempToken
-								+ expandContractWord(contractionWord) + expandContractWord(extraContration))
-								.trim();
 					}
-				}
 
-				checkSymbol = Pattern.compile(alphaAlpha);
-				matchSymbol = checkSymbol.matcher(tempToken.trim());
+					checkSymbol = Pattern.compile(alphaAlpha);
+					matchSymbol = checkSymbol.matcher(tempToken.trim());
 
-				if (!matchSymbol.find()) {
-					tempToken = matchSymbol.group(1) + matchSymbol.group(3);
+					if (!matchSymbol.find()) {
+						tempToken = matchSymbol.group(1) + matchSymbol.group(3);
+					}
+					tk.setTermText(tempToken);
 				}
-				tk.setTermText(tempToken);
 			}
 		}
-
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return false;
 	}
 

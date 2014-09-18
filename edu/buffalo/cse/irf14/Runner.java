@@ -57,12 +57,12 @@ public class Runner {
 				
 				if (files == null)
 					continue;
-				
+				int docId=0;
 				for (String f : files) {
 					try {
 						d.setField(FieldNames.FILEID, f);
 						d.setField(FieldNames.CATEGORY, cat);	
-						
+						d.setDocId(++docId);
 						d = Parser.parse(dir.getAbsolutePath() + File.separator +f);
 						if(d==null)
 							throw new ParserException();

@@ -1,4 +1,4 @@
-  //Jagvir
+//Jagvir
 /**
  * 
  */
@@ -19,20 +19,24 @@ public class TokenStream implements Iterator<Token> {
 	// private Map<Token, ArrayList<String>> tokenMap;
 	// Jagvir//
 	Token token;
-	int index = 0;
-	List<Token> tokenStreamList = new ArrayList<Token>();
+	int index;
+	int currentIndex;
+	List<Token> tokenStreamList ;
+	//	= new ArrayList<Token>();
 
 	// Jagvir
-	public TokenStream(List<Token> tokenStreamList) {
-
-		this.tokenStreamList = tokenStreamList;
-	}
+	//	public TokenStream(List<Token> tokenStreamList) {
+	//
+	//		this.tokenStreamList = tokenStreamList;
+	//	}
 
 	public TokenStream() {
-
+		tokenStreamList=new ArrayList<Token>();
+		index=-1;
+		currentIndex=0;
 	}
 
-	public List getTokenStreamList() {
+	public List<Token> getTokenStreamList() {
 		return tokenStreamList;
 	}
 
@@ -51,19 +55,20 @@ public class TokenStream implements Iterator<Token> {
 
 	@Override
 	public boolean hasNext() {
-		// TODO YOU MUST IMPLEMENT THIS
-		// Jagvir
-
-		while (index <= tokenStreamList.size()) {
-			
-			System.out.println(index);
-			index++;
+		//		// Jagvir
+		//
+		//		while (index < (tokenStreamList.size()-1)) {
+		//			System.out.println(index);
+		//			//index++;
+		//			return true;
+		//		}
+		//		//System.out.println("here");
+		//
+		//		return false;
+		if(index < (tokenStreamList.size()-1))
 			return true;
-
-		}
-		System.out.println("here");
-
-		return false;
+		else
+			return false;
 	}
 
 	/**
@@ -74,15 +79,22 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	@Override
 	public Token next() {
-		for (int index = 0; index < tokenStreamList.size(); index++) {
-			//System.out.println(tokenStreamList.get(index));
-			return tokenStreamList.get(index++);
-		}
 
-		// TODO YOU MUST IMPLEMENT THIS
+		//		for (int index = 0; index < tokenStreamList.size(); index++) {
+		//			//System.out.println(tokenStreamList.get(index));
+		//			return tokenStreamList.get(index++);
+		//		}
+		if(hasNext())
+		{
+			currentIndex=index+1;
+			return tokenStreamList.get(currentIndex);
+		}
+		else
+			return null;
 		
-		System.out.println("Test");
-		return null;
+
+		//		System.out.println("Test");
+		//		return null;
 	}
 
 	/**
@@ -92,11 +104,11 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	@Override
 	public void remove() {
-		index = tokenStreamList.size();
-		
-		
-		// TODO YOU MUST IMPLEMENT THIS
-		
+		//		index = tokenStreamList.size();
+		if(index<=-1 &&  index>=tokenStreamList.size())
+		{
+			tokenStreamList.remove((index-1));
+		}
 	}
 
 	/**
@@ -106,6 +118,11 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	public void reset() {
 		// TODO : YOU MUST IMPLEMENT THIS
+		//		if(hasNext())
+		//		{
+		//				
+		//		}
+		index=-1;
 	}
 
 	/**
@@ -135,7 +152,10 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	public Token getCurrent() {
 		// TODO: YOU MUST IMPLEMENT THIS
-		return null;
+		if(index!=-1 || index!=tokenStreamList.size())
+			return  (Token)tokenStreamList.get(index);
+		else
+			return null;
 	}
 
 	// Added later

@@ -65,12 +65,13 @@ public class Tokenizer {
 		singleSpaceStr = str.replaceAll("\\s+", " ");
 		System.out.println(singleSpaceStr);
 		strArray = singleSpaceStr.split(delimeterString);
-		for (String string : strArray) {
+		for (String tokenString : strArray) {
 			Token token = new Token();
+			token.setTermText(tokenString);
 			stream.setTokenStreamList(token);
 			// System.out.println(string);
-			stream.hasNext();
-			stream.next();
+//			stream.hasNext();
+//			stream.next();
 
 		}
 		System.out.println(stream.next());
@@ -83,15 +84,15 @@ public class Tokenizer {
 	}
 
 	/* Jagvir Start */
-	public static void main(String[] args) {
-		Tokenizer tokenizer = new Tokenizer();
-		try {
-			tokenizer.consume("     This is a                 test String");
-		} catch (TokenizerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
+//	public static void main(String[] args) {
+//		Tokenizer tokenizer = new Tokenizer();
+//		try {
+//			tokenizer.consume("     This is a                 test String");
+//		} catch (TokenizerException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//	}
 	/* Jagvir Stop */
 }
