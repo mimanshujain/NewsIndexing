@@ -3,6 +3,10 @@
  */
 package edu.buffalo.cse.irf14.analysis;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 /**
  * @author SherlockED
  *
@@ -22,7 +26,24 @@ public class CapitalizationFilter extends TokenFilter {
 	 */
 	@Override
 	public boolean increment() throws TokenizerException {
-		// TODO Auto-generated method stub
+		try
+		{			
+			if(tStream.hasNext())
+			{
+				Token tk=tStream.next();
+				List<String> lst=tStream.getWords();
+				if(lst.indexOf(tk.getTermText())==0)
+				{
+					System.out.println("Only element in list");
+				}
+				return true;
+			}
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+
 		return false;
 	}
 
@@ -35,4 +56,12 @@ public class CapitalizationFilter extends TokenFilter {
 		return null;
 	}
 
+	public static void main(String[] args) throws TokenizerException {
+		String ip="this. My name is Mimanshu and I am a good boy. So what, get lost.";
+		Tokenizer tz=new Tokenizer();
+		TokenStream ts=tz.consume(ip);
+		CapitalizationFilter cp = new CapitalizationFilter(ts);
+		while(cp.increment()){ }
+	}
 }
+

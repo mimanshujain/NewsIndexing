@@ -20,7 +20,7 @@ public class TokenStream implements Iterator<Token> {
 	// Jagvir//
 	Token token;
 	int index;
-	int currentIndex;
+	int dummyIndex;
 	List<Token> tokenStreamList ;
 	//	= new ArrayList<Token>();
 
@@ -32,8 +32,8 @@ public class TokenStream implements Iterator<Token> {
 
 	public TokenStream() {
 		tokenStreamList=new ArrayList<Token>();
-		index=-1;
-		currentIndex=0;
+		index=0;
+		dummyIndex=0;
 	}
 
 	public List<Token> getTokenStreamList() {
@@ -55,17 +55,8 @@ public class TokenStream implements Iterator<Token> {
 
 	@Override
 	public boolean hasNext() {
-		//		// Jagvir
-		//
-		//		while (index < (tokenStreamList.size()-1)) {
-		//			System.out.println(index);
-		//			//index++;
-		//			return true;
-		//		}
-		//		//System.out.println("here");
-		//
-		//		return false;
-		if(index < (tokenStreamList.size()-1))
+
+		if(index < (tokenStreamList.size()))
 			return true;
 		else
 			return false;
@@ -87,12 +78,14 @@ public class TokenStream implements Iterator<Token> {
 		if(hasNext())
 		{
 			//			currentIndex=(index)+1;
-			return (Token)tokenStreamList.get(++index);
+			token=(Token)tokenStreamList.get(index++);
+			return token;
 		}
 		else
-			return null;
-
-
+		{
+			token=null;
+			return token;
+		}
 		//		System.out.println("Test");
 		//		return null;
 	}
@@ -105,13 +98,13 @@ public class TokenStream implements Iterator<Token> {
 	@Override
 	public void remove() {
 		//		index = tokenStreamList.size();
-		if(index>-1&&index<tokenStreamList.size())
+		if(index>0&&index<=tokenStreamList.size())
 		{
-			tokenStreamList.remove((index));
+			tokenStreamList.remove((index-1));
 			index--;
+			token=null;
 		}
 	}
-
 	/**
 	 * Method to reset the stream to bring the iterator back to the beginning of
 	 * the stream. Unless the stream has no tokens, hasNext() after calling
@@ -123,9 +116,8 @@ public class TokenStream implements Iterator<Token> {
 		//		{
 		//				
 		//		}
-		index=-1;
+		index=0;
 	}
-
 	/**
 	 * Method to append the given TokenStream to the end of the current stream
 	 * The append must always occur at the end irrespective of where the
@@ -154,12 +146,74 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	public Token getCurrent() {
 		// TODO: YOU MUST IMPLEMENT THIS
-		if(index>-1 && index<tokenStreamList.size())
-			return  (Token)tokenStreamList.get(index);
+		if(index>0 && index<=tokenStreamList.size()&&token!=null)
+			return  (Token)tokenStreamList.get(index-1);
 		else
 			return null;
 	}
 
+	private String previous() {
+		if(dummyIndex<tokenStreamList.size() && dummyIndex>=0)
+			return tokenStreamList.get(dummyIndex--).getTermText();
+		else 
+			return null;
+	}
+	
+	private String after()
+	{
+		if(dummyIndex<tokenStreamList.size() && dummyIndex>=0)
+		{
+			return tokenStreamList.get(dummyIndex++).getTermText();
+		}
+		else
+			return null;
+	}
+	
+	public List<String> getWords()
+	{
+		dummyIndex=index-2;
+		List<String> lst=new ArrayList<String>();
+		while(true)
+		{
+			String word=previous();
+			if(word==null || word.contains("."))
+				break;			
+			else
+			{
+				lst.add(word);
+			}
+		}
+		lst.add(getCurrent().getTermText());
+		
+		if(getCurrent().getTermText().contains("."))
+			return lst;
+		
+		dummyIndex=index;
+		
+		while(true)
+		{
+			String word=after();
+			if(word==null)
+				break;
+			else if(word.contains("."))
+			{
+				lst.add(word);
+				break;
+			}
+			else
+				lst.add(word);
+		}
+		
+		return lst;
+	}
+	
+	public List<String> getAfterWords()
+	{
+		
+		return null;
+	}
+	
+	
 	// Added later
 	private Map<Token, ArrayList<String>> getTokenMap() {
 		return getTokenMap();

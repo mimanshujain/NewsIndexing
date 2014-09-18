@@ -49,7 +49,9 @@ public class Tokenizer {
 	 *             : In case any exception occurs during tokenization
 	 */
 	public TokenStream consume(String str) throws TokenizerException {
-
+		if(str==null || str.equals("") )
+			throw new TokenizerException();
+		
 		String singleSpaceStr;
 		String[] strArray;
 		TokenStream stream = new TokenStream();
@@ -67,15 +69,15 @@ public class Tokenizer {
 	}
 
 	/* Jagvir Start */
-//	public static void main(String[] args) {
-//		Tokenizer tokenizer = new Tokenizer();
-//		try {
-//			tokenizer.consume("     This is a                 test String");
-//		} catch (TokenizerException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//	}
+	//	public static void main(String[] args) {
+	//		Tokenizer tokenizer = new Tokenizer();
+	//		try {
+	//			tokenizer.consume("     This is a                 test String");
+	//		} catch (TokenizerException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
+	//
+	//	}
 	/* Jagvir Stop */
 }

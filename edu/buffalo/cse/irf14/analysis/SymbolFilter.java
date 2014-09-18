@@ -60,66 +60,87 @@ public class SymbolFilter extends TokenFilter {
 					checkSymbol = Pattern.compile(removePunc);
 					matchSymbol = checkSymbol.matcher(tempToken.trim());
 
-					if (matchSymbol.groupCount() > 0) {
+					if (matchSymbol.find()) {
 						tempToken = matchSymbol.group(1);
 					}
 
-					boolean smallWordMatch = false;
+					boolean wordMatch = false;
 					int i = 0;
 					for (String[] str : chameleonSmallWords) {
 						if (tempToken.equals(str[0])) {
-							smallWordMatch = true;
-							tempToken = chameleonSmallWords[i][0];
+							wordMatch = true;
+							tempToken = chameleonSmallWords[i][1];
+							break;
 						}
 						i++;
 					}
-					boolean bigWordMatch = false;
-					for (String[] str : chameleonBigWords) {
-						if (tempToken.equals(str[0])) {
-							bigWordMatch = true;
-							tempToken = chameleonSmallWords[i][0];
+					i=0;
+					if(!wordMatch)
+					{
+						for (String[] str : chameleonBigWords) {
+							if (tempToken.equals(str[0])) {
+								wordMatch = true;
+								tempToken = chameleonBigWords[i][1];
+								break;
+							}
+							i++;
 						}
-						i++;
 					}
-					if (!smallWordMatch || !bigWordMatch) {
+					if (!wordMatch) {
+						
 						checkSymbol = Pattern.compile(expandWithN);
 						matchSymbol = checkSymbol.matcher(tempToken.trim());
 
 						if (matchSymbol.find()) {
 							tempToken = matchSymbol.group(1);
 							contractionWord = matchSymbol.group(3);
-							tempToken = (tempToken + expandContractWord(contractionWord));
-						} else if ((matchSymbol = (checkSymbol = Pattern
+							String str=expandContractWord(contractionWord);
+							if(str!=null)
+								tempToken = (tempToken + " "+expandContractWord(contractionWord));
+							else
+								tempToken=tempToken+contractionWord;
+						} 
+						else if ((matchSymbol = (checkSymbol = Pattern
 								.compile(expandApos)).matcher(tempToken.trim()))
-								.find()) {
-							checkSymbol = Pattern.compile(expandApos);
-							matchSymbol = checkSymbol.matcher(tempToken.trim());
-
-							if (matchSymbol.find()) {
+								.find()) 
+						{
+//							checkSymbol = Pattern.compile(expandApos);
+//							matchSymbol = checkSymbol.matcher(tempToken.trim());
+	//
+//							if (matchSymbol.find()) {
 								tempToken = matchSymbol.group(1);
 								contractionWord = matchSymbol.group(2);
-								tempToken = (tempToken + expandContractWord(contractionWord))
+								String str=expandContractWord(contractionWord);
+								if(str!=null && !str.equals(""))
+									tempToken = (tempToken + " "+ expandContractWord(contractionWord))
 										.trim();
-							}
-						} else if ((matchSymbol = (checkSymbol = Pattern
+								else if(tempToken.contains("'"))
+									tempToken=(tempToken+contractionWord).replaceAll("[']", "");
+								
+//							}
+						} 
+						else if ((matchSymbol = (checkSymbol = Pattern
 								.compile(doubleAposwithN))
-								.matcher(tempToken.trim())).find()) {
+								.matcher(tempToken.trim())).find()) 
+						{
 							String extraContration;
 							tempToken = matchSymbol.group(1);
 							contractionWord = matchSymbol.group(2);
 							extraContration = matchSymbol.group(4);
-							tempToken = (tempToken
-									+ expandContractWord(contractionWord) + expandContractWord(extraContration))
+							tempToken = (tempToken+" "
+									+ expandContractWord(contractionWord)+ " " + expandContractWord(extraContration))
 									.trim();
-						} else if ((matchSymbol = (checkSymbol = Pattern
+						} 
+						else if ((matchSymbol = (checkSymbol = Pattern
 								.compile(doubleAposwithD))
-								.matcher(tempToken.trim())).find()) {
+								.matcher(tempToken.trim())).find()) 
+						{
 							String extraContration;
 							tempToken = matchSymbol.group(1);
 							contractionWord = matchSymbol.group(2);
 							extraContration = matchSymbol.group(4);
-							tempToken = (tempToken
-									+ expandContractWord(contractionWord) + expandContractWord(extraContration))
+							tempToken = (tempToken +" "
+									+ expandContractWord(contractionWord) +" "+ expandContractWord(extraContration))
 									.trim();
 						}
 					}
@@ -127,10 +148,11 @@ public class SymbolFilter extends TokenFilter {
 					checkSymbol = Pattern.compile(alphaAlpha);
 					matchSymbol = checkSymbol.matcher(tempToken.trim());
 
-					if (!matchSymbol.find()) {
-						tempToken = matchSymbol.group(1) + matchSymbol.group(3);
+					if (matchSymbol.find()) {
+						tempToken = matchSymbol.group(1) +" "+ matchSymbol.group(3);
 					}
 					tk.setTermText(tempToken);
+					System.out.println(tempToken);
 				}
 			}
 		}
@@ -147,24 +169,26 @@ public class SymbolFilter extends TokenFilter {
 		 * case "'ll": return "will"; case "'ts": return "not"; default: return
 		 * conWord; }
 		 */
-		if (conWord == "'s")
+		if (conWord.equals("'s"))
 			return "";
-		else if (conWord == "'t")
+		else if (conWord.equals("'t"))
 			return "not";
-		else if (conWord == "'ll")
+		else if (conWord.equals("'ll"))
 			return "will";
-		else if (conWord == "'ts")
+		else if (conWord.equals("'ts"))
 			return "not";
-		else if (conWord == "'re")
+		else if (conWord.equals("'re"))
 			return "are";
-		else if (conWord == "'m")
+		else if (conWord.equals("'m"))
 			return "am";
-		else if (conWord == "'d")
+		else if (conWord.equals("'d"))
 			return "would";
-		else if (conWord == "'em")
+		else if (conWord.equals("'em"))
 			return "them";
+		else if (conWord.equals("'ve"))
+			return "have";
 		else
-			return conWord;
+			return null;
 
 	}
 

@@ -72,7 +72,14 @@ public class Token {
 	 * @param tokens The token array to be merged
 	 */
 	protected void merge(Token...tokens) {
-		//TODO : YOU MUST IMPLEMENT THIS METHOD
+		if(tokens!=null)
+		{
+			for(Token tk : tokens)
+			{
+				setTermText(toString()+" "+tk.getTermText());
+			}
+			
+		}
 	}
 	
 	/**

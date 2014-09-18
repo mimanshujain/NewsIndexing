@@ -52,6 +52,7 @@ public class IndexWriter {
 		for(String term : termString)
 		{
 			termStream=newToken.consume(term);
+			if(termStream!=null)
 			doAnalysisOnStream(termStream);
 
 		}
@@ -66,7 +67,10 @@ public class IndexWriter {
 			TokenFilter symFilter=tFilterFactory.getFilterByType(TokenFilterType.SYMBOL, tStream);
 			if(symFilter!=null)
 			{
-				
+				while(symFilter.increment())
+				{
+					
+				}
 			}
 			else
 			{
