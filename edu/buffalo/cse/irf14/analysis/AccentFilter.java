@@ -18,7 +18,7 @@ public class AccentFilter extends TokenFilter {
 			if (tempToken!=null && !"".equals(tempToken)) {
 
 				String nfdNormalizedString = Normalizer.normalize(tempToken,
-						Normalizer.Form.NFD);
+						Normalizer.Form.NFKD);
 				Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 				tk.setTermText(pattern.matcher(nfdNormalizedString).replaceAll(""));
 				return true;

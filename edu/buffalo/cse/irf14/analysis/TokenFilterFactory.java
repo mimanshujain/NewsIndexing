@@ -54,7 +54,7 @@ public class TokenFilterFactory {
 			if(type==TokenFilterType.NUMERIC)
 				return new StemmerFilter(stream);
 			if(type==TokenFilterType.CAPITALIZATION)
-				return new StemmerFilter(stream);
+				return new CapitalizationFilter(stream);
 			if(type==TokenFilterType.DATE)
 				return new StemmerFilter(stream);
 			if(type==TokenFilterType.STOPWORD)

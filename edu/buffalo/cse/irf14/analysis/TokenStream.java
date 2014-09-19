@@ -145,7 +145,6 @@ public class TokenStream implements Iterator<Token> {
 	 *         has been reached or the current Token was removed
 	 */
 	public Token getCurrent() {
-		// TODO: YOU MUST IMPLEMENT THIS
 		if(index>0 && index<=tokenStreamList.size()&&token!=null)
 			return  (Token)tokenStreamList.get(index-1);
 		else
@@ -158,7 +157,7 @@ public class TokenStream implements Iterator<Token> {
 		else 
 			return null;
 	}
-	
+
 	private String after()
 	{
 		if(dummyIndex<tokenStreamList.size() && dummyIndex>=0)
@@ -168,7 +167,7 @@ public class TokenStream implements Iterator<Token> {
 		else
 			return null;
 	}
-	
+
 	public List<String> getWords()
 	{
 		dummyIndex=index-2;
@@ -184,12 +183,12 @@ public class TokenStream implements Iterator<Token> {
 			}
 		}
 		lst.add(getCurrent().getTermText());
-		
+
 		if(getCurrent().getTermText().contains("."))
 			return lst;
-		
+
 		dummyIndex=index;
-		
+
 		while(true)
 		{
 			String word=after();
@@ -203,17 +202,41 @@ public class TokenStream implements Iterator<Token> {
 			else
 				lst.add(word);
 		}
-		
+
 		return lst;
 	}
-	
-	public List<String> getAfterWords()
+
+	public Token getPrevious()
 	{
-		
+		if(index>1 && index<=tokenStreamList.size())
+			return  (Token)tokenStreamList.get(index-2);
+		else
+			return null;
+	}
+	public Token getNext(int i)
+	{
+		if(hasNext())
+		{
+			//			currentIndex=(index)+1;
+			token=(Token)tokenStreamList.get(index+i);
+			if(token!=null)
+				return token;
+			else 
+				return null;
+		}
 		return null;
 	}
-	
-	
+
+	public boolean isFirst()
+	{
+		if(index==1)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+
 	// Added later
 	private Map<Token, ArrayList<String>> getTokenMap() {
 		return getTokenMap();
