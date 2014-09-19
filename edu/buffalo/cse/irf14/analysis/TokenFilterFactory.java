@@ -48,16 +48,17 @@ public class TokenFilterFactory {
 			if(type==TokenFilterType.STEMMER)
 				return new StemmerFilter(stream);
 			if(type==TokenFilterType.SPECIALCHARS)
-				return new StemmerFilter(stream);
+				return new SpecialCharacterFilter(stream);
 			if(type==TokenFilterType.ACCENT)
-				return new StemmerFilter(stream);
+				return new AccentFilter(stream);
 			if(type==TokenFilterType.NUMERIC)
 				return new StemmerFilter(stream);
 			if(type==TokenFilterType.CAPITALIZATION)
 				return new StemmerFilter(stream);
 			if(type==TokenFilterType.DATE)
 				return new StemmerFilter(stream);
-	
+			if(type==TokenFilterType.STOPWORD)
+				return new StopwordsFilter(stream);
 		}
 		return null;
 	}

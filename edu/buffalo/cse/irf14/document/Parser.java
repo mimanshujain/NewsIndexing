@@ -51,7 +51,7 @@ public class Parser {
 //
 //			FileWriter fw=new FileWriter(saveData.getAbsoluteFile(),true);
 //			BufferedWriter bw=new BufferedWriter(fw);
-			InputStream openStream=new FileInputStream(parsingOp);;
+			InputStream openStream=new FileInputStream(parsingOp);
 //			try
 //			{
 //				openStream=new FileInputStream(parsingOp);

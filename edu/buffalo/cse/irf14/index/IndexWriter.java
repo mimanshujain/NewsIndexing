@@ -99,6 +99,14 @@ public class IndexWriter {
 				{					
 				}
 			}
+			TokenFilter stopWordFilter=tFilterFactory.getFilterByType(TokenFilterType.STOPWORD, tStream);
+			if(stopWordFilter!=null)
+			{
+				while(stopWordFilter.increment())
+				{					
+					
+				}
+			}
 		}
 		catch(Exception ex)
 		{
