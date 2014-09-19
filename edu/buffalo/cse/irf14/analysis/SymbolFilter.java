@@ -32,7 +32,8 @@ public class SymbolFilter extends TokenFilter {
 			{ "why's", "why is" }, { "ma'am", "madam" },
 			{ "Y'all", "You all" }, { "Y'all'd've", "You all should have" } };
 
-	private static final String removePunc = "(.*)(\\b)";
+	//	private static final String removePunc = "(.*)(\\b)(.*)";
+	private static final String removePunc = "(.*[^!?.]+)(.*)";
 	private static final String expandApos = "(.*)(\\'.*)";
 	private static final String alphaAlpha = "^([A-Za-z]+)([-])([A-Za-z]+)$";
 	private static final String alphaNum = "([a-zA-Z]+)(\\-)([0-9]+)";
@@ -40,7 +41,7 @@ public class SymbolFilter extends TokenFilter {
 	private static final String expandWithN = "(.*)(n)(\\'.*)";
 	private static final String doubleAposwithN = "(.*)(n)(\\'.*)(\\'.*)";
 	private static final String doubleAposwithD = "(.*)(\\'d*)(\\'.*)";
-
+	private static final String checkOnlySpecial="([a-zA-Z0-9]+)";
 	public Pattern checkSymbol = null;
 	public Matcher matchSymbol = null;
 
@@ -56,11 +57,35 @@ public class SymbolFilter extends TokenFilter {
 				if (tk.getTermText() != "" || tk.getTermText() != null) {
 					String tempToken = tk.getTermText();
 					String contractionWord = "";
-
+					//					checkSymbol = Pattern.compile(checkOnlySpecial);
+					//					matchSymbol = checkSymbol.matcher(tempToken.trim());
+					//					if(!matchSymbol.find())
+					//					{
+					//						tStream.remove();
+					//						return true;
+					//					}
+					//					while(true)
+					//					{
+					//						checkSymbol = Pattern.compile(removePunc);
+					//						matchSymbol = checkSymbol.matcher(tempToken.trim());
+					//						if(matchSymbol.find())
+					//						{
+					//							if(!matchSymbol.group(1).contains("!") && !matchSymbol.group(1).contains(".") && !matchSymbol.group(1).contains("?"))
+					//							{
+					//								tempToken= matchSymbol.group(1);
+					//								break;
+					//							}
+					//							else
+					//							{
+					//								tempToken= matchSymbol.group(1);								
+					//							}
+					//						}
+					//
+					//					}
 					checkSymbol = Pattern.compile(removePunc);
 					matchSymbol = checkSymbol.matcher(tempToken.trim());
-
-					if (matchSymbol.find()) {
+					if (matchSymbol.find()) 
+					{
 						tempToken = matchSymbol.group(1);
 					}
 
@@ -87,7 +112,7 @@ public class SymbolFilter extends TokenFilter {
 						}
 					}
 					if (!wordMatch) {
-						
+
 						checkSymbol = Pattern.compile(expandWithN);
 						matchSymbol = checkSymbol.matcher(tempToken.trim());
 
@@ -104,20 +129,27 @@ public class SymbolFilter extends TokenFilter {
 								.compile(expandApos)).matcher(tempToken.trim()))
 								.find()) 
 						{
-//							checkSymbol = Pattern.compile(expandApos);
-//							matchSymbol = checkSymbol.matcher(tempToken.trim());
-	//
-//							if (matchSymbol.find()) {
-								tempToken = matchSymbol.group(1);
-								contractionWord = matchSymbol.group(2);
-								String str=expandContractWord(contractionWord);
-								if(str!=null && !str.equals(""))
-									tempToken = (tempToken + " "+ expandContractWord(contractionWord))
-										.trim();
-								else if(tempToken.contains("'"))
-									tempToken=(tempToken+contractionWord).replaceAll("[']", "");
-								
-//							}
+							tempToken = matchSymbol.group(1);
+							contractionWord = matchSymbol.group(2);
+							String str=expandContractWord(contractionWord);
+
+							if(str!=null && !str.equals(""))
+								tempToken = (tempToken + " "+ str)
+								.trim();
+
+							else if(!tempToken.equals("")&&tempToken.contains("'"))
+								tempToken=(tempToken+contractionWord).replaceAll("[']", "");
+
+							else if(str==null && !contractionWord.equals("") && !tempToken.equals(""))
+							{
+								tempToken=(tempToken+contractionWord).replaceAll("[']", "");
+							}
+
+							else if(!contractionWord.equals("")&&tempToken.equals("")&&contractionWord.contains("'"))
+								tempToken=contractionWord.replaceAll("[']", "");
+							//								else if(!tempToken.equals("")&&!tempToken.contains("'"))
+							//									tempToken=(tempToken+contractionWord).replaceAll("[']", "");
+							//							}
 						} 
 						else if ((matchSymbol = (checkSymbol = Pattern
 								.compile(doubleAposwithN))
@@ -151,8 +183,31 @@ public class SymbolFilter extends TokenFilter {
 					if (matchSymbol.find()) {
 						tempToken = matchSymbol.group(1) +" "+ matchSymbol.group(3);
 					}
+
+					checkSymbol = Pattern.compile("(^[-]+)(.*)");
+					matchSymbol = checkSymbol.matcher(tempToken.trim());
+
+					if(matchSymbol.find())
+					{
+						tempToken=matchSymbol.group(2).trim();
+						if("".equals(tempToken))
+						{
+							tStream.remove();
+							return true;
+						}
+						
+					}
+					checkSymbol=Pattern.compile("(.*[^-]+)([-]+$)");
+					matchSymbol=checkSymbol.matcher(tempToken.trim());
+					
+					if(matchSymbol.find())
+					{
+						tempToken=matchSymbol.group(1);
+					}
+					
 					tk.setTermText(tempToken);
-					System.out.println(tempToken);
+					//System.out.println(tempToken);
+					return true;
 				}
 			}
 		}
@@ -195,7 +250,7 @@ public class SymbolFilter extends TokenFilter {
 	@Override
 	public TokenStream getStream() {
 		// TODO Auto-generated method stub
-		return null;
+		return tStream;
 	}
 
 	/*
