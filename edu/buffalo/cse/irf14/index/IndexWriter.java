@@ -53,13 +53,13 @@ public class IndexWriter {
 		{
 			termStream=newToken.consume(term);
 			if(termStream!=null)
-			doAnalysisOnStream(termStream);
+				doAnalysisOnStream(termStream);
 
 		}
 		//For Dictionary
 		//List<List<String>> super2dArray = new ArrayList<ArrayList<String>>()
 	}
-	
+
 	private void doAnalysisOnStream(TokenStream tStream) throws IndexerException {
 		try
 		{
@@ -68,13 +68,15 @@ public class IndexWriter {
 			if(symFilter!=null)
 			{
 				while(symFilter.increment())
-				{
-					
+				{					
 				}
 			}
-			else
+			TokenFilter stemFilter=tFilterFactory.getFilterByType(TokenFilterType.STEMMER, tStream);
+			if(stemFilter!=null)
 			{
-				//Not sure what to throw.
+				while(stemFilter.increment())
+				{					
+				}
 			}
 		}
 		catch(Exception ex)

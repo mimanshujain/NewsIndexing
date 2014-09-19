@@ -42,8 +42,8 @@ public class SymbolFilter extends TokenFilter {
 	private static final String doubleAposwithN = "(.*)(n)(\\'.*)(\\'.*)";
 	private static final String doubleAposwithD = "(.*)(\\'d*)(\\'.*)";
 	private static final String checkOnlySpecial="([a-zA-Z0-9]+)";
-	public Pattern checkSymbol = null;
-	public Matcher matchSymbol = null;
+	private Pattern checkSymbol = null;
+	private Matcher matchSymbol = null;
 
 	@Override
 	public boolean increment() throws TokenizerException {

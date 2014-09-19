@@ -46,6 +46,8 @@ public class TokenFilterFactory {
 			if (type == TokenFilterType.SYMBOL) {
 				return new SymbolFilter(stream);
 			}
+			if(type==TokenFilterType.STEMMER)
+				return new StemmerFilter(stream);
 		}
 		return null;
 	}
