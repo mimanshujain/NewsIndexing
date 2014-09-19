@@ -47,8 +47,6 @@ public class SymbolFilter extends TokenFilter {
 
 	@Override
 	public boolean increment() throws TokenizerException {
-
-		//tStream.reset();
 		try
 		{
 			if (tStream.hasNext()) {
@@ -57,31 +55,6 @@ public class SymbolFilter extends TokenFilter {
 				if (tk.getTermText() != "" || tk.getTermText() != null) {
 					String tempToken = tk.getTermText();
 					String contractionWord = "";
-					//					checkSymbol = Pattern.compile(checkOnlySpecial);
-					//					matchSymbol = checkSymbol.matcher(tempToken.trim());
-					//					if(!matchSymbol.find())
-					//					{
-					//						tStream.remove();
-					//						return true;
-					//					}
-					//					while(true)
-					//					{
-					//						checkSymbol = Pattern.compile(removePunc);
-					//						matchSymbol = checkSymbol.matcher(tempToken.trim());
-					//						if(matchSymbol.find())
-					//						{
-					//							if(!matchSymbol.group(1).contains("!") && !matchSymbol.group(1).contains(".") && !matchSymbol.group(1).contains("?"))
-					//							{
-					//								tempToken= matchSymbol.group(1);
-					//								break;
-					//							}
-					//							else
-					//							{
-					//								tempToken= matchSymbol.group(1);								
-					//							}
-					//						}
-					//
-					//					}
 					checkSymbol = Pattern.compile(removePunc);
 					matchSymbol = checkSymbol.matcher(tempToken.trim());
 					if (matchSymbol.find()) 
@@ -147,9 +120,7 @@ public class SymbolFilter extends TokenFilter {
 
 							else if(!contractionWord.equals("")&&tempToken.equals("")&&contractionWord.contains("'"))
 								tempToken=contractionWord.replaceAll("[']", "");
-							//								else if(!tempToken.equals("")&&!tempToken.contains("'"))
-							//									tempToken=(tempToken+contractionWord).replaceAll("[']", "");
-							//							}
+
 						} 
 						else if ((matchSymbol = (checkSymbol = Pattern
 								.compile(doubleAposwithN))
@@ -206,7 +177,7 @@ public class SymbolFilter extends TokenFilter {
 					}
 					
 					tk.setTermText(tempToken);
-					//System.out.println(tempToken);
+
 					return true;
 				}
 			}
@@ -219,11 +190,6 @@ public class SymbolFilter extends TokenFilter {
 	}
 
 	private String expandContractWord(String conWord) {
-		/*
-		 * switch (conWord) { case "'s": return ""; case "'t": return "not";
-		 * case "'ll": return "will"; case "'ts": return "not"; default: return
-		 * conWord; }
-		 */
 		if (conWord.equals("'s"))
 			return "";
 		else if (conWord.equals("'t"))
@@ -249,29 +215,7 @@ public class SymbolFilter extends TokenFilter {
 
 	@Override
 	public TokenStream getStream() {
-		// TODO Auto-generated method stub
 		return tStream;
 	}
 
-	/*
-	 * public static void main(String[] args) { SymbolFilter sm = new
-	 * SymbolFilter(null); String ip,op; ip="shouldn't"; op=sm.test(ip);
-	 * System.out.println(op); }
-	 * 
-	 * public String test(String tk){
-	 * 
-	 * // if (tk.getTermText() != "" || tk.getTermText() != null) { String
-	 * tempToken = tk; String contractionWord = ""; checkSymbol =
-	 * Pattern.compile(removePunc); matchSymbol =
-	 * checkSymbol.matcher(tempToken.trim()); if (matchSymbol.groupCount() > 0)
-	 * { tempToken = matchSymbol.group(1); } checkSymbol =
-	 * Pattern.compile(expandApos); matchSymbol =
-	 * checkSymbol.matcher(tempToken.trim()); // change this condition // check
-	 * for Exception if (matchSymbol.find()) { tempToken = matchSymbol.group(1);
-	 * // tempToken=tempToken; contractionWord = matchSymbol.group(2); tempToken
-	 * = (tempToken + expandContractWord(contractionWord)) .trim(); } return
-	 * tempToken; // checkSymbol = Pattern.compile(alphaNum); // matchSymbol =
-	 * checkSymbol.matcher(tempToken.trim()); // if (!matchSymbol.find()) { //
-	 * // } // } }
-	 */
 }
