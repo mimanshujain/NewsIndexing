@@ -78,10 +78,32 @@ public class IndexWriter {
 				{					
 				}
 			}
+			TokenFilter accentFilter=tFilterFactory.getFilterByType(TokenFilterType.ACCENT, tStream);
+			if(accentFilter!=null)
+			{
+				while(accentFilter.increment())
+				{					
+				}
+			}
+			TokenFilter specialCharFilter=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
+			if(specialCharFilter!=null)
+			{
+				while(specialCharFilter.increment())
+				{					
+				}
+			}
+			TokenFilter capitalFilter=tFilterFactory.getFilterByType(TokenFilterType.CAPITALIZATION, tStream);
+			if(capitalFilter!=null)
+			{
+				while(capitalFilter.increment())
+				{					
+				}
+			}
 		}
 		catch(Exception ex)
 		{
 			ex.printStackTrace();
+			throw new IndexerException();
 		}
 
 	}

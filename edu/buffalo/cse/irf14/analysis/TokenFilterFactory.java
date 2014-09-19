@@ -43,11 +43,21 @@ public class TokenFilterFactory {
 		if (type == null) {
 			return null;
 		} else {
-			if (type == TokenFilterType.SYMBOL) {
-				return new SymbolFilter(stream);
-			}
+			if (type == TokenFilterType.SYMBOL) 
+				return new SymbolFilter(stream);			
 			if(type==TokenFilterType.STEMMER)
 				return new StemmerFilter(stream);
+			if(type==TokenFilterType.SPECIALCHARS)
+				return new StemmerFilter(stream);
+			if(type==TokenFilterType.ACCENT)
+				return new StemmerFilter(stream);
+			if(type==TokenFilterType.NUMERIC)
+				return new StemmerFilter(stream);
+			if(type==TokenFilterType.CAPITALIZATION)
+				return new StemmerFilter(stream);
+			if(type==TokenFilterType.DATE)
+				return new StemmerFilter(stream);
+	
 		}
 		return null;
 	}
