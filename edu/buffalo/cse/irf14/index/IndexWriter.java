@@ -56,7 +56,7 @@ public class IndexWriter {
 				doAnalysisOnStream(termStream);
 
 		}
-		//For Dictionary
+		////For Dictionary
 		//List<List<String>> super2dArray = new ArrayList<ArrayList<String>>()
 	}
 
