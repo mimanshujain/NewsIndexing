@@ -18,10 +18,11 @@ public class CapitalizationFilter extends TokenFilter {
 	public CapitalizationFilter(TokenStream stream) {
 		super(stream);
 	}
-
-	private static final String firstCapital="^[A-Z][a-zA-Z0-9-,]?";
-	private static final String allCapital="[A-Z]+";
-	private static final String allCapitalWithDots="[A-Z.]+";
+	//^[A-Z][a-zA-Z0-9-,]?
+	//[A-Z]+
+	private static final String firstCapital="[A-Z]{1}(.*)";
+	private static final String allCapital="[A-Z\\,\\-0-9]+";
+	private static final String allCapitalWithDots="[A-Z\\,\\-0-9\\.]+";
 	//	private nextValue;
 	//	private static final String ="[A-Z.]+";
 
@@ -37,54 +38,107 @@ public class CapitalizationFilter extends TokenFilter {
 				//				{
 				//					System.out.println("Only element in list");
 				//				}
+
+				//Initializing some varibles to be used.
 				String tempToken = tk.getTermText();
 				String transitionalString=tempToken;
 				String nextTokenString="";
 				Token token;
+
 				if (tempToken!=null && !"".equals(tempToken)) {
 
 					if(tempToken.matches(firstCapital) && !tempToken.matches(allCapital) && !tempToken.matches(allCapitalWithDots))
 					{		
 						if(tempToken.length()>1)
 						{
+							//Geting the Previous Token
 							token=(Token)tStream.getPrevious();
+							//Check if previous token exists and if it, then check if it was the last word of previous Line.
 							if(token!=null && (token.getTermText().contains(".")))
 							{
 								transitionalString=transitionalString.toLowerCase();
 							}
+							//This is when the current token is the very first word in the Stream.
 							else if(tStream.isFirst())
 							{
 								transitionalString=transitionalString.toLowerCase();
 							}
 
-							transitionalString=giveNextUpperString(tempToken,0);
-							if(transitionalString!=null)
-								transitionalString=giveNextUpperString(transitionalString,1);
-							else
-								transitionalString=tempToken;
+							//To check if the next token is also upper case.
+							nextTokenString=giveNextUpperString(transitionalString,0);
+
+							//To check if the second token from current is also upper case
+							//Before that making sure that last one was not null and not same as input, coz we dont need to do anything in that case.
+							if(nextTokenString!=null && !nextTokenString.equals(transitionalString))
+							{
+								transitionalString=nextTokenString;
+								nextTokenString=giveNextUpperString(nextTokenString,1);
+								//Doing the same as was doing with the last call.
+								if(nextTokenString!=null && !nextTokenString.equals(transitionalString))
+								{
+									transitionalString=nextTokenString;
+								}
+							}
+//							else
+//							{
+//								transitionalString=transitionalString.toLowerCase();
+//							}
 						}
 						else
 						{
 							tempToken=tempToken.toLowerCase();
-							return true;
+
 						}
+						tempToken=transitionalString;
+						//						tempToken=tempToken.toLowerCase();
+						tk.setTermText(tempToken);
+						return true;
 					}
-					else if(tempToken.matches(allCapital) && !tempToken.matches(allCapitalWithDots))
+					else if(tempToken.matches(allCapital) || tempToken.matches(allCapitalWithDots))
 					{
 						List<String> lst=tStream.getWords();
 						if(lst.size()>0)
 						{
+							int flag=0;
 							for(String str : lst)
 							{
 								if(!str.matches(allCapital) && !str.matches(allCapitalWithDots))
 								{
+									flag=1;
 									break;
 								}
 							}
+							if(flag==0)
+							{
+								transitionalString=transitionalString.toLowerCase();
+							}
 						}
+					}
+					
+//					else if(tempToken.matches(allCapitalWithDots))
+//					{
+//						List<String> lst=tStream.getWords();
+//						if(lst.size()>0)
+//						{
+//							for(String str : lst)
+//							{
+//								if(!str.matches(allCapital) && !str.matches(allCapitalWithDots))
+//								{
+//									break;
+//								}
+//							}
+//						}
+//						
+//					}
+					else
+					{
+						//tempToken=tempToken.toLowerCase();
+						tk.setTermText(tempToken);
+						return true;
 					}
 
 				}
+
 				return true;
 			}
 		}
@@ -92,13 +146,13 @@ public class CapitalizationFilter extends TokenFilter {
 		{
 			ex.printStackTrace();
 		}
-
+		//
 		return false;
 	}
 
 	private String giveNextUpperString(String currentValue,int i)
 	{
-		if(tStream.hasNext())
+		if(tStream.hasNext(i))
 		{
 			Token token=tStream.getNext(i);
 			if(token!=null)
@@ -130,15 +184,8 @@ public class CapitalizationFilter extends TokenFilter {
 	@Override
 	public TokenStream getStream() {
 		// TODO Auto-generated method stub
-		return null;
+		return tStream;
 	}
 
-	public static void main(String[] args) throws TokenizerException {
-		String ip="this. My name is Mimanshu and I am a good boy. So what, get lost.";
-		Tokenizer tz=new Tokenizer();
-		TokenStream ts=tz.consume(ip);
-		CapitalizationFilter cp = new CapitalizationFilter(ts);
-		while(cp.increment()){ }
-	}
 }
 

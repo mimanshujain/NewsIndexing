@@ -14,6 +14,7 @@ import java.util.Map;
  *         {@link Analyzer} and {@link TokenFilter} instances operate on this to
  *         implement their behavior
  */
+
 public class TokenStream implements Iterator<Token> {
 	// Added Later
 	// private Map<Token, ArrayList<String>> tokenMap;
@@ -151,6 +152,9 @@ public class TokenStream implements Iterator<Token> {
 			return null;
 	}
 
+	//Mimanshu Starts
+	
+	//Method to get the previous token without incrementing
 	private String previous() {
 		if(dummyIndex<tokenStreamList.size() && dummyIndex>=0)
 			return tokenStreamList.get(dummyIndex--).getTermText();
@@ -158,6 +162,7 @@ public class TokenStream implements Iterator<Token> {
 			return null;
 	}
 
+	//Method to get the next token without incrementing
 	private String after()
 	{
 		if(dummyIndex<tokenStreamList.size() && dummyIndex>=0)
@@ -168,6 +173,7 @@ public class TokenStream implements Iterator<Token> {
 			return null;
 	}
 
+	//Method to get the whole line.
 	public List<String> getWords()
 	{
 		dummyIndex=index-2;
@@ -197,7 +203,11 @@ public class TokenStream implements Iterator<Token> {
 			else if(word.contains("."))
 			{
 				lst.add(word);
-				break;
+				word=after();
+				if(word.matches("[A-Z]{1}(.*)"))
+					break;
+				else
+					lst.add(word);
 			}
 			else
 				lst.add(word);
@@ -237,11 +247,19 @@ public class TokenStream implements Iterator<Token> {
 			return false;
 	}
 
+	public boolean hasNext(int i) {
+
+		if((index+i) < (tokenStreamList.size()))
+			return true;
+		else
+			return false;
+	}
+
 	// Added later
 	private Map<Token, ArrayList<String>> getTokenMap() {
 		return getTokenMap();
 	}
-
+	//Mimanshu End
 	/*
 	 * public void setTokenMap(Map<Token, ArrayList<String>> tokenMap) {
 	 * this.tokenMap = tokenMap; }
