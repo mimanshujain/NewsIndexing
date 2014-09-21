@@ -18,18 +18,11 @@ import java.util.Map;
 public class TokenStream implements Iterator<Token> {
 	// Added Later
 	// private Map<Token, ArrayList<String>> tokenMap;
-	// Jagvir//
+	
 	Token token;
 	int index;
 	int dummyIndex;
 	List<Token> tokenStreamList ;
-	//	= new ArrayList<Token>();
-
-	// Jagvir
-	//	public TokenStream(List<Token> tokenStreamList) {
-	//
-	//		this.tokenStreamList = tokenStreamList;
-	//	}
 
 	public TokenStream() {
 		tokenStreamList=new ArrayList<Token>();
@@ -42,11 +35,9 @@ public class TokenStream implements Iterator<Token> {
 	}
 
 	public void setTokenStreamList(Token token) {
-		// this.tokenStreamList = tokenStreamList;
 		tokenStreamList.add(token);
 	}
 
-	// Jagvir//
 	/**
 	 * Method that checks if there is any Token left in the stream with regards
 	 * to the current pointer. DOES NOT ADVANCE THE POINTER
@@ -71,14 +62,8 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	@Override
 	public Token next() {
-
-		//		for (int index = 0; index < tokenStreamList.size(); index++) {
-		//			//System.out.println(tokenStreamList.get(index));
-		//			return tokenStreamList.get(index++);
-		//		}
 		if(hasNext())
 		{
-			//			currentIndex=(index)+1;
 			token=(Token)tokenStreamList.get(index++);
 			return token;
 		}
@@ -87,8 +72,6 @@ public class TokenStream implements Iterator<Token> {
 			token=null;
 			return token;
 		}
-		//		System.out.println("Test");
-		//		return null;
 	}
 
 	/**
@@ -98,7 +81,6 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	@Override
 	public void remove() {
-		//		index = tokenStreamList.size();
 		if(index>0&&index<=tokenStreamList.size())
 		{
 			tokenStreamList.remove((index-1));
@@ -112,11 +94,6 @@ public class TokenStream implements Iterator<Token> {
 	 * reset() must always return true.
 	 */
 	public void reset() {
-		// TODO : YOU MUST IMPLEMENT THIS
-		//		if(hasNext())
-		//		{
-		//				
-		//		}
 		index=0;
 	}
 	/**

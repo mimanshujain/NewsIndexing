@@ -35,7 +35,7 @@ public class SymbolFilter extends TokenFilter {
 	//	private static final String removePunc = "(.*)(\\b)(.*)";
 	private static final String removePunc = "(.*[^!?.]+)(.*)";
 	private static final String expandApos = "(.*)(\\'.*)";
-	private static final String alphaAlpha = "^([A-Za-z]+)([-])([A-Za-z]+)$";
+	private static final String alphaAlpha = "^([A-Za-z]+)([-]+)([A-Za-z]+)$";
 	private static final String alphaNum = "([a-zA-Z]+)(\\-)([0-9]+)";
 	private static final String numAlpha = "([0-9]+)(\\-)([a-zA-Z]+)";
 	private static final String expandWithN = "(.*)(n)(\\'.*)";
