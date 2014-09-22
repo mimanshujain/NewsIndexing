@@ -111,6 +111,9 @@ public class CapitalizationFilter extends TokenFilter {
 							if(flag==0)
 							{
 								transitionalString=transitionalString.toLowerCase();
+//								while(int i<lst)
+								int i=lst.size();
+								
 							}
 						}
 					}
@@ -130,12 +133,12 @@ public class CapitalizationFilter extends TokenFilter {
 //						}
 //						
 //					}
-					else
-					{
+//					else
+//					{
 						//tempToken=tempToken.toLowerCase();
 						tk.setTermText(tempToken);
 						return true;
-					}
+					
 
 				}
 
