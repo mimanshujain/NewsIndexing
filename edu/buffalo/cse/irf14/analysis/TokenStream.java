@@ -252,19 +252,22 @@ public class TokenStream implements Iterator<Token> {
 	{
 		if(i>0&&i<=tokenStreamList.size())
 		{
-			if(i<index)
+			if(i!=index)
 			{
-				tokenStreamList.remove((i-1));
-				index--;
-//				token=null;
-			}
-			else
-			{
-				tokenStreamList.remove((i-1));
+				if(i<index)
+				{
+					tokenStreamList.remove((i-1));
+					index--;
+					//				token=null;
+				}
+				else
+				{
+					tokenStreamList.remove((i-1));
+				}
 			}
 		}
 	}
-	
+
 	//To get the current index number
 	public int getIndex()
 	{
