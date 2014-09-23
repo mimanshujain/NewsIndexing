@@ -18,7 +18,7 @@ import java.util.Map;
 public class TokenStream implements Iterator<Token> {
 	// Added Later
 	// private Map<Token, ArrayList<String>> tokenMap;
-	
+
 	Token token;
 	int index;
 	int dummyIndex;
@@ -130,7 +130,7 @@ public class TokenStream implements Iterator<Token> {
 	}
 
 	//Mimanshu Starts
-	
+
 	//Method to get the previous token without incrementing
 	private String previous() {
 		if(dummyIndex<tokenStreamList.size() && dummyIndex>=0)
@@ -193,19 +193,32 @@ public class TokenStream implements Iterator<Token> {
 		return lst;
 	}
 
-	public Token getPrevious()
+	//Used to get the previous Token
+	public Token getPrevious(int i)
 	{
-		if(index>1 && index<=tokenStreamList.size())
-			return  (Token)tokenStreamList.get(index-2);
+		if(i == -2)
+		{
+			if(index>1 && index<=tokenStreamList.size())
+				return  (Token)tokenStreamList.get(index-2);
+			else
+				return null;
+		}
 		else
-			return null;
+		{
+			if(i>1 && i<=tokenStreamList.size())
+				return  (Token)tokenStreamList.get(i);
+			else
+				return null;
+		}
 	}
+
+	//To get the ith next token 
 	public Token getNext(int i)
 	{
-		if(hasNext())
+		if(hasNext(i))
 		{
 			//			currentIndex=(index)+1;
-			token=(Token)tokenStreamList.get(index+i);
+			token=(Token)tokenStreamList.get(i);
 			if(token!=null)
 				return token;
 			else 
@@ -214,6 +227,7 @@ public class TokenStream implements Iterator<Token> {
 		return null;
 	}
 
+	//To check if it is the first element.
 	public boolean isFirst()
 	{
 		if(index==1)
@@ -224,18 +238,48 @@ public class TokenStream implements Iterator<Token> {
 			return false;
 	}
 
+	//To check if we have the i th next element in the list.
 	public boolean hasNext(int i) {
 
-		if((index+i) < (tokenStreamList.size()))
+		if((i) < (tokenStreamList.size()))
 			return true;
 		else
 			return false;
 	}
 
+	//To remove at ith index
+	public void remove(int i)
+	{
+		if(i>0&&i<=tokenStreamList.size())
+		{
+			if(i<index)
+			{
+				tokenStreamList.remove((i-1));
+				index--;
+//				token=null;
+			}
+			else
+			{
+				tokenStreamList.remove((i-1));
+			}
+		}
+	}
+	
+	//To get the current index number
+	public int getIndex()
+	{
+		return index;
+	}
+
+
+
 	// Added later
 	private Map<Token, ArrayList<String>> getTokenMap() {
 		return getTokenMap();
 	}
+
+
+
 	//Mimanshu End
 	/*
 	 * public void setTokenMap(Map<Token, ArrayList<String>> tokenMap) {
