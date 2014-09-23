@@ -52,7 +52,7 @@ public class CapitalizationFilter extends TokenFilter {
 						if(tempToken.length()>1)
 						{
 							//Geting the Previous Token
-							token=(Token)tStream.getPrevious();
+							token=(Token)tStream.getPrevious(-2);
 							//Check if previous token exists and if it, then check if it was the last word of previous Line.
 							if(token!=null && (token.getTermText().contains(".")))
 							{
@@ -65,14 +65,14 @@ public class CapitalizationFilter extends TokenFilter {
 							}
 
 							//To check if the next token is also upper case.
-							nextTokenString=giveNextUpperString(transitionalString,0);
+							nextTokenString=giveNextUpperString(transitionalString,tStream.getIndex());
 
 							//To check if the second token from current is also upper case
 							//Before that making sure that last one was not null and not same as input, coz we dont need to do anything in that case.
 							if(nextTokenString!=null && !nextTokenString.equals(transitionalString))
 							{
 								transitionalString=nextTokenString;
-								nextTokenString=giveNextUpperString(nextTokenString,1);
+								nextTokenString=giveNextUpperString(nextTokenString,(tStream.getIndex()+1));
 								//Doing the same as was doing with the last call.
 								if(nextTokenString!=null && !nextTokenString.equals(transitionalString))
 								{
