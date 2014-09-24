@@ -252,8 +252,8 @@ public class TokenStream implements Iterator<Token> {
 	{
 		if(i>0&&i<=tokenStreamList.size())
 		{
-			if(i!=index)
-			{
+//			if(i!=index)
+//			{
 				if(i<index)
 				{
 					tokenStreamList.remove((i-1));
@@ -264,7 +264,7 @@ public class TokenStream implements Iterator<Token> {
 				{
 					tokenStreamList.remove((i-1));
 				}
-			}
+//			}
 		}
 	}
 
@@ -274,7 +274,10 @@ public class TokenStream implements Iterator<Token> {
 		return index;
 	}
 
-
+public void updateList(Token tk,int i)
+{
+	tokenStreamList.set(i, tk);
+}
 
 	// Added later
 	private Map<Token, ArrayList<String>> getTokenMap() {
