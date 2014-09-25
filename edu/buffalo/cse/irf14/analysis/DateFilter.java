@@ -30,6 +30,8 @@ public class DateFilter extends TokenFilter {
 			+ "1[0-9]|2[0-3]):([0-5][0-9])$)";
 	private static final String timeIntegrated="(^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(PM|AM)$)|"
 			+ "(^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])(PM|AM)$)";
+	private static final String dateWithHyphen="([1-2]\\d{3})-(\\d{2})(.*)";
+	
 	private Pattern checkPat= null;
 	private Matcher matchText = null;
 
@@ -288,6 +290,28 @@ public class DateFilter extends TokenFilter {
 							return true;
 						}
 
+					}
+					
+					checkPat=Pattern.compile(dateWithHyphen,Pattern.CASE_INSENSITIVE);
+					matchText=checkPat.matcher(trans);
+
+					if(matchText.matches())
+					{
+						String date1=matchText.group(1);
+						String date2=matchText.group(2);
+						
+						if(tempToken.contains(","))
+							extra=",";
+						if(tempToken.contains("."))
+							extra=".";
+						
+						String yearPrefix=date1.substring(0, 2);
+						date1=date1+month+day;
+						date2=yearPrefix+date2+month+day;
+						
+						tempToken=date1+"-"+date2+extra;	
+						tk.setTermText(tempToken);
+						return true;
 					}
 					//					else
 					//						return true;
