@@ -3,6 +3,14 @@
  */
 package edu.buffalo.cse.irf14.index;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
+import edu.buffalo.cse.irf14.analysis.Analyzer;
+import edu.buffalo.cse.irf14.analysis.AnalyzerFactory;
+import edu.buffalo.cse.irf14.analysis.TermAnalyer;
 import edu.buffalo.cse.irf14.analysis.TokenFilter;
 import edu.buffalo.cse.irf14.analysis.TokenFilterFactory;
 import edu.buffalo.cse.irf14.analysis.TokenFilterType;
@@ -22,9 +30,9 @@ public class IndexWriter {
 	 * @param indexDir : The root directory to be sued for indexing
 	 */
 	public IndexWriter(String indexDir) {
-		//TODO : YOU MUST IMPLEMENT THIS
 	}
-	//test//
+
+	IndexCreator createrObj;
 
 	/**
 	 * Method to add the given Document to the index
@@ -37,74 +45,49 @@ public class IndexWriter {
 	 */
 	public void addDocument(Document d) throws IndexerException, TokenizerException {
 
-		Tokenizer newToken=new Tokenizer();
-		String[] termString=
-			{d.getField(FieldNames.TITLE)[0],
-				d.getField(FieldNames.CONTENT)[0],
-				d.getField(FieldNames.AUTHOR)[0],
-				d.getField(FieldNames.AUTHORORG)[0],
-				d.getField(FieldNames.PLACE)[0],
-				d.getField(FieldNames.CATEGORY)[0],
-				d.getField(FieldNames.NUMBERS)[0]
-			};
-		TokenStream termStream=new TokenStream();
+		//		String[] termString=
+		//			{d.getField(FieldNames.TITLE)[0],
+		//				d.getField(FieldNames.CONTENT)[0],
+		//				d.getField(FieldNames.AUTHOR)[0],
+		//				d.getField(FieldNames.AUTHORORG)[0],
+		//				d.getField(FieldNames.PLACE)[0],
+		//				d.getField(FieldNames.CATEGORY)[0]
+		//			};
+		//		TokenStream termStream=new TokenStream();
 		//Need to remove the for loop later.
-		for(String term : termString)
+		//		for(String term : termString)
+		//		{
+		//			termStream=newToken.consume(term);
+		//			if(termStream!=null)
+		//				doAnalysisOnStream(termStream);
+		//		}
+
+		Tokenizer tokenizeFields=new Tokenizer();
+		for(FieldNames fn : FieldNames.values())
 		{
-			termStream=newToken.consume(term);
-			if(termStream!=null)
-				doAnalysisOnStream(termStream);
-
+			TokenStream termStream=tokenizeFields.consume(d.getField(fn)[0]);
+			analyzeAndFiltering(termStream, fn.name());
+			createrObj=new IndexCreator(IndexType.CONTENT.name());
+			close();
 		}
-		////For Dictionary
-		//List<List<String>> super2dArray = new ArrayList<ArrayList<String>>()
 	}
-
-	private void doAnalysisOnStream(TokenStream tStream) throws IndexerException {
+	private void analyzeAndFiltering(TokenStream tStream, String type) throws IndexerException
+	{
+		AnalyzerFactory factoryObj=AnalyzerFactory.getInstance();
 		try
 		{
-			TokenFilterFactory tFilterFactory=TokenFilterFactory.getInstance();
-			TokenFilter symFilter=tFilterFactory.getFilterByType(TokenFilterType.SYMBOL, tStream);
-			if(symFilter!=null)
+			tStream.reset();
+			if(tStream!=null)
 			{
-				while(symFilter.increment())
-				{					
-				}
-			}
-			TokenFilter stemFilter=tFilterFactory.getFilterByType(TokenFilterType.STEMMER, tStream);
-			if(stemFilter!=null)
-			{
-				while(stemFilter.increment())
-				{					
-				}
-			}
-			TokenFilter accentFilter=tFilterFactory.getFilterByType(TokenFilterType.ACCENT, tStream);
-			if(accentFilter!=null)
-			{
-				while(accentFilter.increment())
-				{					
-				}
-			}
-			TokenFilter specialCharFilter=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
-			if(specialCharFilter!=null)
-			{
-				while(specialCharFilter.increment())
-				{					
-				}
-			}
-			TokenFilter capitalFilter=tFilterFactory.getFilterByType(TokenFilterType.CAPITALIZATION, tStream);
-			if(capitalFilter!=null)
-			{
-				while(capitalFilter.increment())
-				{					
-				}
-			}
-			TokenFilter stopWordFilter=tFilterFactory.getFilterByType(TokenFilterType.STOPWORD, tStream);
-			if(stopWordFilter!=null)
-			{
-				while(stopWordFilter.increment())
-				{					
-					
+				if(type==FieldNames.CONTENT.name())
+				{
+					Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.CONTENT, tStream);
+					if(termAnlzr!=null)
+					{
+						while(termAnlzr.increment()){							
+						}
+
+					}
 				}
 			}
 		}
@@ -114,15 +97,29 @@ public class IndexWriter {
 			throw new IndexerException();
 		}
 
-	}
 
+	}
 
 	/**
 	 * Method that indicates that all open resources must be closed
 	 * and cleaned and that the entire indexing operation has been completed.
 	 * @throws IndexerException : In case any error occurs
 	 */
-	public void close() throws IndexerException {
-		//TODO
+	public void close() throws IndexerException, IOException {
+		try
+		{
+//			String SaveIndexDir = System.getProperty("user.dir") + File.separatorChar + "news_training"+ File.separatorChar + "training";
+//			FileOutputStream writeIndex =
+//					new FileOutputStream();
+//			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+//			out.writeObject(e);
+//			out.close();
+//			fileOut.close();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();	
+			throw new IndexerException();
+		}
 	}
 }

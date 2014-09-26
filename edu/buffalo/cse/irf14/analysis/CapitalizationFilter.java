@@ -1,4 +1,4 @@
-/**
+	/**
  * 
  */
 package edu.buffalo.cse.irf14.analysis;
@@ -33,13 +33,9 @@ public class CapitalizationFilter extends TokenFilter {
 			if(tStream.hasNext())
 			{
 				Token tk=tStream.next();
-				//				List<String> lst=tStream.getWords();
-				//				if(lst.indexOf(tk.getTermText())==0)
-				//				{
-				//					System.out.println("Only element in list");
-				//				}
-
-				//Initializing some varibles to be used.
+				
+				if(tk==null) return true;
+				
 				String tempToken = tk.getTermText();
 				String transitionalString=tempToken;
 				String nextTokenString="";
@@ -51,8 +47,8 @@ public class CapitalizationFilter extends TokenFilter {
 					{		
 						if(tempToken.length()>1)
 						{
-							//Geting the Previous Token
-							token=(Token)tStream.getPrevious(-2);
+							//Getting the Previous Token
+							token=tStream.getPrevious(-2);
 							//Check if previous token exists and if it, then check if it was the last word of previous Line.
 							if(token!=null && (token.getTermText().contains(".")))
 							{
@@ -63,7 +59,10 @@ public class CapitalizationFilter extends TokenFilter {
 							{
 								transitionalString=transitionalString.toLowerCase();
 							}
-
+							else
+							{
+								transitionalString=givePreviousUpper(transitionalString, tk);
+							}
 							//To check if the next token is also upper case.
 							nextTokenString=giveNextUpperString(transitionalString,tStream.getIndex());
 
@@ -79,15 +78,10 @@ public class CapitalizationFilter extends TokenFilter {
 									transitionalString=nextTokenString;
 								}
 							}
-//							else
-//							{
-//								transitionalString=transitionalString.toLowerCase();
-//							}
 						}
 						else
 						{
 							tempToken=tempToken.toLowerCase();
-
 						}
 						tempToken=transitionalString;
 						//						tempToken=tempToken.toLowerCase();
@@ -96,26 +90,33 @@ public class CapitalizationFilter extends TokenFilter {
 					}
 					else if(tempToken.matches(allCapital) || tempToken.matches(allCapitalWithDots))
 					{
-						List<String> lst=tStream.getWords();
-						if(lst.size()>0)
+						if(tempToken.length()>1)
 						{
-							int flag=0;
-							for(String str : lst)
+							List<String> lst=tStream.getWords();
+							if(lst.size()>0)
 							{
-								if(!str.matches(allCapital) && !str.matches(allCapitalWithDots))
+								int flag=0;
+								for(String str : lst)
 								{
-									flag=1;
-									break;
+									if(!str.matches(allCapital) && !str.matches(allCapitalWithDots))
+									{
+										flag=1;
+										break;
+									}
+								}
+								if(flag==0)
+								{
+									transitionalString=transitionalString.toLowerCase();
+									int i=lst.size();
+									
 								}
 							}
-							if(flag==0)
-							{
-								transitionalString=transitionalString.toLowerCase();
-//								while(int i<lst)
-								int i=lst.size();
-								
-							}
 						}
+						else
+						{
+							tempToken=tempToken.toLowerCase();
+						}
+
 					}
 					
 //					else if(tempToken.matches(allCapitalWithDots))
@@ -138,8 +139,6 @@ public class CapitalizationFilter extends TokenFilter {
 						//tempToken=tempToken.toLowerCase();
 						tk.setTermText(tempToken);
 						return true;
-					
-
 				}
 
 				return true;
@@ -179,6 +178,27 @@ public class CapitalizationFilter extends TokenFilter {
 			return null;
 
 		return currentValue;
+	}
+	
+	private String givePreviousUpper(String currentValue,Token tk){
+
+		if(tk!=null)
+		{
+			String termText=tk.getTermText();
+			if(termText!=null && !"".equals(termText))
+			{
+				if(termText.matches(firstCapital) && !termText.matches(allCapital) && !termText.matches(allCapitalWithDots))
+				{
+					currentValue=currentValue+ " "+termText;
+				}
+			}
+			else
+				return null;
+		}
+		else
+			return null;
+		
+		return null;
 	}
 
 	/* (non-Javadoc)

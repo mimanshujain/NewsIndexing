@@ -22,8 +22,7 @@ public class AnalyzerFactory {
 	 * @return An instance of the factory
 	 */
 	public static AnalyzerFactory getInstance() {
-		//TODO: YOU NEED TO IMPLEMENT THIS METHOD
-		return null;
+		return new AnalyzerFactory();
 	}
 	
 	/**
@@ -38,7 +37,15 @@ public class AnalyzerFactory {
 	 * null otherwise
 	 */
 	public Analyzer getAnalyzerForField(FieldNames name, TokenStream stream) {
-		//TODO : YOU NEED TO IMPLEMENT THIS METHOD
+	
+		if(name!=null)
+		{
+			if(name==FieldNames.CONTENT )
+				return new TermAnalyer(stream);
+		}
+		
 		return null;
 	}
 }
+
+

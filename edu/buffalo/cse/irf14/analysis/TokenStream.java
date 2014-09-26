@@ -274,15 +274,15 @@ public class TokenStream implements Iterator<Token> {
 		return index;
 	}
 
-public void updateList(Token tk,int i)
-{
-	tokenStreamList.set(i, tk);
-}
-
-	// Added later
-	private Map<Token, ArrayList<String>> getTokenMap() {
-		return getTokenMap();
-	}
+//public void updateList(Token tk,int i)
+//{
+//	tokenStreamList.set(i, tk);
+//}
+//
+//	// Added later
+//	private Map<Token, ArrayList<String>> getTokenMap() {
+//		return getTokenMap();
+//	}
 
 
 
