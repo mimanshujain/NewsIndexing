@@ -52,7 +52,7 @@ public class TokenFilterFactory {
 			if(type==TokenFilterType.ACCENT)
 				return new AccentFilter(stream);
 			if(type==TokenFilterType.NUMERIC)
-				return new StemmerFilter(stream);
+				return new NumberFilter(stream);
 			if(type==TokenFilterType.CAPITALIZATION)
 				return new CapitalizationFilter(stream);
 			if(type==TokenFilterType.DATE)

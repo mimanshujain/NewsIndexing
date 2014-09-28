@@ -33,20 +33,20 @@ public class StemmerFilter extends TokenFilter {
 						st.stem();
 						tempToken=st.toString();
 						tk.setTermText(tempToken);
-						return true;
+						return tStream.hasNext();
 					}
 
 				}
 			}
 			else
-				return false;
+				return tStream.hasNext();
 		}
 
 		catch(Exception ex)
 		{
 			ex.printStackTrace();
 		}
-		return false;
+		return tStream.hasNext();
 	}
 
 	@Override

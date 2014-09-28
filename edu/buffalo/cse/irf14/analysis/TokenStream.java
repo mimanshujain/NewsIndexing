@@ -167,8 +167,8 @@ public class TokenStream implements Iterator<Token> {
 		}
 		lst.add(getCurrent().getTermText());
 
-		if(getCurrent().getTermText().contains("."))
-			return lst;
+		//		if(getCurrent().getTermText().contains(".?"))
+		//			return lst;
 
 		dummyIndex=index;
 
@@ -181,10 +181,15 @@ public class TokenStream implements Iterator<Token> {
 			{
 				lst.add(word);
 				word=after();
-				if(word.matches("[A-Z]{1}(.*)"))
-					break;
+				if(word!=null)
+				{
+					if(word.matches("[A-Z]{1}(.*)") && !word.matches("[A-Z]{2}(.*)"))
+						break;
+					else
+						lst.add(word);
+				}
 				else
-					lst.add(word);
+					break;
 			}
 			else
 				lst.add(word);
@@ -215,14 +220,17 @@ public class TokenStream implements Iterator<Token> {
 	//To get the ith next token 
 	public Token getNext(int i)
 	{
-		if(hasNext(i))
+		if(i>=1 && i<=tokenStreamList.size())
 		{
-			//			currentIndex=(index)+1;
-			token=(Token)tokenStreamList.get(i);
-			if(token!=null)
-				return token;
-			else 
-				return null;
+			if(hasNext(i))
+			{
+				//			currentIndex=(index)+1;
+				token=(Token)tokenStreamList.get(i);
+				if(token!=null)
+					return token;
+				else 
+					return null;
+			}
 		}
 		return null;
 	}
@@ -252,19 +260,19 @@ public class TokenStream implements Iterator<Token> {
 	{
 		if(i>0&&i<=tokenStreamList.size())
 		{
-//			if(i!=index)
-//			{
-				if(i<index)
-				{
-					tokenStreamList.remove((i-1));
-					index--;
-					//				token=null;
-				}
-				else
-				{
-					tokenStreamList.remove((i-1));
-				}
-//			}
+			//			if(i!=index)
+			//			{
+			if(i<index)
+			{
+				tokenStreamList.remove((i-1));
+				index--;
+				//				token=null;
+			}
+			else
+			{
+				tokenStreamList.remove((i-1));
+			}
+			//			}
 		}
 	}
 
@@ -273,16 +281,19 @@ public class TokenStream implements Iterator<Token> {
 	{
 		return index;
 	}
-
-//public void updateList(Token tk,int i)
-//{
-//	tokenStreamList.set(i, tk);
-//}
-//
-//	// Added later
-//	private Map<Token, ArrayList<String>> getTokenMap() {
-//		return getTokenMap();
-//	}
+	@Override
+	public String toString(){
+		return tokenStreamList.toString();
+	}
+	//public void updateList(Token tk,int i)
+	//{
+	//	tokenStreamList.set(i, tk);
+	//}
+	//
+	//	// Added later
+	//	private Map<Token, ArrayList<String>> getTokenMap() {
+	//		return getTokenMap();
+	//	}
 
 
 

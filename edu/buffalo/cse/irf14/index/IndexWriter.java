@@ -7,13 +7,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 import edu.buffalo.cse.irf14.analysis.Analyzer;
 import edu.buffalo.cse.irf14.analysis.AnalyzerFactory;
-import edu.buffalo.cse.irf14.analysis.TermAnalyer;
-import edu.buffalo.cse.irf14.analysis.TokenFilter;
-import edu.buffalo.cse.irf14.analysis.TokenFilterFactory;
-import edu.buffalo.cse.irf14.analysis.TokenFilterType;
 import edu.buffalo.cse.irf14.analysis.TokenStream;
 import edu.buffalo.cse.irf14.analysis.Tokenizer;
 import edu.buffalo.cse.irf14.analysis.TokenizerException;
@@ -30,9 +32,26 @@ public class IndexWriter {
 	 * @param indexDir : The root directory to be sued for indexing
 	 */
 	public IndexWriter(String indexDir) {
+
+		termIndex=new IndexCreator(IndexType.TERM.name());
+		authorIndex=new IndexCreator(IndexType.AUTHOR.name());
+		categoyIndex=new IndexCreator(IndexType.CATEGORY.name());
+		placeIndex=new IndexCreator(IndexType.PLACE.name());
+
+		//		docId=1;
+		if(indexDir!=null)
+			this.indexDir=indexDir;
+		else
+			this.indexDir="";
 	}
 
-	IndexCreator createrObj;
+	static String docId;
+	String indexDir;
+
+	IndexCreator termIndex;
+	IndexCreator authorIndex;
+	IndexCreator categoyIndex;
+	IndexCreator placeIndex;
 
 	/**
 	 * Method to add the given Document to the index
@@ -42,61 +61,135 @@ public class IndexWriter {
 	 * @param d : The Document to be added
 	 * @throws IndexerException : In case any error occurs
 	 * @throws TokenizerException 
+	 * @throws IOException 
 	 */
-	public void addDocument(Document d) throws IndexerException, TokenizerException {
-
-		//		String[] termString=
-		//			{d.getField(FieldNames.TITLE)[0],
-		//				d.getField(FieldNames.CONTENT)[0],
-		//				d.getField(FieldNames.AUTHOR)[0],
-		//				d.getField(FieldNames.AUTHORORG)[0],
-		//				d.getField(FieldNames.PLACE)[0],
-		//				d.getField(FieldNames.CATEGORY)[0]
-		//			};
-		//		TokenStream termStream=new TokenStream();
-		//Need to remove the for loop later.
-		//		for(String term : termString)
-		//		{
-		//			termStream=newToken.consume(term);
-		//			if(termStream!=null)
-		//				doAnalysisOnStream(termStream);
-		//		}
+	public void addDocument(Document d) throws IndexerException {
 
 		Tokenizer tokenizeFields=new Tokenizer();
+
+		TokenStream termStream;
+		//		try
+		//		{
+		//			termStream = tokenizeFields.consume(d.getField(FieldNames.CONTENT)[0]);
+		//			analyzeAndFiltering(termStream, FieldNames.CONTENT.name());
+		//			termIndex.type=IndexType.TERM.name();
+		//			termIndex.createIndexer(termStream,d.getField(FieldNames.FILEID)[0]);
+		//		}
+		//		catch (TokenizerException e) 
+		//		{				
+		//			e.printStackTrace();
+		//			System.out.println("Inside addDoc Token: "+(docId-1));
+		//			throw new IndexerException();
+		//		} 
+		//		catch (Exception e) 
+		//		{
+		//			e.printStackTrace();
+		//			System.out.println("Inside addDoc Exception: "+(docId-1));
+		//			throw new IndexerException();
+		//		}
+		//		docId++;
+		docId=d.getField(FieldNames.CATEGORY)[0]+d.getField(FieldNames.FILEID)[0];
+		tokenizeFields.docId=docId;
 		for(FieldNames fn : FieldNames.values())
 		{
-			TokenStream termStream=tokenizeFields.consume(d.getField(fn)[0]);
-			analyzeAndFiltering(termStream, fn.name());
-			createrObj=new IndexCreator(IndexType.CONTENT.name());
-			close();
+			try
+			{
+				if(d.getField(fn)!=null && d.getField(fn).length>0 && fn!=FieldNames.FILEID)
+				{
+					String str=d.getField(fn)[0];
+					if(!str.equals(null) && !"".equals(str))
+					{
+						//					if(fn==FieldNames.TITLE)
+						//						tokenizeFields.isTitle=true;
+						termStream = tokenizeFields.consume(str);
+						analyzeAndFiltering(termStream, fn.name(), d.getField(FieldNames.FILEID)[0]);
+					}
+					//termIndex.createIndexer(termStream,docId);
+				}
+			} 
+			catch (TokenizerException e) 
+			{				
+				e.printStackTrace();
+				throw new IndexerException();
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				throw new IndexerException();
+			}
 		}
 	}
-	private void analyzeAndFiltering(TokenStream tStream, String type) throws IndexerException
+	private void analyzeAndFiltering(TokenStream tStream, String type, String fileId) throws IndexerException
 	{
 		AnalyzerFactory factoryObj=AnalyzerFactory.getInstance();
-		try
+		if(factoryObj!=null)
 		{
-			tStream.reset();
-			if(tStream!=null)
+			try
 			{
-				if(type==FieldNames.CONTENT.name())
+				if(tStream!=null)
 				{
-					Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.CONTENT, tStream);
-					if(termAnlzr!=null)
+					tStream.reset();
+					if(type==FieldNames.CONTENT.name()  || type==FieldNames.TITLE.name())
 					{
-						while(termAnlzr.increment()){							
+						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.CONTENT, tStream);
+						if(termAnlzr!=null)
+						{
+							while(termAnlzr.increment()){							
+							}
+							termIndex.createIndexer(tStream,fileId);
 						}
+					}
+					if(type==FieldNames.PLACE.name())
+					{
+						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.PLACE, tStream);
+						if(termAnlzr!=null)
+						{
+							while(termAnlzr.increment()){							
+							}
+							placeIndex.createIndexer(tStream, fileId);
+						}
+					}
+					if(type==FieldNames.AUTHOR.name() || type==FieldNames.AUTHORORG.name())
+					{
+						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.PLACE, tStream);
+						if(termAnlzr!=null)
+						{
+							while(termAnlzr.increment()){							
+							}
+						}
+						authorIndex.createIndexer(tStream, fileId);
+					}
 
+					if(type==FieldNames.NEWSDATE.name())
+					{
+						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.NEWSDATE, tStream);
+						if(termAnlzr!=null)
+						{
+							while(termAnlzr.increment()){							
+							}
+						}
+						termIndex.createIndexer(tStream,fileId);
+					}
+
+					if(type==FieldNames.CATEGORY.name())
+					{
+						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.CATEGORY, tStream);
+						if(termAnlzr!=null)
+						{
+							while(termAnlzr.increment()){							
+							}
+						}
+						categoyIndex.createIndexer(tStream,fileId);
 					}
 				}
 			}
-		}
-		catch(Exception ex)
-		{
-			ex.printStackTrace();
-			throw new IndexerException();
-		}
 
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+				throw new IndexerException();
+			}
+		}
 
 	}
 
@@ -105,16 +198,28 @@ public class IndexWriter {
 	 * and cleaned and that the entire indexing operation has been completed.
 	 * @throws IndexerException : In case any error occurs
 	 */
-	public void close() throws IndexerException, IOException {
+	public void close() throws IndexerException {
+		//String diskFileName = "Indexer.txt";
+		writeToDisk(termIndex, IndexType.TERM.name());
+	}
+
+	private void writeToDisk(IndexCreator objIndex, String diskFileName) throws IndexerException {
 		try
 		{
-//			String SaveIndexDir = System.getProperty("user.dir") + File.separatorChar + "news_training"+ File.separatorChar + "training";
-//			FileOutputStream writeIndex =
-//					new FileOutputStream();
-//			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-//			out.writeObject(e);
-//			out.close();
-//			fileOut.close();
+			if(!"".equals(indexDir))
+			{
+				List<Integer> indexTermIds  = new ArrayList<Integer>(termIndex.termDictionary.values());
+				Collections.sort(indexTermIds, termIndex.new SortByTermFreq());
+				String SaveIndexDir = indexDir+File.separatorChar + diskFileName;
+				FileOutputStream writeIndex =
+						new FileOutputStream(SaveIndexDir);
+				GZIPOutputStream zipInput = new GZIPOutputStream(writeIndex);
+				ObjectOutputStream indexerOut = new ObjectOutputStream(zipInput);
+				indexerOut.writeObject(objIndex);
+				indexerOut.writeObject(indexTermIds);
+				indexerOut.close();
+				writeIndex.close();
+			}
 		}
 		catch(Exception ex)
 		{

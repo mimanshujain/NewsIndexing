@@ -5,31 +5,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Postings {
+public class Postings implements java.io.Serializable
+
+{
 
 	Integer totalFreq;
 	int collectionFreq;
 	int docFreq;
-	Map<Integer, Integer> postingMap;
+	String termString;
+	Map<String, Integer> postingMap;
+	
+	public Map<String, Integer> getPostingMap() {
+		return postingMap;
+	}
+
+	public int getCollectionFreq() {
+		return collectionFreq;
+	}
+
 	List<Integer> position;
 
-	public Postings() 
+	public Postings(String term) 
 	{
 		totalFreq=0;
 		docFreq=0;
 		collectionFreq=0;
-		postingMap = new HashMap<Integer,Integer>();
+		postingMap = new HashMap<String,Integer>();
 		position=new ArrayList<Integer>();
+		termString=term;
 	}
 
-	public void setDocID(int docId){
+	public void setDocID(String docId){
 
 		if (!postingMap.containsKey(docId)) {
 			totalFreq =  1;
 			collectionFreq++;
 			docFreq++;
 			
-			postingMap.put(docId, (int)totalFreq);			
+			postingMap.put(docId, totalFreq);			
 		}
 		else{
 			totalFreq = totalFreq+1;
@@ -38,7 +51,25 @@ public class Postings {
 		}
 
 	}
-
+	
+//	@Override
+//	public int compareTo(Postings comparePosting) {
+//		 
+//		int compareQuantity = ((Postings) comparePosting ).getCollectionFreq(); 
+// 
+//		//ascending order
+//		//return this.quantity - compareQuantity;
+// 
+//		//descending order
+//		return (compareQuantity - this.collectionFreq);
+// 
+//	}
+	
+//	public static <K, V extends Comparable<? super V>> Map<K, V> 
+//    sortByValue( Map<K, V> map )
+//    {
+//		
+//    }
 //	//Calculating Total Frequency
 //	public int getCollectionFreq()
 //	{

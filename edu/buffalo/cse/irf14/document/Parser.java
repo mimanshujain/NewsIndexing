@@ -41,13 +41,13 @@ public class Parser {
 			if (filename == null || filename.equals(""))
 				throw new ParserException();
 			File parsingOp = new File(filename);
+						
 			InputStream openStream = new FileInputStream(parsingOp);
-
+			
 			readFile = new BufferedReader(new InputStreamReader(openStream));
 
 			List<String> regexValues = new ArrayList<String>();
-			regexValues
-					.add("(?i:\\<AUTHOR\\>)(\\s+\\w+\\s+)(.*)(,)(\\s+)(\\w+)");
+			regexValues.add("(?i:\\<AUTHOR\\>)(\\s+\\w+\\s+)(.*)(,)(\\s+)(\\w+)");
 			regexValues.add("(?i:\\<AUTHOR\\>\\s+)(?i:by\\s+)(\\w.*)(\\<)");
 			regexValues.add("(.*)(,\\s+)(\\w+\\s+\\d{1,2})(\\s+\\-\\s+)(.*)");
 			regexValues.add("(\\d+(?:\\.\\d+)?)");
@@ -55,9 +55,8 @@ public class Parser {
 
 			int count = 0, authorFlag = 0, placeFlag = 0, contentFlag = 0;
 			String contentStart = "";
-			List<String> contentDump = new ArrayList<String>();
-			List<String> contentNumber = new ArrayList<String>();
 
+			StringBuilder sbContent=new StringBuilder();
 			String lineValue = readFile.readLine();
 
 			Pattern checkAuthor = Pattern.compile("AUTHOR",
@@ -78,7 +77,7 @@ public class Parser {
 					} else if (contentFlag == 0) {
 						if (authorFlag == 0
 								&& (parseMatch = checkAuthor.matcher(trimText))
-										.find()) {
+								.find()) {
 							count = 1;
 							Iterator<String> travRegex = regexValues.iterator();
 							while (travRegex.hasNext()) {
@@ -108,7 +107,7 @@ public class Parser {
 							parseMatch.reset();
 							if (placeFlag == 0
 									&& (parseMatch = parsePattern
-											.matcher(trimText)).find()) {
+									.matcher(trimText)).find()) {
 								if ((parseMatch = parsePattern
 										.matcher(trimText)).find()) {
 									docParser.setField(FieldNames.PLACE,
@@ -116,39 +115,64 @@ public class Parser {
 									docParser.setField(FieldNames.NEWSDATE,
 											parseMatch.group(3));
 									contentStart = parseMatch.group(5);
-									contentDump.add(contentStart);
-									contentNumber.addAll(findNumber(
-											contentStart,
-											(String) regexValues.get(3)));
+//									contentDump.add(contentStart);
+									if(sbContent.toString().equals(""))
+										sbContent.append(contentStart);
+//									contentNumber.addAll(findNumber(
+//											contentStart,
+//											(String) regexValues.get(3)));
 
 									placeFlag = 1;
 								}
 							} else if (placeFlag == 1 && authorFlag == 1) {
 								contentFlag = 1;
-								contentDump.add(trimText);
-
-								contentNumber.addAll(findNumber(trimText,
-										(String) regexValues.get(3)));
+								//contentDump.add(trimText);
+								if(!sbContent.toString().equals(""))
+								{
+									sbContent.append(" "+trimText);
+								}
+								else
+								{
+									sbContent.append(trimText);
+								}
+//								contentNumber.addAll(findNumber(trimText,
+//										(String) regexValues.get(3)));
 							} else {
-								contentDump.add(trimText);
-
-								contentNumber.addAll(findNumber(trimText,
-										(String) regexValues.get(3)));
+//								contentDump.add(trimText);
+								if(!sbContent.toString().equals(""))
+								{
+									sbContent.append(" "+trimText);
+								}
+								else
+								{
+									sbContent.append(trimText);
+								}
+//								contentNumber.addAll(findNumber(trimText,
+//										(String) regexValues.get(3)));
 							}
 						}
 
 					} else if (contentFlag == 1) {
-						contentDump.add(trimText);
+//						contentDump.add(trimText);
+						if(!sbContent.toString().equals(""))
+						{
+							sbContent.append(" "+trimText);
+						}
+						else
+						{
+							sbContent.append(trimText);
+						}
 					}
 				}
 				lineValue = readFile.readLine();
 			}
+//
+//			docParser.setField(FieldNames.NUMBERS,
+//					contentNumber.toArray(new String[contentNumber.size()]));
 
-			docParser.setField(FieldNames.NUMBERS,
-					contentNumber.toArray(new String[contentNumber.size()]));
 			docParser.setField(FieldNames.CONTENT,
-					contentDump.toArray(new String[contentDump.size()]));
-			System.out.println("Parser Ended");
+					sbContent.toString());
+			//System.out.println("Parser Ended");
 
 		}
 
@@ -159,18 +183,18 @@ public class Parser {
 		return docParser;
 	}
 
-	private static List<String> findNumber(final String matchData,
-			final String regex) {
-		parsePattern = Pattern.compile(regex);
-		parseMatch = parsePattern.matcher(matchData);
-		List<String> matchedData = new ArrayList<String>();
-		while (true) {
-			if (parseMatch.find()) {
-				matchedData.add((String) parseMatch.group(1));
-			} else
-				break;
-		}
-		return matchedData;
-	}
+//	private static List<String> findNumber(final String matchData,
+//			final String regex) {
+//		parsePattern = Pattern.compile(regex);
+//		parseMatch = parsePattern.matcher(matchData);
+//		List<String> matchedData = new ArrayList<String>();
+//		while (true) {
+//			if (parseMatch.find()) {
+//				matchedData.add((String) parseMatch.group(1));
+//			} else
+//				break;
+//		}
+//		return matchedData;
+//	}
 
 }

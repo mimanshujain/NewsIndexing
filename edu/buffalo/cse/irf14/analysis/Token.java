@@ -19,9 +19,16 @@ public class Token {
 	private int termId;
 	private int docFrequency;
 	private int totalFrequency;
+	private boolean isThisDate=false, isTitle=false;
 	
+	public void setThisDate(boolean isThisDate) {
+		this.isThisDate = isThisDate;
+	}
+
 	//The char array backing termText
 	private char[] termBuffer;
+	
+	public String doc;
 	
 	/**
 	 * Method to set the termText to given text.
@@ -99,5 +106,9 @@ public class Token {
 		//TODO: YOU MUST IMPLEMENT THIS METHOD
 		
 		return termText;
+	}
+	
+	public boolean isDate() {
+		return isThisDate;
 	}
 }

@@ -33,6 +33,9 @@ public class CapitalizationRuleTest extends TFRuleBaseTest {
 							new String[] { "a", "runs", "Apple's", "iOS",
 									"mobile", "operating", "system," },
 							runTest(TokenFilterType.CAPITALIZATION, "A runs Apple's iOS mobile operating system,"));
+					assertArrayEquals(
+							new String[] { "my", "name", "is", "mimanshu,"},
+							runTest(TokenFilterType.CAPITALIZATION, "MY NAME IS MIMANSHU,"));
 			} catch (TokenizerException e) {
 				fail("Exception thrown when not expected!");
 			}

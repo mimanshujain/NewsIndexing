@@ -1,11 +1,10 @@
-	/**
+/**
  * 
  */
 package edu.buffalo.cse.irf14.analysis;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author SherlockED
@@ -17,15 +16,33 @@ public class CapitalizationFilter extends TokenFilter {
 	 */
 	public CapitalizationFilter(TokenStream stream) {
 		super(stream);
+		
+		checkFirstCapital=Pattern.compile(firstCapital);
+		checkAllCapital=Pattern.compile(allCapital);
+		checkCapitalWithDots=Pattern.compile(allCapitalWithDots);
 	}
 	//^[A-Z][a-zA-Z0-9-,]?
 	//[A-Z]+
-	private static final String firstCapital="[A-Z]{1}(.*)";
-	private static final String allCapital="[A-Z\\,\\-0-9]+";
-	private static final String allCapitalWithDots="[A-Z\\,\\-0-9\\.]+";
+	private static String firstCapital; 			//="[A-Z]{1}(.*)";
+	private static String allCapital	;			//="[A-Z\\,\\-0-9]+";
+	private static String allCapitalWithDots;		//="[A-Z\\,\\-0-9\\.]+";
+
+	private Pattern checkFirstCapital; 
+	private Pattern checkAllCapital; 
+	private Pattern checkCapitalWithDots; 
+	
+	private Matcher matchFirstCapital=null;
+	private Matcher matchAllCapital=null;
+	private Matcher matchCapitalWithDots=null;
 	//	private nextValue;
 	//	private static final String ="[A-Z.]+";
 
+	static {
+		firstCapital="^[A-Z][^A-Z]+";
+		allCapital="[A-Z\\,\\-0-9\\'\\<\\>]+";
+		allCapitalWithDots="[A-Z\\,\\-0-9\\.\\'\\<\\>]+";
+	}
+	
 	@Override
 	public boolean increment() throws TokenizerException {
 		try
@@ -33,62 +50,67 @@ public class CapitalizationFilter extends TokenFilter {
 			if(tStream.hasNext())
 			{
 				Token tk=tStream.next();
-				
+
 				if(tk==null) return true;
-				
+
 				String tempToken = tk.getTermText();
 				String transitionalString=tempToken;
-				String nextTokenString="";
+				String previousTokenString="";
 				Token token;
 
 				if (tempToken!=null && !"".equals(tempToken)) {
 
-					if(tempToken.matches(firstCapital) && !tempToken.matches(allCapital) && !tempToken.matches(allCapitalWithDots))
+					matchFirstCapital=checkFirstCapital.matcher(tempToken);
+					matchCapitalWithDots=checkCapitalWithDots.matcher(tempToken);
+					matchAllCapital=checkAllCapital.matcher(tempToken);
+
+					if(matchFirstCapital.matches() )//&& !matchAllCapital.matches() && !matchCapitalWithDots.matches()
+						//if(tempToken.matches(firstCapital) && !tempToken.matches(allCapital) && !tempToken.matches(allCapitalWithDots))
 					{		
 						if(tempToken.length()>1)
 						{
 							//Getting the Previous Token
 							token=tStream.getPrevious(-2);
 							//Check if previous token exists and if it, then check if it was the last word of previous Line.
-							if(token!=null && (token.getTermText().contains(".")))
+							if(token!=null)
 							{
-								transitionalString=transitionalString.toLowerCase();
+								previousTokenString=token.getTermText();
+								String prevWord=previousTokenString;
+								prevWord=prevWord.substring(prevWord.length()-1, prevWord.length());
+								int count = previousTokenString.length() - previousTokenString.replace(".", "").length();
+								if(count==1)
+								{
+									tempToken=transitionalString.toLowerCase();
+									tk.setTermText(tempToken);
+									return tStream.hasNext();
+								}
 							}
+
 							//This is when the current token is the very first word in the Stream.
-							else if(tStream.isFirst())
+							if(tStream.isFirst())
 							{
-								transitionalString=transitionalString.toLowerCase();
+								tempToken=transitionalString.toLowerCase();
+								tk.setTermText(tempToken);
+								//return tStream.hasNext();
 							}
 							else
 							{
-								transitionalString=givePreviousUpper(transitionalString, tk);
-							}
-							//To check if the next token is also upper case.
-							nextTokenString=giveNextUpperString(transitionalString,tStream.getIndex());
-
-							//To check if the second token from current is also upper case
-							//Before that making sure that last one was not null and not same as input, coz we dont need to do anything in that case.
-							if(nextTokenString!=null && !nextTokenString.equals(transitionalString))
-							{
-								transitionalString=nextTokenString;
-								nextTokenString=giveNextUpperString(nextTokenString,(tStream.getIndex()+1));
-								//Doing the same as was doing with the last call.
-								if(nextTokenString!=null && !nextTokenString.equals(transitionalString))
-								{
-									transitionalString=nextTokenString;
-								}
+								transitionalString=givePreviousUpper(transitionalString, previousTokenString);
+								//tempToken=transitionalString.toLowerCase();
+								tk.setTermText(transitionalString);
+								//return tStream.hasNext();
 							}
 						}
 						else
 						{
-							tempToken=tempToken.toLowerCase();
+							//tempToken=tempToken.toLowerCase();
+							tempToken=transitionalString.toLowerCase();
+							tk.setTermText(tempToken);
 						}
-						tempToken=transitionalString;
-						//						tempToken=tempToken.toLowerCase();
-						tk.setTermText(tempToken);
-						return true;
+						//return tStream.hasNext();
 					}
-					else if(tempToken.matches(allCapital) || tempToken.matches(allCapitalWithDots))
+					else if(matchAllCapital.matches() || matchCapitalWithDots.matches())
+						//					else if(tempToken.matches(allCapital) || tempToken.matches(allCapitalWithDots))
 					{
 						if(tempToken.length()>1)
 						{
@@ -106,42 +128,23 @@ public class CapitalizationFilter extends TokenFilter {
 								}
 								if(flag==0)
 								{
-									transitionalString=transitionalString.toLowerCase();
-									int i=lst.size();
-									
+									transitionalString=transitionalString.toLowerCase();						
+									tk.setTermText(transitionalString);
+									doAllWordsLowerCase();
 								}
 							}
 						}
 						else
 						{
 							tempToken=tempToken.toLowerCase();
+							tk.setTermText(tempToken);
 						}
 
+						//return tStream.hasNext();
 					}
-					
-//					else if(tempToken.matches(allCapitalWithDots))
-//					{
-//						List<String> lst=tStream.getWords();
-//						if(lst.size()>0)
-//						{
-//							for(String str : lst)
-//							{
-//								if(!str.matches(allCapital) && !str.matches(allCapitalWithDots))
-//								{
-//									break;
-//								}
-//							}
-//						}
-//						
-//					}
-//					else
-//					{
-						//tempToken=tempToken.toLowerCase();
-						tk.setTermText(tempToken);
-						return true;
-				}
 
-				return true;
+					return tStream.hasNext();
+				}
 			}
 		}
 		catch(Exception ex)
@@ -152,55 +155,92 @@ public class CapitalizationFilter extends TokenFilter {
 		return false;
 	}
 
-	private String giveNextUpperString(String currentValue,int i)
-	{
-		if(tStream.hasNext(i))
+
+	private String givePreviousUpper(String currentValue,String termText){
+
+		if(termText!=null && !"".equals(termText) && !termText.substring(termText.length()-1).equals(","))
 		{
-			Token token=tStream.getNext(i);
-			if(token!=null)
+			if(termText.matches(firstCapital) && !termText.matches(allCapital) && !termText.matches(allCapitalWithDots))
 			{
-				String nextTokenString=token.getTermText();
-				if(nextTokenString.matches(firstCapital) && !nextTokenString.matches(allCapital) && !nextTokenString.matches(allCapitalWithDots))
-				{
-					String output=currentValue.substring(0,1).toUpperCase()+currentValue.substring(1);
-					currentValue=output+ " "+nextTokenString;
-					//tk.setTermText(currentValue);
-					token=tStream.next();
-					if(token.getTermText().equals(nextTokenString))
-						tStream.remove();
-					return currentValue;
-				}
+				currentValue=termText+" "+currentValue;
+				tStream.remove(tStream.getIndex()-1);
+				return currentValue;
 			}
-			else
-				return null;
 		}
 		else
-			return null;
+			return currentValue;
+		//		}
+		//		else
+		//			return currentValue;
 
 		return currentValue;
 	}
-	
-	private String givePreviousUpper(String currentValue,Token tk){
 
-		if(tk!=null)
+	private void doAllWordsLowerCase()
+	{
+		while(tStream.hasNext())
 		{
-			String termText=tk.getTermText();
-			if(termText!=null && !"".equals(termText))
+			Token tk=tStream.next();
+			String tokenText="";
+			if(tk!=null)
 			{
-				if(termText.matches(firstCapital) && !termText.matches(allCapital) && !termText.matches(allCapitalWithDots))
+				tokenText=tk.getTermText();
+				tk.setTermText(tokenText.toLowerCase());
+				int count = tokenText.length() - tokenText.replace(".", "").length();
+				if(count==1 && !"".equals(tokenText))		
 				{
-					currentValue=currentValue+ " "+termText;
+					Token tk2 = tStream.getNext(tStream.getIndex());
+					if(tk2!=null)
+					{
+						if(tk2.getTermText().matches("[A-Z]{1}(.*)"))
+							break;
+					}			
 				}
 			}
-			else
-				return null;
 		}
-		else
-			return null;
-		
-		return null;
 	}
 
+	//	private String giveNextUpperString(String currentValue,int i)
+	//	{
+	//		if(tStream.hasNext(i))
+	//		{
+	//			Token token=tStream.getNext(i);
+	//			if(token!=null)
+	//			{
+	//				String nextTokenString=token.getTermText();
+	//				if(nextTokenString.matches(firstCapital) && !nextTokenString.matches(allCapital) && !nextTokenString.matches(allCapitalWithDots))
+	//				{
+	//					String output=currentValue.substring(0,1).toUpperCase()+currentValue.substring(1);
+	//					currentValue=output+ " "+nextTokenString;
+	//					//tk.setTermText(currentValue);
+	//					token=tStream.next();
+	//					if(token.getTermText().equals(nextTokenString))
+	//						tStream.remove();
+	//					return currentValue;
+	//				}
+	//			}
+	//			else
+	//				return null;
+	//		}
+	//		else
+	//			return null;
+	//
+	//		return currentValue;
+	//	}
+
+	//	private boolean isNextUpper()
+	//	{
+	//		Token token=tStream.getNext(tStream.getIndex());
+	//		if(token!=null)
+	//		{
+	//			String nextTokenString=token.getTermText();
+	//			if(nextTokenString.matches(firstCapital) && !nextTokenString.matches(allCapital) && !nextTokenString.matches(allCapitalWithDots))
+	//			{
+	//				return true;
+	//			}
+	//		}
+	//		return false;
+	//	}
 	/* (non-Javadoc)
 	 * @see edu.buffalo.cse.irf14.analysis.Analyzer#getStream()
 	 */

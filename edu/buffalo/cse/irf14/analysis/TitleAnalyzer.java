@@ -1,16 +1,17 @@
 package edu.buffalo.cse.irf14.analysis;
 
-public class TermAnalyer implements Analyzer {
+public class TitleAnalyzer implements Analyzer {
 
-	TokenStream tStream;
-	TokenFilter filtering;
-
-	public TermAnalyer(TokenStream tStream) {
+	public TitleAnalyzer(TokenStream tStream) {
 		this.tStream=tStream;
 	}
 
+	TokenStream tStream;
+	TokenFilter filtering;
+	
 	@Override
 	public boolean increment() throws TokenizerException {
+		
 		try
 		{
 			if(tStream!=null)
@@ -38,25 +39,23 @@ public class TermAnalyer implements Analyzer {
 		{
 			TokenFilterFactory tFilterFactory=TokenFilterFactory.getInstance();
 
-			if(tFilterFactory!=null && tStream!=null)
+			if(tFilterFactory!=null)
 			{
-				//				filtering=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
-				//				applyFilters(filtering);
+//				filtering=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
+//				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.STOPWORD, tStream);
-				applyFilters(filtering);
-				filtering=tFilterFactory.getFilterByType(TokenFilterType.ACCENT, tStream);
 				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.CAPITALIZATION, tStream);
 				applyFilters(filtering);
-				filtering=tFilterFactory.getFilterByType(TokenFilterType.DATE, tStream);
-				applyFilters(filtering);
-				filtering=tFilterFactory.getFilterByType(TokenFilterType.NUMERIC, tStream);
-				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.SYMBOL, tStream);
 				applyFilters(filtering);			
-				filtering=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
+				filtering=tFilterFactory.getFilterByType(TokenFilterType.DATE, tStream);
 				applyFilters(filtering);
+	//			filtering=tFilterFactory.getFilterByType(TokenFilterType.NUMERIC, tStream);
+	//			applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.STEMMER, tStream);
+				applyFilters(filtering);
+				filtering=tFilterFactory.getFilterByType(TokenFilterType.ACCENT, tStream);
 				applyFilters(filtering);
 			}
 		}
@@ -67,19 +66,14 @@ public class TermAnalyer implements Analyzer {
 		}
 
 	}
-
-
 	private void applyFilters(TokenFilter filterObject)
 	{
 		if(filterObject!=null)
 		{
 			try {
-				if(tStream!=null)
-				{
-					tStream.reset();
-					while(filterObject.increment())
-					{					
-					}
+				tStream.reset();
+				while(filterObject.increment())
+				{					
 				}
 
 				filtering=null;
@@ -88,9 +82,11 @@ public class TermAnalyer implements Analyzer {
 			}
 		}
 	}
+	
 	@Override
 	public TokenStream getStream() {
-		return tStream;
+
+		return null;
 	}
 
 }

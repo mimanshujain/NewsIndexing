@@ -7,117 +7,123 @@ public class SpecialCharacterFilter extends TokenFilter {
 
 	public SpecialCharacterFilter(TokenStream stream) {
 		super(stream);
-		// TODO Auto-generated constructor stub
+		splChrFilterMinusMathSymbol = "[a-zA-Z0-9]*[\\^\\+\\*\\-]+[a-zA-Z0-9]*";
+		splChrMathOpr = "[@<|>\\/\\*\\+\\^=:;&_\\\\]";
+		splChrAlphaAlpha1 = 
+				"[(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\()])+(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\(\\)])+(\\-)*]+";
+		splChrAlphaAlpha = 
+				"([\\+\\!#$%\\^&\\*\\(\\)~])";
+
+		checkSplChrMinusMathSym=Pattern.compile(splChrFilterMinusMathSymbol);
+		checkSplChrAlphaAlpha1=Pattern.compile(splChrAlphaAlpha1);
+		checkSplChrAlphaAlpha=Pattern.compile(splChrAlphaAlpha);
 	}
 
 	// Jagvir
-//	private static final String splChrFilterMinusMathSymbol = "[a-zA-Z0-9\\^\\+\\*\\-]+";
-	private static final String splChrFilterMinusMathSymbol = "[a-zA-Z0-9]*[\\^\\+\\*\\-]+[a-zA-Z0-9]*";
-//	private static final String splChrMathOpr = "[@<|>\\/\\*\\+\\^\\=\\&[\\/\\_\\\\]+]+";
-	private static final String splChrMathOpr = "[@<|>\\/\\*\\+\\^=:;&_\\\\]";
-	private static final String splChrAlphaAlpha1 = 
-			"[(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\()])+(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\(\\)])+(\\-)*]+";
-	private static final String splChrAlphaAlpha = 
-			"([\\+\\!#$%\\^&\\*\\(\\)~])";
-	private static final String splChrAtRate="([a-zA-Z0-9]*)(@)([a-zA-Z0-9.]*)";
-	public Pattern checkSplCharacter = null;
-	public Matcher matchSplCharacter = null;
+	//	private  String splChrFilterMinusMathSymbol = "[a-zA-Z0-9\\^\\+\\*\\-]+";
+	private  String splChrFilterMinusMathSymbol;// = "[a-zA-Z0-9]*[\\^\\+\\*\\-]+[a-zA-Z0-9]*";
+	//	private  String splChrMathOpr = "[@<|>\\/\\*\\+\\^\\=\\&[\\/\\_\\\\]+]+";
+	private  String splChrMathOpr;// = "[@<|>\\/\\*\\+\\^=:;&_\\\\]";
+	private  String splChrAlphaAlpha1;// = 
+	//			"[(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\()])+(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\(\\)])+(\\-)*]+";
+	private  String splChrAlphaAlpha;// = 
+	//			"([\\+\\!#$%\\^&\\*\\(\\)~])";
+	//	private  String splChrAtRate;//="([a-zA-Z0-9]*)(@)([a-zA-Z0-9.]*)";
 	private String stringToSaveTemp = "";
 	private String stringToSaveTemp2 = "";
 
+	//	private Pattern checkSplCharacter = null;
+	private Pattern checkSplChrMinusMathSym=null;
+	//	private Pattern checkSplChrChrMathOpr=null;
+	private Pattern checkSplChrAlphaAlpha1=null;
+	private Pattern checkSplChrAlphaAlpha=null;
+	//	private Pattern checkSplAtRate=null;
+
+
+	private Matcher matchSplCharacter = null;
+
 	@Override
 	public boolean increment() throws TokenizerException {
-		// TODO Auto-generated method stub
-
 		try {
 			if (tStream.hasNext()) {
-				
+
 				Token tk = tStream.next();
-
-				if (tk.getTermText() != "" || tk.getTermText() != null) {
-					// Jagvir FInding all symbols save math operations
-					
+				if(tk!=null)
+				{
 					String tempToken = tk.getTermText();
-					checkSplCharacter = Pattern
-							.compile(splChrFilterMinusMathSymbol);
-					matchSplCharacter = checkSplCharacter.matcher(tempToken
-							.trim());
-					String temp = "";
-					int i = 0;
-					while (matchSplCharacter.find()) {
-						temp += matchSplCharacter.group();
-						
-					}
-					if (!temp.isEmpty())
-						tempToken = temp;
+					if (!tempToken.equals(null) && !tempToken.equals("")) {
+						// Jagvir FInding all symbols save math operations
 
-					// 21stSept math symbol code
+						
+						//					checkSplCharacter = Pattern
+						//							.compile(splChrFilterMinusMathSymbol);
+						matchSplCharacter = checkSplChrMinusMathSym.matcher(tempToken
+								.trim());
+						String temp = "";
+						//					int i = 0;
+						while (matchSplCharacter.find()) {
+							temp += matchSplCharacter.group();
 
-					if (!tempToken.trim().equals("") || tempToken != "") {
-						
-						stringToSaveTemp = tempToken.toString();
-						
-						stringToSaveTemp = stringToSaveTemp.replaceAll(
-								splChrMathOpr, "");
-						
-						stringToSaveTemp = stringToSaveTemp.replaceAll(
-								splChrAlphaAlpha, "");
-						
-						tempToken = stringToSaveTemp.trim();
+						}
+						if (!temp.isEmpty())
+							tempToken = temp;
 
-						// splCharacters
-						if (tempToken.matches(splChrAlphaAlpha)) {
-							
-							checkSplCharacter = Pattern
-									.compile(splChrAlphaAlpha);
-							matchSplCharacter = checkSplCharacter
-									.matcher(tempToken.trim());
-							if (matchSplCharacter.find()) {
-								stringToSaveTemp2 = tempToken.toString();
+						// 21stSept math symbol code
 
-								stringToSaveTemp = stringToSaveTemp.replaceAll(
-										"-", "");
-								tempToken = stringToSaveTemp.trim();
-								
+						if (!tempToken.equals(null) && !tempToken.trim().equals("")) {
+
+							stringToSaveTemp = tempToken.toString();
+
+							stringToSaveTemp = stringToSaveTemp.replaceAll(
+									splChrMathOpr, "");
+
+							stringToSaveTemp = stringToSaveTemp.replaceAll(
+									splChrAlphaAlpha, "");
+
+							tempToken = stringToSaveTemp.trim();
+
+							// splCharacters
+							if (tempToken.matches(splChrAlphaAlpha)) {
+
+								//							checkSplCharacter = Pattern
+								//									.compile(splChrAlphaAlpha);
+								matchSplCharacter = checkSplChrAlphaAlpha
+										.matcher(tempToken.trim());
+								if (matchSplCharacter.find()) {
+									stringToSaveTemp2 = tempToken.toString();
+
+									stringToSaveTemp = stringToSaveTemp.replaceAll(
+											"-", "");
+									tempToken = stringToSaveTemp.trim();								
+								}
+							}
+							if (tempToken.matches(splChrAlphaAlpha1)) {
+
+								//							checkSplCharacter = Pattern
+								//									.compile(splChrAlphaAlpha1);
+								matchSplCharacter = checkSplChrAlphaAlpha1
+										.matcher(tempToken.trim());
+								if (matchSplCharacter.find()) {
+									stringToSaveTemp2 = tempToken.toString();
+
+									stringToSaveTemp = stringToSaveTemp.replaceAll(
+											"-", "");
+									tempToken = stringToSaveTemp.trim();			
+								}
+
 							}
 
 						}
-						if (tempToken.matches(splChrAlphaAlpha1)) {
-							
-							checkSplCharacter = Pattern
-									.compile(splChrAlphaAlpha1);
-							matchSplCharacter = checkSplCharacter
-									.matcher(tempToken.trim());
-							if (matchSplCharacter.find()) {
-								stringToSaveTemp2 = tempToken.toString();
 
-								stringToSaveTemp = stringToSaveTemp.replaceAll(
-										"-", "");
-								tempToken = stringToSaveTemp.trim();
-								
-							}
-
-						}
-//						if (matchSplCharacter.find()) {
-//							if (matchSplCharacter.group(2) != null)
-//								matchSplCharacter.replaceAll(matchSplCharacter.group(2));
-//							
-//							System.out.println();
-//						}
-						
-						
-
+						tk.setTermText(tempToken.trim());
+						// commit
+						return true;
 					}
-
-					tk.setTermText(tempToken.trim());
-					// commit
-					return true;
 				}
-
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new TokenizerException();
 		}
 
 		return false;

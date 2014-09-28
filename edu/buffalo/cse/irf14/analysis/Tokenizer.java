@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class Tokenizer {
 	private String delimeterString;
-
+	//public boolean isTitle=false;
 	/**
 	 * Default constructor. Assumes tokens are whitespace delimited
 	 */
@@ -32,7 +32,7 @@ public class Tokenizer {
 		// TODO : YOU MUST IMPLEMENT THIS METHOD
 		delimeterString = delim;
 	}
-
+	public String docId;
 	/**
 	 * Method to convert the given string into a TokenStream instance. This must
 	 * only break it into tokens and initialize the stream. No other processing
@@ -49,23 +49,34 @@ public class Tokenizer {
 	 *             : In case any exception occurs during tokenization
 	 */
 	public TokenStream consume(String str) throws TokenizerException {
-		if(str==null || str.equals("") )
-			throw new TokenizerException();
-		
-		String singleSpaceStr;
-		String[] strArray;
-		TokenStream stream = new TokenStream();
+		try
+		{
+			if(str==null || str.equals("") )
+				throw new TokenizerException();
 
-		singleSpaceStr = str.replaceAll("\\s+", " ");
-		System.out.println(singleSpaceStr);
-		strArray = singleSpaceStr.split(delimeterString);
-		for (String tokenString : strArray) {
-			Token token = new Token();
-			token.setTermText(tokenString);
-			stream.setTokenStreamList(token);
+			String singleSpaceStr;
+			String[] strArray;
+			TokenStream stream = new TokenStream();
+
+			singleSpaceStr = str.replaceAll("\\s+", " ");
+			//System.out.println(singleSpaceStr);
+			strArray = singleSpaceStr.split(delimeterString);
+			for (String tokenString : strArray) {
+				Token token = new Token();
+				token.setTermText(tokenString);
+				//token.setTitle(this.isTitle);
+				token.doc=docId;
+				stream.setTokenStreamList(token);
+			}
+			//isTitle=false;
+			return stream;
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw new TokenizerException();
 		}
 		//System.out.println(stream.next());
-		return stream;
 	}
 
 	/* Jagvir Start */

@@ -42,6 +42,14 @@ public class AnalyzerFactory {
 		{
 			if(name==FieldNames.CONTENT )
 				return new TermAnalyer(stream);
+			if(name==FieldNames.PLACE )
+				return new PlaceAnalyzer(stream);
+			if(name==FieldNames.AUTHOR )
+				return new AuthorAnayzer(stream);
+			if(name==FieldNames.NEWSDATE )
+				return new DateAnalyzer(stream);
+			if(name==FieldNames.CATEGORY )
+				return new CategoryAnalyzer(stream);
 		}
 		
 		return null;

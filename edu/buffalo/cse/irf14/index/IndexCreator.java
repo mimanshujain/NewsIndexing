@@ -1,43 +1,74 @@
 package edu.buffalo.cse.irf14.index;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.buffalo.cse.irf14.analysis.Token;
 import edu.buffalo.cse.irf14.analysis.TokenStream;
 
 public class IndexCreator implements java.io.Serializable
 {
-
+	private static final long serialVersionUID = 1L;
 	Map<Integer, Postings> termPostings;
 	Map<String, Integer> termDictionary;
 	String type;
-	int termId;
+	int termId=0;
+	Set<String> docIdSet;
 
-	public IndexCreator(String type) {
-		termId=1;
+	public IndexCreator(String type){
 		termPostings=new HashMap<Integer, Postings>();
 		termDictionary=new HashMap<String, Integer>();
+		docIdSet=new HashSet<String>();
 		this.type=type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getType() {
 		return type;
 	}
 
-	public Map<String, Integer> getTermDictionary() {
-		return termDictionary;
+	public Map<String, Integer> getTermDictionary(String term) {
+
+		if(termDictionary!=null)
+		{
+			if(termDictionary.containsKey(term))
+			{
+				int key=termDictionary.get(term);
+				if(termPostings!=null)
+				{
+					if(termPostings.containsKey(key))
+					{
+						Postings p=termPostings.get(key);
+						if(p!=null)
+						{
+							return p.getPostingMap();
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public Map<Integer, Postings> getTermPostings() {
 		return termPostings;
 	}
 
-	private void createIndexer(TokenStream tStream, int docId) throws IndexerException
+	public void createIndexer(TokenStream tStream, String docId) throws IndexerException
 	{
 		try
 		{
+			docIdSet.add(docId);
+
 			List<Token> tokenStreamList=tStream.getTokenStreamList();
 			if(tokenStreamList!=null)
 			{
@@ -55,7 +86,7 @@ public class IndexCreator implements java.io.Serializable
 
 	}
 
-	private void makePosting(String term, int docId) throws IndexerException
+	private void makePosting(String term, String docId) throws IndexerException
 	{
 		Postings p;
 		int key=testDict(term);
@@ -63,12 +94,12 @@ public class IndexCreator implements java.io.Serializable
 		{
 			if(termPostings.containsKey(key))
 			{
-				p=termPostings.get(key);		
+				p=termPostings.get(key);						
 				p.setDocID(docId);
 			}
 			else
 			{
-				p=new Postings();
+				p=new Postings(term);
 				p.setDocID(docId);
 				termPostings.put(key, p);
 			}
@@ -96,4 +127,48 @@ public class IndexCreator implements java.io.Serializable
 
 	}
 
+	public int getTotalDocumentValue() 
+	{
+		try
+		{
+			if(docIdSet!=null)
+			{
+				return docIdSet.size();
+			}
+			return -1;
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		return -1;
+	}
+
+	public int getTotalTerms()
+	{
+		if(termDictionary!=null)
+		{
+			return termDictionary.size();
+		}
+		return -1;
+	}
+
+	public class SortByTermFreq implements Comparator<Integer> {
+
+		@Override
+		public int compare(Integer termId1, Integer termId2) {
+			// TODO Auto-generated method stub
+			int f1 = termPostings.get(termId1).collectionFreq;
+			int f2 = termPostings.get(termId2).collectionFreq;
+			int result=f2 - f1;
+
+			if(result<0)
+				return -1;
+			else if(result > 0)
+				return 1;
+			else
+				return termPostings.get(termId1).termString.compareTo(termPostings.get(termId2).termString);
+		}
+
+	}
 }

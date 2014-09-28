@@ -12,18 +12,21 @@ public class AccentFilter extends TokenFilter {
 	@Override
 	public boolean increment() throws TokenizerException {
 
+
 		if (tStream.hasNext()) {
 			Token tk = tStream.next();
 			String tempToken = tk.getTermText();
 			if (tempToken!=null && !"".equals(tempToken)) {
 
 				String nfdNormalizedString = Normalizer.normalize(tempToken,
-						Normalizer.Form.NFKD);
+						Normalizer.Form.NFD);
+				//System.out.println(nfdNormalizedString);
 				Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 				tk.setTermText(pattern.matcher(nfdNormalizedString).replaceAll(""));
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -36,5 +39,7 @@ public class AccentFilter extends TokenFilter {
 //	public static void main(String[] args) {
 //
 //	}
+
+	
 
 }

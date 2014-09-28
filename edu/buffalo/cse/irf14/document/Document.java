@@ -17,14 +17,14 @@ public class Document {
 	//Sample implementation - you can change this if you like
 	private HashMap<FieldNames, String[]> map;
 	
-	int docId;
-	public int getDocId() {
-		return docId;
-	}
-
-	public void setDocId(int docId) {
-		this.docId = docId;
-	}
+//	int docId;
+//	public int getDocId() {
+//		return docId;
+//	}
+//
+//	public void setDocId(int docId) {
+//		this.docId = docId;
+//	}
 
 	/**
 	 * Default constructor
@@ -35,7 +35,6 @@ public class Document {
 		{
 			setField(fn, "");
 		}
-		docId=0;
 	}
 	
 	/**

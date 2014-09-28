@@ -3,12 +3,8 @@
  */
 package edu.buffalo.cse.irf14;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
-import edu.buffalo.cse.irf14.analysis.TokenizerException;
 import edu.buffalo.cse.irf14.document.Document;
 import edu.buffalo.cse.irf14.document.FieldNames;
 import edu.buffalo.cse.irf14.document.Parser;
@@ -33,19 +29,23 @@ public class Runner {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		long lStartTime = System.currentTimeMillis();
+		
 		String ipDir = args[0];
 		String indexDir = args[1];
-//		more? idk!
+		//		more? idk!
 		//This is taking all the directories in File variable
 		File ipDirectory = new File(ipDir);
 		//All the sub folders inside the directories
 		String[] catDirectories = ipDirectory.list();
-		
+
 		String[] files;
 		File dir;
-		
+
 		Document d = null;
 		IndexWriter writer = new IndexWriter(indexDir);
+		
+		String docId="";
 		
 		try {
 			//Traversing all the sub directories
@@ -54,60 +54,43 @@ public class Runner {
 				dir = new File(ipDir+ File.separator+ cat);
 				//Taking all the files in files variables
 				files = dir.list();
-				
+
 				if (files == null)
 					continue;
-				int docId=0;
+				
 				for (String f : files) {
 					try {
-						d.setField(FieldNames.FILEID, f);
-						d.setField(FieldNames.CATEGORY, cat);	
-						d.setDocId(++docId);
+
 						d = Parser.parse(dir.getAbsolutePath() + File.separator +f);
+						if (d != null)
+						{
+							//writeToFile(d);
+							docId=d.getField(FieldNames.FILEID)[0];
+							writer.addDocument(d);
+						}
+
 						if(d==null)
 							throw new ParserException();
 
-						writeToFile(d);
-						writer.addDocument(d);
-					} catch (ParserException e) {
-						// TODO Auto-generated catch block
+					} 
+					catch (ParserException e) {
+						System.out.println("Inside Runner Parser: "+docId);
 						e.printStackTrace();
 					} 
-					catch(TokenizerException tEx)
-					{
-						tEx.printStackTrace();
-					}
 				}
-				
+
 			}
-			
+
 			writer.close();
+			
+			long lEndTime = System.currentTimeMillis();
+			long difference = lEndTime - lStartTime;
+			 
+			System.out.println("Elapsed milliseconds: " + difference);
+			
 		} catch (IndexerException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	private static void writeToFile(Document d)
-	{
-		try 
-		{
-			File saveData=new File("E:"+File.separator+"Dropbox"+File.separator+"Master"+File.separator+"Results.txt");
-			FileWriter fw;
-			
-			fw = new FileWriter(saveData.getAbsoluteFile(),true);
-			BufferedWriter bw=new BufferedWriter(fw);
-			
-			if(!saveData.exists())
-			{
-				saveData.createNewFile();
-			}
-			bw.write(d.toString());
-			bw.newLine();bw.newLine();
-			bw.close();
-		} 
-		catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Inside Runner Index: "+docId);
 			e.printStackTrace();
 		}
 	}
