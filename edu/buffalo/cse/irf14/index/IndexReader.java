@@ -3,8 +3,16 @@
  */
 package edu.buffalo.cse.irf14.index;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @author nikhillo
@@ -19,29 +27,58 @@ public class IndexReader {
 	 * @param type The {@link IndexType} to read from
 	 */
 	public IndexReader(String indexDir, IndexType type) {
-		//TODO
+
+		if (indexDir!=null)
+			this.indexDir=indexDir;
+		else
+			this.indexDir="";
+
+		indexType=type.name();
+		objCreator=readFromDisk();
+		//		lst=new ArrayList<Integer>;
 	}
-	
+	String indexDir;
+	String indexType;
+	IndexCreator objCreator;
+	List<Integer> orderedTerms;
 	/**
 	 * Get total number of terms from the "key" dictionary associated with this 
 	 * index. A postings list is always created against the "key" dictionary
 	 * @return The total number of terms
 	 */
 	public int getTotalKeyTerms() {
-		//TODO : YOU MUST IMPLEMENT THIS
+
+		try
+		{
+			if(objCreator!=null)
+			{
+				return objCreator.getTotalTerms();
+			}
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return -1;
 	}
-	
+
 	/**
 	 * Get total number of terms from the "value" dictionary associated with this 
 	 * index. A postings list is always created with the "value" dictionary
 	 * @return The total number of terms
 	 */
 	public int getTotalValueTerms() {
-		//TODO: YOU MUST IMPLEMENT THIS
+
+		try{
+			return objCreator.getTotalDocumentValue();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return -1;
 	}
-	
+
 	/**
 	 * Method to get the postings for a given term. You can assume that
 	 * the raw string that is used to query would be passed through the same
@@ -51,10 +88,20 @@ public class IndexReader {
 	 * number of occurrences as values if the given term was found, null otherwise.
 	 */
 	public Map<String, Integer> getPostings(String term) {
-		//TODO:YOU MUST IMPLEMENT THIS
+		try
+		{
+			if(objCreator!=null)
+			{
+				return objCreator.getTermDictionary(term);
+			}
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return null;
 	}
-	
+
 	/**
 	 * Method to get the top k terms from the index in terms of the total number
 	 * of occurrences.
@@ -63,10 +110,63 @@ public class IndexReader {
 	 * null for invalid k values
 	 */
 	public List<String> getTopK(int k) {
-		//TODO YOU MUST IMPLEMENT THIS
+		try
+		{
+			if (k <= 0)
+				return null;
+			List<String> terms=new ArrayList<String>(); 
+			int i=0;
+			if(orderedTerms.size()>0)
+			{
+				for(int termId : orderedTerms)
+				{
+					if(i<k)
+					{
+						Postings p = objCreator.termPostings.get(termId);
+						terms.add(p.termString);
+					}
+					else
+						break;
+					i++;
+				}
+				
+				
+				return terms;
+			}
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return null;
 	}
-	
+
+
+	private IndexCreator readFromDisk() 
+	{
+		try
+		{
+			if(!"".equals(indexDir))
+			{
+				String ReadIndexDir = indexDir+File.separatorChar + indexType;
+				FileInputStream readIndex =
+						new FileInputStream(ReadIndexDir);
+				GZIPInputStream  unzipOut = new GZIPInputStream(readIndex);
+				ObjectInputStream  indexerIn = new ObjectInputStream(unzipOut);
+				objCreator = (IndexCreator) indexerIn.readObject();
+				orderedTerms = (List<Integer>)indexerIn.readObject();
+				indexerIn.close();
+				return objCreator;
+			}
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();	
+		}
+
+		return null;
+	}
+
 	/**
 	 * Method to implement a simple boolean AND query on the given index
 	 * @param terms The ordered set of terms to AND, similar to getPostings()
