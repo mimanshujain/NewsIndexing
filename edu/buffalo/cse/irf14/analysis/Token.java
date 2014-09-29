@@ -16,11 +16,19 @@ public class Token {
 	private String termText;
 	
 	//Newely Added
-	private int termId;
-	private int docFrequency;
-	private int totalFrequency;
-	private boolean isThisDate=false, isTitle=false;
+//	private int termId;
+//	private int docFrequency;
+//	private int totalFrequency;
+	private boolean isThisDate=false, isTime=false;
 	
+	public boolean isTime() {
+		return isTime;
+	}
+
+	public void setTime(boolean isTime) {
+		this.isTime = isTime;
+	}
+
 	public void setThisDate(boolean isThisDate) {
 		this.isThisDate = isThisDate;
 	}
@@ -28,7 +36,7 @@ public class Token {
 	//The char array backing termText
 	private char[] termBuffer;
 	
-	public String doc;
+	//public String doc;
 	
 	/**
 	 * Method to set the termText to given text.

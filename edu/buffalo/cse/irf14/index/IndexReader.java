@@ -70,7 +70,7 @@ public class IndexReader {
 	public int getTotalValueTerms() {
 
 		try{
-			return objCreator.getTotalDocumentValue();
+			return objCreator.getDocCount();
 		}
 		catch(Exception ex)
 		{

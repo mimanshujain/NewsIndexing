@@ -19,7 +19,8 @@ public class IndexCreator implements java.io.Serializable
 	Map<String, Integer> termDictionary;
 	String type;
 	int termId=0;
-	Set<String> docIdSet;
+	public int docCount=0;
+	transient Set<String> docIdSet;
 
 	public IndexCreator(String type){
 		termPostings=new HashMap<Integer, Postings>();
@@ -88,20 +89,23 @@ public class IndexCreator implements java.io.Serializable
 
 	private void makePosting(String term, String docId) throws IndexerException
 	{
-		Postings p;
-		int key=testDict(term);
-		if(key!=-1)
+		if(term!= null && !term.isEmpty())
 		{
-			if(termPostings.containsKey(key))
+			Postings p;
+			int key=testDict(term);
+			if(key!=-1)
 			{
-				p=termPostings.get(key);						
-				p.setDocID(docId);
-			}
-			else
-			{
-				p=new Postings(term);
-				p.setDocID(docId);
-				termPostings.put(key, p);
+				if(termPostings.containsKey(key))
+				{
+					p=termPostings.get(key);						
+					p.setDocID(docId);
+				}
+				else
+				{
+					p=new Postings(term);
+					p.setDocID(docId);
+					termPostings.put(key, p);
+				}
 			}
 		}
 	}
@@ -157,7 +161,6 @@ public class IndexCreator implements java.io.Serializable
 
 		@Override
 		public int compare(Integer termId1, Integer termId2) {
-			// TODO Auto-generated method stub
 			int f1 = termPostings.get(termId1).collectionFreq;
 			int f2 = termPostings.get(termId2).collectionFreq;
 			int result=f2 - f1;
@@ -170,5 +173,14 @@ public class IndexCreator implements java.io.Serializable
 				return termPostings.get(termId1).termString.compareTo(termPostings.get(termId2).termString);
 		}
 
+	}
+
+	public void setDocCount() {	
+		docCount=docIdSet.size();
+	}
+
+	public int getDocCount() {
+
+		return docCount;
 	}
 }

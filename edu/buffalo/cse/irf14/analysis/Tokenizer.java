@@ -32,7 +32,7 @@ public class Tokenizer {
 		// TODO : YOU MUST IMPLEMENT THIS METHOD
 		delimeterString = delim;
 	}
-	public String docId;
+	//public String docId;
 	/**
 	 * Method to convert the given string into a TokenStream instance. This must
 	 * only break it into tokens and initialize the stream. No other processing
@@ -65,7 +65,7 @@ public class Tokenizer {
 				Token token = new Token();
 				token.setTermText(tokenString);
 				//token.setTitle(this.isTitle);
-				token.doc=docId;
+
 				stream.setTokenStreamList(token);
 			}
 			//isTitle=false;

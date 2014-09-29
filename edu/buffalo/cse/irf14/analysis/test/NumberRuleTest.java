@@ -1,5 +1,7 @@
 /**
- * 
+ * 1,058,585
+ * 396.7
+ * 2,317,000
  */
 package edu.buffalo.cse.irf14.analysis.test;
 
@@ -21,7 +23,7 @@ public class NumberRuleTest extends TFRuleBaseTest {
 			try {
 					assertArrayEquals(
 							new String[] { "The", "App", "Store", "offered", "more", "than", "apps", "by", "Apple", "and", "third", "parties." },
-							runTest(TokenFilterType.NUMERIC, "The App Store offered more than 775,000 apps by Apple and third parties."));
+							runTest(TokenFilterType.NUMERIC, "The App Store offered more than 1,00,00.00 apps by Apple and third parties."));
 					assertArrayEquals(
 							new String[] { "The", "game", "received", "average", "review", "scores", "of", "%", "and", "/", "for", "the", "Xbox", "version" },
 							runTest(TokenFilterType.NUMERIC, "The game received average review scores of 96.92% and 98/100 for the Xbox 360 version"));

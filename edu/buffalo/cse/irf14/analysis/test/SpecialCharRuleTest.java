@@ -42,7 +42,8 @@ public class SpecialCharRuleTest extends TFRuleBaseTest {
 							runTest(TokenFilterType.SPECIALCHARS, "stdin < cut -f1 | sort > myfile")); //< > |
 					assertArrayEquals(new String[]{"pray", "to"}, 
 							runTest(TokenFilterType.SPECIALCHARS, "pray to __/\\__"));
-			
+					assertArrayEquals(new String[]{"Btu"}, 
+							runTest(TokenFilterType.SPECIALCHARS, "Btu -"));			
 			} catch (TokenizerException e) {
 				fail("Exception thrown when not expected!");	
 			}

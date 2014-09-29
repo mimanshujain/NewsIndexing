@@ -6,11 +6,38 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.text.DateFormatSymbols;
 
+import javax.xml.stream.events.Characters;
+
 public class DateFilter extends TokenFilter {
 
 	public DateFilter(TokenStream stream) {
 		super(stream);
 
+		checkFullMonth=Pattern.compile(fullMonth,Pattern.CASE_INSENSITIVE);
+		checkYearRange=Pattern.compile(yearRange, Pattern.CASE_INSENSITIVE);
+		//		checkDay=Pattern.compile(dayRegex, Pattern.CASE_INSENSITIVE);
+		checkPatAdBc=Pattern.compile(checkAdBc, Pattern.CASE_INSENSITIVE);
+		checkBcAdWithNum=Pattern.compile(bcAdWithNum, Pattern.CASE_INSENSITIVE);
+		checkTimeSeperate=Pattern.compile(timeSeperate, Pattern.CASE_INSENSITIVE);
+		checkTimeIntegrated=Pattern.compile(timeIntegrated, Pattern.CASE_INSENSITIVE);
+		checkDateWithHyphen=Pattern.compile(dateWithHyphen, Pattern.CASE_INSENSITIVE);		
+		checkNum=Pattern.compile(strNum, Pattern.CASE_INSENSITIVE);
+		checkShortMon = Pattern.compile(shortMonth);
+
+		//		matchFullMonth=Pattern.compile(fullMonth).matcher("");
+		//		matchYearRange=Pattern.compile(yearRange).matcher("");
+		//		//matchDay=Pattern.compile(checkAdBc).matcher("");
+		//		matchPatAdBc=Pattern.compile(checkAdBc).matcher("");
+		//		matchBcAdWithNum=Pattern.compile(bcAdWithNum).matcher("");
+		//		matchTimeSeperate=Pattern.compile(timeSeperate).matcher("");
+		//		matchTimeIntegrated=Pattern.compile(timeIntegrated).matcher("");
+		//		matchDateWithHyphen=Pattern.compile(dateWithHyphen).matcher("");
+		//		matchNum=Pattern.compile(strNum).matcher("");
+		//		matchShortMon=Pattern.compile(shortMonth).matcher("");
+	}
+
+	static
+	{
 		//All the regex initialized
 		fullMonth = "(january)|(february)|(march)|(april)|(may)|\" + \"(june)|(july)|(august)|(september)|(october)|(november)|(december)";
 		yearRange="([1-2][0-9]{3})([a-zA-Z,']+)|([1-2][0-9]{3})";//"(([1-2][0-9]{3})(..))|([1-2][0-9]{3})";
@@ -27,17 +54,6 @@ public class DateFilter extends TokenFilter {
 				+ "(^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])(PM|AM)$)";
 		dateWithHyphen="([1-2]\\d{3})-(\\d{2})(.*)";
 		strNum="^(\\d+)(.*)";
-
-		checkFullMonth=Pattern.compile(fullMonth,Pattern.CASE_INSENSITIVE);
-		checkYearRange=Pattern.compile(yearRange, Pattern.CASE_INSENSITIVE);
-		//		checkDay=Pattern.compile(dayRegex, Pattern.CASE_INSENSITIVE);
-		checkPatAdBc=Pattern.compile(checkAdBc, Pattern.CASE_INSENSITIVE);
-		checkBcAdWithNum=Pattern.compile(bcAdWithNum, Pattern.CASE_INSENSITIVE);
-		checkTimeSeperate=Pattern.compile(timeSeperate, Pattern.CASE_INSENSITIVE);
-		checkTimeIntegrated=Pattern.compile(timeIntegrated, Pattern.CASE_INSENSITIVE);
-		checkDateWithHyphen=Pattern.compile(dateWithHyphen, Pattern.CASE_INSENSITIVE);		
-		checkNum=Pattern.compile(strNum, Pattern.CASE_INSENSITIVE);
-		checkShortMon = Pattern.compile(shortMonth);
 	}
 	//
 	//	String dateFormat="yyyyMMdd";
@@ -47,21 +63,21 @@ public class DateFilter extends TokenFilter {
 	boolean ad, bc;
 	String extra="";
 
-	private  String fullMonth;// = "(january)|(february)|(march)|(april)|(may)|\" + \"(june)|(july)|(august)|(september)|(october)|(november)|(december)";
-	private  String yearRange;//="([1-2][0-9]{3})([a-zA-Z,']+)|([1-2][0-9]{3})";//"(([1-2][0-9]{3})(..))|([1-2][0-9]{3})";
-	private  String shortMonth;//="^(?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))";
-	private  String dayRegex;//="(\\d{1,2})([',a-z]+)|^(\\d{1,2})";//"((\\d{1,2})(..))|((\\d{1,2}))|(\\d{1,2},)|((\\d{1,2})(...))";	//"((\\d{1,2})(..))|((\\d{1,2}))";//([0-2][0-9]|[3][0-1])|([0-9])";
-	private  String dayWithString;//="(\\d{1,2})(..)";//"(([0-2][0-9]|[3][0-1])|([0-9]))(..)";
-	private  String checkAdBc;//="([B].[C].)|([B][C])|([B].[C])|([A].[D].)|([A][D])|([A].[D])";//"([B].*[C].*)|([A].*[D].*)";
-	private  String yearNum;//="([0-9]+)(.*)";
-	private  String bcAdWithNum;//="(\\d+)(([B].*[C].*)|([A].*[D].*))";
-	private  String conbineTime;//="(\\d{1,2}+)(:)(\\d+)(AM|PM)";
-	private  String timeSeperate;//="(^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$)|(^([0-9]|0[0-9]|"
+	private static String fullMonth;// = "(january)|(february)|(march)|(april)|(may)|\" + \"(june)|(july)|(august)|(september)|(october)|(november)|(december)";
+	private static String yearRange;//="([1-2][0-9]{3})([a-zA-Z,']+)|([1-2][0-9]{3})";//"(([1-2][0-9]{3})(..))|([1-2][0-9]{3})";
+	private static String shortMonth;//="^(?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))";
+	private static String dayRegex;//="(\\d{1,2})([',a-z]+)|^(\\d{1,2})";//"((\\d{1,2})(..))|((\\d{1,2}))|(\\d{1,2},)|((\\d{1,2})(...))";	//"((\\d{1,2})(..))|((\\d{1,2}))";//([0-2][0-9]|[3][0-1])|([0-9])";
+	private static String dayWithString;//="(\\d{1,2})(..)";//"(([0-2][0-9]|[3][0-1])|([0-9]))(..)";
+	private static String checkAdBc;//="([B].[C].)|([B][C])|([B].[C])|([A].[D].)|([A][D])|([A].[D])";//"([B].*[C].*)|([A].*[D].*)";
+	private static String yearNum;//="([0-9]+)(.*)";
+	private static String bcAdWithNum;//="(\\d+)(([B].*[C].*)|([A].*[D].*))";
+	private static String conbineTime;//="(\\d{1,2}+)(:)(\\d+)(AM|PM)";
+	private static String timeSeperate;//="(^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$)|(^([0-9]|0[0-9]|"
 	//			+ "1[0-9]|2[0-3]):([0-5][0-9])$)";
-	private  String timeIntegrated;//="(^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(PM|AM)$)|"
+	private static String timeIntegrated;//="(^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(PM|AM)$)|"
 	//			+ "(^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])(PM|AM)$)";
-	private  String dateWithHyphen;//="([1-2]\\d{3})-(\\d{2})(.*)";
-	private String strNum;
+	private static String dateWithHyphen;//="([1-2]\\d{3})-(\\d{2})(.*)";
+	private static String strNum;
 
 	private Pattern checkPat= null;
 	private Pattern checkFullMonth= null;
@@ -76,6 +92,17 @@ public class DateFilter extends TokenFilter {
 	private Pattern checkShortMon=null;
 
 	private Matcher matchText = null;
+	//	private Matcher matchPat = null;
+	//	private Matcher matchFullMonth = null;
+	//	private Matcher matchYearRange = null;
+	//	private Matcher matchDay = null;
+	//	private Matcher matchPatAdBc = null;
+	//	private Matcher matchBcAdWithNum = null;
+	//	private Matcher matchTimeSeperate = null;
+	//	private Matcher matchTimeIntegrated = null;
+	//	private Matcher matchDateWithHyphen = null;
+	//	private Matcher matchNum = null;
+	//	private Matcher matchShortMon = null;
 
 	@Override
 	public boolean increment() throws TokenizerException {
@@ -93,7 +120,7 @@ public class DateFilter extends TokenFilter {
 					{						
 						year="1900"; month="01"; day="01"; second="00"; hour="00"; minute="00";
 						matchText=checkFullMonth.matcher(tempToken);
-						
+						//matchFullMonth=matchFullMonth.reset(tempToken);
 						//Match 1 with Month Name
 						if(matchText.find())
 						{
@@ -131,11 +158,33 @@ public class DateFilter extends TokenFilter {
 								}
 							}
 
-							tempToken=year+month+day+extra;
+							tempToken=year+month+day;
+
+							Token pk=tStream.getPrevious(-2);
+							if(pk!=null)
+							{
+								if(pk.isTime())
+								{
+									String pkTerm=pk.getTermText();
+									if(!pkTerm.equals(null) && !pkTerm.equals(""))
+									{
+										char ch=pkTerm.charAt(pkTerm.length()-1);
+										if(!Character.isDigit(ch))
+										{
+											pkTerm=pkTerm.substring(0,pkTerm.length()-1);
+										}
+										tempToken=tempToken+ " " +pkTerm; 
+										tStream.remove(monthIndex-1);
+										tk.setTime(true);
+									}
+								}
+							}
+
+							tempToken=tempToken+extra;
 							tk.setTermText(tempToken);
 							tk.setThisDate(true);
 							return tStream.hasNext();
-							//						}
+
 						}
 
 						matchText=checkShortMon.matcher(tempToken);
@@ -171,7 +220,28 @@ public class DateFilter extends TokenFilter {
 								}
 							}
 
-							tempToken=year+month+day+extra;
+							tempToken=year+month+day;
+
+							Token pk=tStream.getPrevious(-2);
+							if(pk!=null)
+							{
+								if(pk.isTime())
+								{
+									String pkTerm=pk.getTermText();
+									if(!pkTerm.equals(null) && !pkTerm.equals(""))
+									{
+										char ch=pkTerm.charAt(pkTerm.length()-1);
+										if(!Character.isDigit(ch))
+										{
+											pkTerm=pkTerm.substring(0,pkTerm.length()-1);
+										}
+										tempToken=tempToken+ " " +pkTerm; 
+										tStream.remove(monthIndex-1);
+										tk.setTime(true);
+									}
+								}
+							}
+							tempToken=tempToken+extra;
 							tk.setTermText(tempToken);
 							tk.setThisDate(true);
 							return tStream.hasNext();
@@ -268,72 +338,114 @@ public class DateFilter extends TokenFilter {
 								}
 							}
 
-							tempToken=year+month+day+extra;
+							tempToken=year+month+day;
+							Token pk=tStream.getPrevious(-2);
+							if(pk!=null)
+							{
+								if(pk.isTime())
+								{
+									String pkTerm=pk.getTermText();
+									if(!pkTerm.equals(null) && !pkTerm.equals(""))
+									{
+										char ch=pkTerm.charAt(pkTerm.length()-1);
+										if(!Character.isDigit(ch))
+										{
+											pkTerm=pkTerm.substring(0,pkTerm.length()-1);
+										}
+										tempToken=tempToken+ " " +pkTerm; 
+										tStream.remove(yearIndex-1);
+										tk.setTime(true);
+									}
+								}
+							}
+							tempToken=tempToken+extra;
 							tk.setTermText(tempToken);
 							tk.setThisDate(true);
 							return tStream.hasNext();
 						}
 						//End-4
 						//	Start-5		
-
-						String trans=tempToken;
-						trans=trans.substring(trans.length()-1, trans.length());
-
-						if (trans.contains(".") || trans.contains(",") || trans.contains("?"))
+						if(tempToken.contains(":"))
 						{
-							trans=tempToken;
-							trans=trans.substring(0, tempToken.length()-1);
-						}
-						else
-							trans=tempToken;
+							String trans=tempToken;
+							trans=trans.substring(trans.length()-1, trans.length());
 
-						//checkPat=Pattern.compile(timeIntegrated,Pattern.CASE_INSENSITIVE);
-						matchText=checkTimeIntegrated.matcher(trans);
-
-						if(matchText.matches())
-						{
-							String type="";
-							if(matchText.group(7)!=null)
+							if (trans.contains(".") || trans.contains(",") || trans.contains("?"))
 							{
-								hour=matchText.group(7);
-								minute=matchText.group(8);
-								type=matchText.group(9);
+								trans=tempToken;
+								trans=trans.substring(0, tempToken.length()-1);
 							}
 							else
-							{
-								hour=matchText.group(2);
-								minute=matchText.group(3);
-								second=matchText.group(4);
-								type=matchText.group(5);
-							}
+								trans=tempToken;
 
-							int hr=Integer.parseInt(hour);
+							//checkPat=Pattern.compile(timeIntegrated,Pattern.CASE_INSENSITIVE);
+							matchText=checkTimeIntegrated.matcher(trans);
 
-							if(type.toUpperCase().equals("PM"))
+							if(matchText.matches())
 							{
-								if(hr<12 && hr!=0)
-									hr=hr+12;
-								if(hr==12)
+								String type="";
+								if(matchText.group(7)!=null)
 								{
-									hr=0;
+									hour=matchText.group(7);
+									minute=matchText.group(8);
+									type=matchText.group(9);
 								}
+								else
+								{
+									hour=matchText.group(2);
+									minute=matchText.group(3);
+									second=matchText.group(4);
+									type=matchText.group(5);
+								}
+
+								int hr=Integer.parseInt(hour);
+
+								if(type.toUpperCase().equals("PM"))
+								{
+									if(hr<12 && hr!=0)
+										hr=hr+12;
+									if(hr==12)
+									{
+										hr=0;
+									}
+								}
+								hour=String.format("%02d", hr);
+								if(tempToken.contains(","))
+									extra=",";
+								if(tempToken.contains("."))
+									extra=".";
+
+								tempToken=hour+":"+minute+":"+second;
+								
+								Token pk=tStream.getPrevious(-2);
+								if(pk!=null)
+								{
+									if(pk.isDate())
+									{
+										String pkTerm=pk.getTermText();
+										if(!pkTerm.equals(null) && !pkTerm.equals(""))
+										{
+											char ch=pkTerm.charAt(pkTerm.length()-1);
+											if(!Character.isDigit(ch))
+											{
+												pkTerm=pkTerm.substring(0,pkTerm.length()-1);
+											}
+											tempToken=pkTerm+ " " +tempToken; 
+											tStream.remove(tStream.getIndex()-1);
+											tk.setThisDate(true);
+										}
+									}
+								}
+								tempToken=tempToken+extra;
+								tk.setTermText(tempToken);
+								tk.setTime(true);
+								return tStream.hasNext();			
 							}
-							hour=String.format("%02d", hr);
-							if(tempToken.contains(","))
-								extra=",";
-							if(tempToken.contains("."))
-								extra=".";
-
-							tempToken=hour+":"+minute+":"+second+extra;
-							tk.setTermText(tempToken);
-							tk.setThisDate(true);
-							return tStream.hasNext();			
 						}
-
 						//End-5
 						//Start-6					
-						trans=tempToken.toUpperCase();
-						if(trans.contains("AM") || trans.contains("PM"))
+//						tempToken=tempToken.toUpperCase();
+						if(tempToken.matches("(?i:PM)|(?i:AM)|(?i:PM[.,?])|(?i:AM[.,?])"))
 						{
 							int index=tStream.getIndex();
 							Token previous=tStream.getPrevious(index-2);
@@ -358,7 +470,7 @@ public class DateFilter extends TokenFilter {
 
 									int hr=Integer.parseInt(hour);
 
-									if(trans.contains("PM"))
+									if(tempToken.contains("PM"))
 									{
 										if(hr<12 && hr!=0)
 											hr=hr+12;
@@ -374,11 +486,33 @@ public class DateFilter extends TokenFilter {
 									if(tempToken.contains("."))
 										extra=".";
 
-									tempToken=hour+":"+minute+":"+second+extra;
+									tempToken=hour+":"+minute+":"+second;
+									tStream.remove(index-1);
+									
+									Token pk=tStream.getPrevious(-2);
+									if(pk!=null)
+									{
+										if(pk.isDate())
+										{
+											String pkTerm=pk.getTermText();
+											if(!pkTerm.equals(null) && !pkTerm.equals(""))
+											{
+												char ch=pkTerm.charAt(pkTerm.length()-1);
+												if(!Character.isDigit(ch))
+												{
+													pkTerm=pkTerm.substring(0,pkTerm.length()-1);
+												}
+												tempToken=pkTerm+ " " +tempToken; 
+												tStream.remove(index-1);
+												tk.setThisDate(true);
+											}
+										}
+									}
+									tempToken=tempToken+extra;
 									tk.setTermText(tempToken);
 									//tStream.updateList(tk, index-1);
-									tStream.remove(index-1);
-									tk.setThisDate(true);
+									
+									tk.setTime(true);
 									return tStream.hasNext();
 								}
 							}					
@@ -386,7 +520,7 @@ public class DateFilter extends TokenFilter {
 						//End-6
 						//Start-7						
 						//checkPat=Pattern.compile(dateWithHyphen,Pattern.CASE_INSENSITIVE);
-						matchText=checkDateWithHyphen.matcher(trans);
+						matchText=checkDateWithHyphen.matcher(tempToken);
 
 						if(matchText.matches())
 						{

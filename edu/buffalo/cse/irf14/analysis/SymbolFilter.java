@@ -1,3 +1,5 @@
+	//Few words are taken from Wikipedia
+
 package edu.buffalo.cse.irf14.analysis;
 
 
@@ -21,8 +23,9 @@ public class SymbolFilter extends TokenFilter {
 		checkDoubleD=Pattern.compile(doubleAposwithD);
 		checkOnlySpl=Pattern.compile(onlySpecial);
 		checkDoubSpl=Pattern.compile(doubleSpecial);
+		checkBasic=Pattern.compile("\\W+");
 	}
-	//Few words are taken from Wikipedia
+
 	String[][] chameleonSmallWords = { { "ain't", "am not" }, { "can't", "cannot" },
 			{ "won't", "will not" }, { "how's", "hows is" },
 			{ "it's", "it is" }, { "shan't", "shall not" },
@@ -55,7 +58,7 @@ public class SymbolFilter extends TokenFilter {
 
 	static
 	{
-		removePunc = "(.*[^!?.]+)(.*)";
+		removePunc = "(.*[^!?.,\"]+)(.*)";
 		expandApos = "(.*)(\\'.*)";
 		alphaAlpha = "^([A-Za-z]+)([-]+)([A-Za-z]+)$";
 		expandWithN = "(.*)(n)(\\'[t])";
@@ -66,8 +69,7 @@ public class SymbolFilter extends TokenFilter {
 	}
 	String contractionWord = "";
 
-	private Pattern checkSymbol = null;
-
+//	private Pattern checkSymbol = null;
 	private Pattern checkPunc=null;
 	private Pattern checkExpandApos=null;
 	private Pattern checkAlphaAlpha=null;
@@ -76,7 +78,8 @@ public class SymbolFilter extends TokenFilter {
 	private Pattern checkDoubleD=null;
 	private Pattern checkOnlySpl=null;
 	private Pattern checkDoubSpl=null;
-
+	private Pattern checkBasic=null;
+	
 	private Matcher matchSymbol = null;
 
 	@Override

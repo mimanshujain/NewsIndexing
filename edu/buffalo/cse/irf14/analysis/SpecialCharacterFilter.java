@@ -4,41 +4,46 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SpecialCharacterFilter extends TokenFilter {
-
+	
 	public SpecialCharacterFilter(TokenStream stream) {
 		super(stream);
+
+		checkSplChrMinusMathSym=Pattern.compile(splChrFilterMinusMathSymbol);
+		checkSplChrAlphaAlpha1=Pattern.compile(splChrAlphaAlpha1);
+		checkSplChrAlphaAlpha=Pattern.compile(splChrAlphaAlpha);
+		checkSpl=Pattern.compile("\\w+");
+	}
+
+	// Jagvir
+	//	private  String splChrFilterMinusMathSymbol = "[a-zA-Z0-9\\^\\+\\*\\-]+";
+	private static String splChrFilterMinusMathSymbol;// = "[a-zA-Z0-9]*[\\^\\+\\*\\-]+[a-zA-Z0-9]*";
+	//	private  String splChrMathOpr = "[@<|>\\/\\*\\+\\^\\=\\&[\\/\\_\\\\]+]+";
+	private static String splChrMathOpr;// = "[@<|>\\/\\*\\+\\^=:;&_\\\\]";
+	private static String splChrAlphaAlpha1;// = 
+	//			"[(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\()])+(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\(\\)])+(\\-)*]+";
+	private static String splChrAlphaAlpha;// = 
+	//			"([\\+\\!#$%\\^&\\*\\(\\)~])";
+	//	private  String splChrAtRate;//="([a-zA-Z0-9]*)(@)([a-zA-Z0-9.]*)";
+	private static String stringToSaveTemp = "";
+	private static String stringToSaveTemp2 = "";
+	
+	static 
+	{
 		splChrFilterMinusMathSymbol = "[a-zA-Z0-9]*[\\^\\+\\*\\-]+[a-zA-Z0-9]*";
 		splChrMathOpr = "[@<|>\\/\\*\\+\\^=:;&_\\\\]";
 		splChrAlphaAlpha1 = 
 				"[(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\()])+(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\(\\)])+(\\-)*]+";
 		splChrAlphaAlpha = 
 				"([\\+\\!#$%\\^&\\*\\(\\)~])";
-
-		checkSplChrMinusMathSym=Pattern.compile(splChrFilterMinusMathSymbol);
-		checkSplChrAlphaAlpha1=Pattern.compile(splChrAlphaAlpha1);
-		checkSplChrAlphaAlpha=Pattern.compile(splChrAlphaAlpha);
 	}
-
-	// Jagvir
-	//	private  String splChrFilterMinusMathSymbol = "[a-zA-Z0-9\\^\\+\\*\\-]+";
-	private  String splChrFilterMinusMathSymbol;// = "[a-zA-Z0-9]*[\\^\\+\\*\\-]+[a-zA-Z0-9]*";
-	//	private  String splChrMathOpr = "[@<|>\\/\\*\\+\\^\\=\\&[\\/\\_\\\\]+]+";
-	private  String splChrMathOpr;// = "[@<|>\\/\\*\\+\\^=:;&_\\\\]";
-	private  String splChrAlphaAlpha1;// = 
-	//			"[(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\()])+(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\(\\)])+(\\-)*]+";
-	private  String splChrAlphaAlpha;// = 
-	//			"([\\+\\!#$%\\^&\\*\\(\\)~])";
-	//	private  String splChrAtRate;//="([a-zA-Z0-9]*)(@)([a-zA-Z0-9.]*)";
-	private String stringToSaveTemp = "";
-	private String stringToSaveTemp2 = "";
-
+	
 	//	private Pattern checkSplCharacter = null;
 	private Pattern checkSplChrMinusMathSym=null;
 	//	private Pattern checkSplChrChrMathOpr=null;
 	private Pattern checkSplChrAlphaAlpha1=null;
 	private Pattern checkSplChrAlphaAlpha=null;
 	//	private Pattern checkSplAtRate=null;
-
+private Pattern checkSpl=null;
 
 	private Matcher matchSplCharacter = null;
 
@@ -51,14 +56,8 @@ public class SpecialCharacterFilter extends TokenFilter {
 				if(tk!=null)
 				{
 					String tempToken = tk.getTermText();
-					if (!tempToken.equals(null) && !tempToken.equals("")) {
-						// Jagvir FInding all symbols save math operations
-
-						
-						//					checkSplCharacter = Pattern
-						//							.compile(splChrFilterMinusMathSymbol);
-						matchSplCharacter = checkSplChrMinusMathSym.matcher(tempToken
-								.trim());
+					if (!tempToken.equals(null) && !tempToken.equals("") && !tempToken.matches("[a-zA-Z0-9]*")) {
+						matchSplCharacter = checkSplChrMinusMathSym.matcher(tempToken.trim());
 						String temp = "";
 						//					int i = 0;
 						while (matchSplCharacter.find()) {
@@ -112,12 +111,15 @@ public class SpecialCharacterFilter extends TokenFilter {
 								}
 
 							}
-
 						}
-
-						tk.setTermText(tempToken.trim());
-						// commit
-						return true;
+						if(tempToken.equals("") || tempToken.matches("[?.,\\\"-%\\d!_]")) //tempToken.equals("\"") && tempToken.equals("-") "".equals(tempToken.trim()) || t
+						{
+							tStream.remove();
+						}
+						else {
+							tk.setTermText(tempToken.trim());
+						}
+						return tStream.hasNext();
 					}
 				}
 			}
@@ -126,7 +128,7 @@ public class SpecialCharacterFilter extends TokenFilter {
 			throw new TokenizerException();
 		}
 
-		return false;
+		return tStream.hasNext();
 	}
 
 	@Override

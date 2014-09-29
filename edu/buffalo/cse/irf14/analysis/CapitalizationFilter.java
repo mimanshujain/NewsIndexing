@@ -51,20 +51,22 @@ public class CapitalizationFilter extends TokenFilter {
 			{
 				Token tk=tStream.next();
 
-				if(tk==null) return true;
+				if(tk==null) return tStream.hasNext();
 
 				String tempToken = tk.getTermText();
 				String transitionalString=tempToken;
 				String previousTokenString="";
 				Token token;
 
-				if (tempToken!=null && !"".equals(tempToken)) {
-
+				if (tempToken!=null && !"".equals(tempToken) && !tempToken.equals(tempToken.toLowerCase())) {
+					
+					//if(tempToken.equals(tempToken.toLowerCase())) return tStream.hasNext();
+							
 					matchFirstCapital=checkFirstCapital.matcher(tempToken);
 					matchCapitalWithDots=checkCapitalWithDots.matcher(tempToken);
 					matchAllCapital=checkAllCapital.matcher(tempToken);
 
-					if(matchFirstCapital.matches() )//&& !matchAllCapital.matches() && !matchCapitalWithDots.matches()
+					if(matchFirstCapital.matches())//&& !matchAllCapital.matches() && !matchCapitalWithDots.matches()   tempToken.matches(firstCapital)
 						//if(tempToken.matches(firstCapital) && !tempToken.matches(allCapital) && !tempToken.matches(allCapitalWithDots))
 					{		
 						if(tempToken.length()>1)
@@ -152,7 +154,7 @@ public class CapitalizationFilter extends TokenFilter {
 			ex.printStackTrace();
 		}
 		//
-		return false;
+		return tStream.hasNext();
 	}
 
 

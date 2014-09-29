@@ -50,10 +50,14 @@ public class TermAnalyer implements Analyzer {
 				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.DATE, tStream);
 				applyFilters(filtering);
-				filtering=tFilterFactory.getFilterByType(TokenFilterType.NUMERIC, tStream);
-				applyFilters(filtering);
+//				filtering=tFilterFactory.getFilterByType(TokenFilterType.NUMERIC, tStream);
+//				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.SYMBOL, tStream);
 				applyFilters(filtering);			
+//				filtering=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
+//				applyFilters(filtering);
+				filtering=tFilterFactory.getFilterByType(TokenFilterType.NUMERIC, tStream);
+				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
 				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.STEMMER, tStream);

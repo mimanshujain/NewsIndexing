@@ -88,13 +88,12 @@ public class IndexWriter {
 		//			throw new IndexerException();
 		//		}
 		//		docId++;
-		docId=d.getField(FieldNames.CATEGORY)[0]+d.getField(FieldNames.FILEID)[0];
-		tokenizeFields.docId=docId;
+		//docId=d.getField(FieldNames.CATEGORY)[0]+d.getField(FieldNames.FILEID)[0];
 		for(FieldNames fn : FieldNames.values())
 		{
 			try
 			{
-				if(d.getField(fn)!=null && d.getField(fn).length>0 && fn!=FieldNames.FILEID)
+				if(d.getField(fn)!=null && d.getField(fn).length>0 && fn!=FieldNames.FILEID )
 				{
 					String str=d.getField(fn)[0];
 					if(!str.equals(null) && !"".equals(str))
@@ -168,17 +167,17 @@ public class IndexWriter {
 							while(termAnlzr.increment()){							
 							}
 						}
-						termIndex.createIndexer(tStream,fileId);
+						//termIndex.createIndexer(tStream,fileId);
 					}
 
 					if(type==FieldNames.CATEGORY.name())
 					{
-						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.CATEGORY, tStream);
-						if(termAnlzr!=null)
-						{
-							while(termAnlzr.increment()){							
-							}
-						}
+//						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.CATEGORY, tStream);
+//						if(termAnlzr!=null)
+//						{
+//							while(termAnlzr.increment()){							
+//							}
+//						}
 						categoyIndex.createIndexer(tStream,fileId);
 					}
 				}
@@ -201,6 +200,11 @@ public class IndexWriter {
 	public void close() throws IndexerException {
 		//String diskFileName = "Indexer.txt";
 		writeToDisk(termIndex, IndexType.TERM.name());
+		writeToDisk(categoyIndex, IndexType.CATEGORY.name());
+		writeToDisk(placeIndex, IndexType.PLACE.name());
+		writeToDisk(authorIndex, IndexType.AUTHOR.name());
+		System.out.println(termIndex.termDictionary.keySet().toString());
+		System.out.println(termIndex.termDictionary.size());
 	}
 
 	private void writeToDisk(IndexCreator objIndex, String diskFileName) throws IndexerException {
@@ -211,6 +215,7 @@ public class IndexWriter {
 				List<Integer> indexTermIds  = new ArrayList<Integer>(termIndex.termDictionary.values());
 				Collections.sort(indexTermIds, termIndex.new SortByTermFreq());
 				String SaveIndexDir = indexDir+File.separatorChar + diskFileName;
+				objIndex.setDocCount();
 				FileOutputStream writeIndex =
 						new FileOutputStream(SaveIndexDir);
 				GZIPOutputStream zipInput = new GZIPOutputStream(writeIndex);
@@ -227,4 +232,5 @@ public class IndexWriter {
 			throw new IndexerException();
 		}
 	}
+	
 }
