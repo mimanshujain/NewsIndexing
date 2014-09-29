@@ -73,7 +73,6 @@ public class Tokenizer {
 		}
 		catch(Exception ex)
 		{
-			ex.printStackTrace();
 			throw new TokenizerException();
 		}
 		//System.out.println(stream.next());

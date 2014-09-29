@@ -74,7 +74,7 @@ public class Runner {
 					} 
 					catch (ParserException e) {
 						System.out.println("Inside Runner Parser: "+docId);
-						e.printStackTrace();
+						
 					} 
 				}
 

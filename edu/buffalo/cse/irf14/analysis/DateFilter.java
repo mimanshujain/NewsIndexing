@@ -24,16 +24,6 @@ public class DateFilter extends TokenFilter {
 		checkNum=Pattern.compile(strNum, Pattern.CASE_INSENSITIVE);
 		checkShortMon = Pattern.compile(shortMonth);
 
-		//		matchFullMonth=Pattern.compile(fullMonth).matcher("");
-		//		matchYearRange=Pattern.compile(yearRange).matcher("");
-		//		//matchDay=Pattern.compile(checkAdBc).matcher("");
-		//		matchPatAdBc=Pattern.compile(checkAdBc).matcher("");
-		//		matchBcAdWithNum=Pattern.compile(bcAdWithNum).matcher("");
-		//		matchTimeSeperate=Pattern.compile(timeSeperate).matcher("");
-		//		matchTimeIntegrated=Pattern.compile(timeIntegrated).matcher("");
-		//		matchDateWithHyphen=Pattern.compile(dateWithHyphen).matcher("");
-		//		matchNum=Pattern.compile(strNum).matcher("");
-		//		matchShortMon=Pattern.compile(shortMonth).matcher("");
 	}
 
 	static
@@ -92,17 +82,6 @@ public class DateFilter extends TokenFilter {
 	private Pattern checkShortMon=null;
 
 	private Matcher matchText = null;
-	//	private Matcher matchPat = null;
-	//	private Matcher matchFullMonth = null;
-	//	private Matcher matchYearRange = null;
-	//	private Matcher matchDay = null;
-	//	private Matcher matchPatAdBc = null;
-	//	private Matcher matchBcAdWithNum = null;
-	//	private Matcher matchTimeSeperate = null;
-	//	private Matcher matchTimeIntegrated = null;
-	//	private Matcher matchDateWithHyphen = null;
-	//	private Matcher matchNum = null;
-	//	private Matcher matchShortMon = null;
 
 	@Override
 	public boolean increment() throws TokenizerException {
@@ -136,8 +115,9 @@ public class DateFilter extends TokenFilter {
 								}
 								i++;
 							}
-
-
+							
+							
+							
 							month=String.format("%02d", i);
 							String yearString=getYear();
 							String dayString=getDay();

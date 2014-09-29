@@ -102,12 +102,15 @@ private Pattern checkSpl=null;
 
 							}
 						}
-						if(tempToken.equals("") || tempToken.matches("[?.,\\\"-%\\d!_]")) //tempToken.equals("\"") && tempToken.equals("-") "".equals(tempToken.trim()) || t
+						if(tempToken.equals("") || tempToken.matches("[?.,\\\"-%\\d!_]"))
 						{
 							tStream.remove();
 						}
 						else {
-							tk.setTermText(tempToken.trim());
+							if(tempToken.contains("\""))
+								tk.setTermText(tempToken.replaceAll("\"", "").trim());
+							else
+								tk.setTermText(tempToken.trim());
 						}
 						return tStream.hasNext();
 					}

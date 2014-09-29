@@ -1,3 +1,4 @@
+//Taken the Stemmer Algo from the availaible resoures.
 package edu.buffalo.cse.irf14.analysis;
 
 import java.util.regex.Matcher;

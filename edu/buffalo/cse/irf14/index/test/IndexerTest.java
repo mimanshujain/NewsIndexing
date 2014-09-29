@@ -157,44 +157,44 @@ public class IndexerTest {
 	/**
 	 * Test method for {@link edu.buffalo.cse.irf14.index.IndexReader#query(java.lang.String[])}.
 	 */
-//	@Test
-//	public final void testQuery() {
-//		String[] queryTerms = {"sales", "home", "july", "forecasts", "increase"};
-//		int len = queryTerms.length;
-//		
-//		
-//		for (int i = 0; i <len; i++) {
-//			queryTerms[i] = getAnalyzedTerm(queryTerms[i]);
-//		}
-//		
-//		/*
-//		 * Dummy inverted index
-//		 */
-//		HashMap<String, Integer>[] invIdx = prepareIndex(queryTerms);
-//		HashMap<String, Integer> expected;
-//		
-//		Map<String, Integer> results;
-//		String key;
-//		int value;
-//		for (int i = 0; i < len; i++) {
-//			results = reader.query(Arrays.copyOfRange(queryTerms, 0, i + 1));
-//			expected = (HashMap<String, Integer>) intersect(Arrays.copyOfRange(invIdx, 0, i+1));
-//			
-//			if (expected.isEmpty()) {
-//				assertNull(results);
-//			} else {
-//				assertEquals(expected.size(), results.size(), 0);
-//				
-//				for (Entry<String, Integer> etr : expected.entrySet()) {
-//					key = etr.getKey();
-//					value = etr.getValue();
-//					
-//					assertTrue(results.containsKey(key));
-//					assertEquals(value, results.get(key), 0);
-//				}
-//			}
-//		}
-//	}
+	@Test
+	public final void testQuery() {
+		String[] queryTerms = {"sales", "home", "july", "forecasts", "increase"};
+		int len = queryTerms.length;
+		
+		
+		for (int i = 0; i <len; i++) {
+			queryTerms[i] = getAnalyzedTerm(queryTerms[i]);
+		}
+		
+		/*
+		 * Dummy inverted index
+		 */
+		HashMap<String, Integer>[] invIdx = prepareIndex(queryTerms);
+		HashMap<String, Integer> expected;
+		
+		Map<String, Integer> results;
+		String key;
+		int value;
+		for (int i = 0; i < len; i++) {
+			results = reader.query(Arrays.copyOfRange(queryTerms, 0, i + 1));
+			expected = (HashMap<String, Integer>) intersect(Arrays.copyOfRange(invIdx, 0, i+1));
+			
+			if (expected.isEmpty()) {
+				assertNull(results);
+			} else {
+				assertEquals(expected.size(), results.size(), 0);
+				
+				for (Entry<String, Integer> etr : expected.entrySet()) {
+					key = etr.getKey();
+					value = etr.getValue();
+					
+					assertTrue(results.containsKey(key));
+					assertEquals(value, results.get(key), 0);
+				}
+			}
+		}
+	}
 
 	private Map<String, Integer> intersect(HashMap<String, Integer>...hashMaps) {
 		HashMap<String, Integer> basemap = new HashMap<String, Integer>(hashMaps[0]);

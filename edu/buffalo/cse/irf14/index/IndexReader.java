@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -90,9 +92,11 @@ public class IndexReader {
 	public Map<String, Integer> getPostings(String term) {
 		try
 		{
+			Map<String, Integer> m = null;
 			if(objCreator!=null)
 			{
-				return objCreator.getTermDictionary(term);
+				m=objCreator.getTermDictionary(term);
+				if(m!=null)  return new HashMap<String, Integer>(m);
 			}
 		}
 		catch(Exception ex)
@@ -116,7 +120,7 @@ public class IndexReader {
 				return null;
 			List<String> terms=new ArrayList<String>(); 
 			int i=0;
-			
+
 			if(orderedTerms!=null && orderedTerms.size()>0)
 			{
 				for(int termId : orderedTerms)
@@ -130,8 +134,8 @@ public class IndexReader {
 						break;
 					i++;
 				}
-				
-				
+
+
 				return terms;
 			}
 		}
@@ -179,7 +183,30 @@ public class IndexReader {
 	 * BONUS ONLY
 	 */
 	public Map<String, Integer> query(String...terms) {
-		//TODO : BONUS ONLY
-		return null;
+
+		Map<String, Integer> o=null;
+		if(terms!=null && terms.length>0)
+		{
+			o = getPostings(terms[0]);
+			if(o!=null)
+			{
+				for (int i = 1; i < terms.length;i++) {
+					Map<String, Integer> oo = getPostings(terms[i]);
+					if(oo!=null)
+					{
+						o.keySet().retainAll(oo.keySet());
+						for (Iterator<String> s = o.keySet().iterator(); s.hasNext(); ) {
+							String ss = s.next();
+							Integer f = o.get(ss) + oo.get(ss);
+							o.put(ss, f);
+						}
+					}
+				}
+			}
+			if(o.size()==0) return null;
+		}
+		return o;
 	}
+
+
 }

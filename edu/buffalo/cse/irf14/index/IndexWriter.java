@@ -143,7 +143,7 @@ public class IndexWriter {
 							while(termAnlzr.increment()){							
 							}
 						}
-						
+						//termIndex.createIndexer(tStream, fileId);
 					}
 
 					if(type==FieldNames.CATEGORY.name())
@@ -155,7 +155,7 @@ public class IndexWriter {
 
 			catch(Exception ex)
 			{
-				ex.printStackTrace();
+				
 				throw new IndexerException();
 			}
 		}
@@ -172,8 +172,7 @@ public class IndexWriter {
 		writeToDisk(categoyIndex, IndexType.CATEGORY.name());
 		writeToDisk(placeIndex, IndexType.PLACE.name());
 		writeToDisk(authorIndex, IndexType.AUTHOR.name());
-		System.out.println(termIndex.termDictionary.keySet().toString());
-		System.out.println(termIndex.termDictionary.size());
+
 	}
 
 	private void writeToDisk(IndexCreator objIndex, String diskFileName) throws IndexerException {
@@ -196,8 +195,7 @@ public class IndexWriter {
 			}
 		}
 		catch(Exception ex)
-		{
-			ex.printStackTrace();	
+		{			
 			throw new IndexerException();
 		}
 	}
