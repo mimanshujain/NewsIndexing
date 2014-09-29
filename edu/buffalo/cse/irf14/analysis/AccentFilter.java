@@ -1,7 +1,6 @@
-package edu.buffalo.cse.irf14.analysis;
+//Code taken from StakOverflow.
 
-import java.text.Normalizer;
-import java.util.regex.Pattern;
+package edu.buffalo.cse.irf14.analysis;
 
 public class AccentFilter extends TokenFilter {
 
@@ -19,62 +18,42 @@ public class AccentFilter extends TokenFilter {
 	@Override
 	public boolean increment() throws TokenizerException {
 
-		//
-		//
-		// if (tStream.hasNext()) {
-		//
-		//
-		// Token tk = tStream.next();
-		// String tempToken = tk.getTermText();
-		// if (tempToken!=null && !"".equals(tempToken)) {
-		//
-		// String nfdNormalizedString = Normalizer.normalize(tempToken,
-		// Normalizer.Form.NFKD);
-		// //System.out.println(nfdNormalizedString);
-		// Pattern pattern =
-		// Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-		// tk.setTermText(pattern.matcher(nfdNormalizedString).replaceAll(""));
-		// return true;
-		// }
-		// }
-		//
-		// return false;
 
 		try {
 			if (tStream.hasNext()) {
 
 				Token tk = tStream.next();
+				if (tk!=null)
+				{
+					String tempToken = tk.getTermText();
+					if(!tempToken.equals(null) && !tempToken.equals(""))
+					{
+						char[] vysl = new char[tempToken.length()];
 
-				String tempToken = tk.getTermText();
-				String tempToken1 = "";
+						char one;
 
-				char[] vysl = new char[tempToken.length()];
-				
-				char one;
-				
-				for (int i = 0; i < tempToken.length(); i++) {
-					one = tempToken.charAt(i);
-					if (one >= '\u00c0' && one <= '\u017f') {
-						one = tab00c0.charAt((int) one - '\u00c0');
+						for (int i = 0; i < tempToken.length(); i++) {
+							one = tempToken.charAt(i);
+							if (one >= '\u00c0' && one <= '\u017f') {
+								one = tab00c0.charAt((int) one - '\u00c0');
+							}
+							vysl[i] = one;
+							String b = String.valueOf(vysl);
+							tk.setTermText(b.trim());
+						}
 
+						return tStream.hasNext();
 					}
-					vysl[i] = one;
-					String b = String.valueOf(vysl);
-					tk.setTermText(b.trim());
 				}
-
-				return true;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return false;
+		return tStream.hasNext();
 	}
 
 	@Override
 	public TokenStream getStream() {
-		// TODO Auto-generated method stub
 		return tStream;
 	}
 

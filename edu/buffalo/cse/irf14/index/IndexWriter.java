@@ -68,27 +68,6 @@ public class IndexWriter {
 		Tokenizer tokenizeFields=new Tokenizer();
 
 		TokenStream termStream;
-		//		try
-		//		{
-		//			termStream = tokenizeFields.consume(d.getField(FieldNames.CONTENT)[0]);
-		//			analyzeAndFiltering(termStream, FieldNames.CONTENT.name());
-		//			termIndex.type=IndexType.TERM.name();
-		//			termIndex.createIndexer(termStream,d.getField(FieldNames.FILEID)[0]);
-		//		}
-		//		catch (TokenizerException e) 
-		//		{				
-		//			e.printStackTrace();
-		//			System.out.println("Inside addDoc Token: "+(docId-1));
-		//			throw new IndexerException();
-		//		} 
-		//		catch (Exception e) 
-		//		{
-		//			e.printStackTrace();
-		//			System.out.println("Inside addDoc Exception: "+(docId-1));
-		//			throw new IndexerException();
-		//		}
-		//		docId++;
-		//docId=d.getField(FieldNames.CATEGORY)[0]+d.getField(FieldNames.FILEID)[0];
 		for(FieldNames fn : FieldNames.values())
 		{
 			try
@@ -98,12 +77,9 @@ public class IndexWriter {
 					String str=d.getField(fn)[0];
 					if(!str.equals(null) && !"".equals(str))
 					{
-						//					if(fn==FieldNames.TITLE)
-						//						tokenizeFields.isTitle=true;
 						termStream = tokenizeFields.consume(str);
 						analyzeAndFiltering(termStream, fn.name(), d.getField(FieldNames.FILEID)[0]);
-					}
-					//termIndex.createIndexer(termStream,docId);
+					}					
 				}
 			} 
 			catch (TokenizerException e) 
@@ -167,17 +143,11 @@ public class IndexWriter {
 							while(termAnlzr.increment()){							
 							}
 						}
-						//termIndex.createIndexer(tStream,fileId);
+						
 					}
 
 					if(type==FieldNames.CATEGORY.name())
 					{
-//						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.CATEGORY, tStream);
-//						if(termAnlzr!=null)
-//						{
-//							while(termAnlzr.increment()){							
-//							}
-//						}
 						categoyIndex.createIndexer(tStream,fileId);
 					}
 				}
@@ -198,7 +168,6 @@ public class IndexWriter {
 	 * @throws IndexerException : In case any error occurs
 	 */
 	public void close() throws IndexerException {
-		//String diskFileName = "Indexer.txt";
 		writeToDisk(termIndex, IndexType.TERM.name());
 		writeToDisk(categoyIndex, IndexType.CATEGORY.name());
 		writeToDisk(placeIndex, IndexType.PLACE.name());

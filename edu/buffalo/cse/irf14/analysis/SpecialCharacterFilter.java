@@ -14,11 +14,9 @@ public class SpecialCharacterFilter extends TokenFilter {
 		checkSpl=Pattern.compile("\\w+");
 	}
 
-	// Jagvir
-	//	private  String splChrFilterMinusMathSymbol = "[a-zA-Z0-9\\^\\+\\*\\-]+";
 	private static String splChrFilterMinusMathSymbol;// = "[a-zA-Z0-9]*[\\^\\+\\*\\-]+[a-zA-Z0-9]*";
 	//	private  String splChrMathOpr = "[@<|>\\/\\*\\+\\^\\=\\&[\\/\\_\\\\]+]+";
-	private static String splChrMathOpr;// = "[@<|>\\/\\*\\+\\^=:;&_\\\\]";
+	private static String splChrMathOpr;// = "[\"@<|>\\/\\*\\+\\^=:;&_\\\\]";
 	private static String splChrAlphaAlpha1;// = 
 	//			"[(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\()])+(\\-)*([a-zA-Z\\+\\!\\#\\$\\%\\^\\&\\*\\(\\)])+(\\-)*]+";
 	private static String splChrAlphaAlpha;// = 
@@ -59,15 +57,12 @@ private Pattern checkSpl=null;
 					if (!tempToken.equals(null) && !tempToken.equals("") && !tempToken.matches("[a-zA-Z0-9]*")) {
 						matchSplCharacter = checkSplChrMinusMathSym.matcher(tempToken.trim());
 						String temp = "";
-						//					int i = 0;
 						while (matchSplCharacter.find()) {
 							temp += matchSplCharacter.group();
 
 						}
 						if (!temp.isEmpty())
-							tempToken = temp;
-
-						// 21stSept math symbol code
+							tempToken = temp;						
 
 						if (!tempToken.equals(null) && !tempToken.trim().equals("")) {
 
@@ -81,11 +76,8 @@ private Pattern checkSpl=null;
 
 							tempToken = stringToSaveTemp.trim();
 
-							// splCharacters
 							if (tempToken.matches(splChrAlphaAlpha)) {
-
-								//							checkSplCharacter = Pattern
-								//									.compile(splChrAlphaAlpha);
+						
 								matchSplCharacter = checkSplChrAlphaAlpha
 										.matcher(tempToken.trim());
 								if (matchSplCharacter.find()) {
@@ -97,9 +89,7 @@ private Pattern checkSpl=null;
 								}
 							}
 							if (tempToken.matches(splChrAlphaAlpha1)) {
-
-								//							checkSplCharacter = Pattern
-								//									.compile(splChrAlphaAlpha1);
+								
 								matchSplCharacter = checkSplChrAlphaAlpha1
 										.matcher(tempToken.trim());
 								if (matchSplCharacter.find()) {
@@ -133,7 +123,6 @@ private Pattern checkSpl=null;
 
 	@Override
 	public TokenStream getStream() {
-		// TODO Auto-generated method stub
 		return tStream;
 	}
 

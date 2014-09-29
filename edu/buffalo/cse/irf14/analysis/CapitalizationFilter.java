@@ -66,14 +66,12 @@ public class CapitalizationFilter extends TokenFilter {
 					matchCapitalWithDots=checkCapitalWithDots.matcher(tempToken);
 					matchAllCapital=checkAllCapital.matcher(tempToken);
 
-					if(matchFirstCapital.matches())//&& !matchAllCapital.matches() && !matchCapitalWithDots.matches()   tempToken.matches(firstCapital)
-						//if(tempToken.matches(firstCapital) && !tempToken.matches(allCapital) && !tempToken.matches(allCapitalWithDots))
+					if(matchFirstCapital.matches())
 					{		
 						if(tempToken.length()>1)
 						{
-							//Getting the Previous Token
 							token=tStream.getPrevious(-2);
-							//Check if previous token exists and if it, then check if it was the last word of previous Line.
+							
 							if(token!=null)
 							{
 								previousTokenString=token.getTermText();
@@ -87,20 +85,19 @@ public class CapitalizationFilter extends TokenFilter {
 									return tStream.hasNext();
 								}
 							}
-
-							//This is when the current token is the very first word in the Stream.
+							
 							if(tStream.isFirst())
 							{
 								tempToken=transitionalString.toLowerCase();
 								tk.setTermText(tempToken);
-								//return tStream.hasNext();
+								
 							}
 							else
 							{
 								transitionalString=givePreviousUpper(transitionalString, previousTokenString);
-								//tempToken=transitionalString.toLowerCase();
+								
 								tk.setTermText(transitionalString);
-								//return tStream.hasNext();
+								
 							}
 						}
 						else

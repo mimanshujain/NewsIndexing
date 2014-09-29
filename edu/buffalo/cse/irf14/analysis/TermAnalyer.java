@@ -27,7 +27,7 @@ public class TermAnalyer implements Analyzer {
 		}
 		catch(Exception ex)
 		{
-			ex.printStackTrace();
+			
 			throw new TokenizerException();
 		}
 		return false;
@@ -40,8 +40,6 @@ public class TermAnalyer implements Analyzer {
 
 			if(tFilterFactory!=null && tStream!=null)
 			{
-				//				filtering=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
-				//				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.STOPWORD, tStream);
 				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.ACCENT, tStream);
@@ -50,14 +48,10 @@ public class TermAnalyer implements Analyzer {
 				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.DATE, tStream);
 				applyFilters(filtering);
-//				filtering=tFilterFactory.getFilterByType(TokenFilterType.NUMERIC, tStream);
-//				applyFilters(filtering);
-				filtering=tFilterFactory.getFilterByType(TokenFilterType.SYMBOL, tStream);
-				applyFilters(filtering);			
-//				filtering=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
-//				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.NUMERIC, tStream);
 				applyFilters(filtering);
+				filtering=tFilterFactory.getFilterByType(TokenFilterType.SYMBOL, tStream);
+				applyFilters(filtering);		
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.SPECIALCHARS, tStream);
 				applyFilters(filtering);
 				filtering=tFilterFactory.getFilterByType(TokenFilterType.STEMMER, tStream);
@@ -66,7 +60,6 @@ public class TermAnalyer implements Analyzer {
 		}
 		catch(Exception ex)
 		{
-			ex.printStackTrace();
 			throw new TokenizerException();
 		}
 

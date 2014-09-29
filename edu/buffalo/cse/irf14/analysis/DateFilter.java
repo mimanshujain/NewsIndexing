@@ -557,7 +557,7 @@ public class DateFilter extends TokenFilter {
 			ex.printStackTrace();
 			throw new TokenizerException();
 		}
-		return true;
+		return tStream.hasNext();
 	}
 
 	//Get the year if present

@@ -33,7 +33,6 @@ public class Runner {
 		
 		String ipDir = args[0];
 		String indexDir = args[1];
-		//		more? idk!
 		//This is taking all the directories in File variable
 		File ipDirectory = new File(ipDir);
 		//All the sub folders inside the directories
@@ -89,9 +88,7 @@ public class Runner {
 			System.out.println("Elapsed milliseconds: " + difference);
 			
 		} catch (IndexerException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Inside Runner Index: "+docId);
-			e.printStackTrace();
+
 		}
 	}
 

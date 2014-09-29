@@ -16,8 +16,8 @@ public class ParserTest {
 	/* For testing purposes we are assuming that the corpus data is in the project directory. 
 	 * If you are going to be using these tests locally and your corpus data is not in your project
 	 * directory then feel free to change this. */
-	private static final String BASE_USER_DIR = System.getProperty("user.dir") + File.separatorChar + "news_training"+ File.separatorChar + "training";
-			/*;*/
+	private static final String BASE_USER_DIR = 
+			System.getProperty("user.dir") + File.separatorChar + "training" ;
 	
 	private static final String[] titles = {"COMPUTER TERMINAL SYSTEMS <CPML> COMPLETES SALE",
 		"DUTCH PLANNING AGENCY FORECASTS LOWER GROWTH", "WESTMIN TO RAISE MYRA FALLS CAPACITY BY 33 PCT",
@@ -75,7 +75,7 @@ public class ParserTest {
 	public void testParseValidFileName() {		
 		// Valid file name with document testing
 		try {
-			for(int i = 1; i < filenames.length; i++){
+			for(int i = 0; i < filenames.length; i++){
 				d = Parser.parse(filenames[i]);
 				validateTitle(d, i);
 				validateFileId(d, i);
@@ -88,8 +88,6 @@ public class ParserTest {
 		} catch (ParserException e) {
 			e.printStackTrace(); // So that debugging may be a bit easier.
 			fail("A ParserException was thrown when it should not have been thrown.");
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	

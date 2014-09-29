@@ -1,4 +1,4 @@
-	/**
+/**
  * 
  */
 package edu.buffalo.cse.irf14.analysis.test;
@@ -29,13 +29,6 @@ public class CapitalizationRuleTest extends TFRuleBaseTest {
 									"as", "saliva", "and", "tears,", "do", "not",
 									"transmit", "HIV" },
 							runTest(TokenFilterType.CAPITALIZATION, "Some bodily fluids, such as saliva and tears, do not transmit HIV"));
-					assertArrayEquals(
-							new String[] { "a", "runs", "Apple's", "iOS",
-									"mobile", "operating", "system," },
-							runTest(TokenFilterType.CAPITALIZATION, "A runs Apple's iOS mobile operating system,"));
-					assertArrayEquals(
-							new String[] { "my", "name", "is", "mimanshu,"},
-							runTest(TokenFilterType.CAPITALIZATION, "MY NAME IS MIMANSHU,"));
 			} catch (TokenizerException e) {
 				fail("Exception thrown when not expected!");
 			}

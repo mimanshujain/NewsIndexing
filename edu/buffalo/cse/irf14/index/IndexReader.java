@@ -116,7 +116,8 @@ public class IndexReader {
 				return null;
 			List<String> terms=new ArrayList<String>(); 
 			int i=0;
-			if(orderedTerms.size()>0)
+			
+			if(orderedTerms!=null && orderedTerms.size()>0)
 			{
 				for(int termId : orderedTerms)
 				{
