@@ -183,6 +183,7 @@ public class IndexWriter {
 				List<Integer> indexTermIds  = new ArrayList<Integer>(termIndex.termDictionary.values());
 				Collections.sort(indexTermIds, termIndex.new SortByTermFreq());
 				String SaveIndexDir = indexDir+File.separatorChar + diskFileName;
+				System.out.println(termIndex.termDictionary.size());
 				objIndex.setDocCount();
 				FileOutputStream writeIndex =
 						new FileOutputStream(SaveIndexDir);
