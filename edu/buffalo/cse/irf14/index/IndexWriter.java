@@ -23,26 +23,27 @@ import edu.buffalo.cse.irf14.document.Document;
 import edu.buffalo.cse.irf14.document.FieldNames;
 
 /**
- * @author nikhillo
- * Class responsible for writing indexes to disk
+ * @author nikhillo Class responsible for writing indexes to disk
  */
 public class IndexWriter {
 	/**
 	 * Default constructor
-	 * @param indexDir : The root directory to be sued for indexing
+	 * 
+	 * @param indexDir
+	 *            : The root directory to be sued for indexing
 	 */
 	public IndexWriter(String indexDir) {
 
-		termIndex=new IndexCreator(IndexType.TERM.name());
-		authorIndex=new IndexCreator(IndexType.AUTHOR.name());
-		categoyIndex=new IndexCreator(IndexType.CATEGORY.name());
-		placeIndex=new IndexCreator(IndexType.PLACE.name());
+		termIndex = new IndexCreator(IndexType.TERM.name());
+		authorIndex = new IndexCreator(IndexType.AUTHOR.name());
+		categoyIndex = new IndexCreator(IndexType.CATEGORY.name());
+		placeIndex = new IndexCreator(IndexType.PLACE.name());
 
-		//		docId=1;
-		if(indexDir!=null)
-			this.indexDir=indexDir;
+		// docId=1;
+		if (indexDir != null)
+			this.indexDir = indexDir;
 		else
-			this.indexDir="";
+			this.indexDir = "";
 	}
 
 	static String docId;
@@ -54,108 +55,99 @@ public class IndexWriter {
 	IndexCreator placeIndex;
 
 	/**
-	 * Method to add the given Document to the index
-	 * This method should take care of reading the filed values, passing
-	 * them through corresponding analyzers and then indexing the results
-	 * for each indexable field within the document. 
-	 * @param d : The Document to be added
-	 * @throws IndexerException : In case any error occurs
-	 * @throws TokenizerException 
-	 * @throws IOException 
+	 * Method to add the given Document to the index This method should take
+	 * care of reading the filed values, passing them through corresponding
+	 * analyzers and then indexing the results for each indexable field within
+	 * the document.
+	 * 
+	 * @param d
+	 *            : The Document to be added
+	 * @throws IndexerException
+	 *             : In case any error occurs
+	 * @throws TokenizerException
+	 * @throws IOException
 	 */
 	public void addDocument(Document d) throws IndexerException {
 
-		Tokenizer tokenizeFields=new Tokenizer();
+		Tokenizer tokenizeFields = new Tokenizer();
 
 		TokenStream termStream;
-		for(FieldNames fn : FieldNames.values())
-		{
-			try
-			{
-				if(d.getField(fn)!=null && d.getField(fn).length>0 && fn!=FieldNames.FILEID )
-				{
-					String str=d.getField(fn)[0];
-					if(!str.equals(null) && !"".equals(str))
-					{
+		for (FieldNames fn : FieldNames.values()) {
+			try {
+				if (d.getField(fn) != null && d.getField(fn).length > 0
+						&& fn != FieldNames.FILEID) {
+					String str = d.getField(fn)[0];
+					if (!str.equals(null) && !"".equals(str)) {
 						termStream = tokenizeFields.consume(str);
-						analyzeAndFiltering(termStream, fn.name(), d.getField(FieldNames.FILEID)[0]);
-					}					
+						analyzeAndFiltering(termStream, fn.name(),
+								d.getField(FieldNames.FILEID)[0]);
+					}
 				}
-			} 
-			catch (TokenizerException e) 
-			{				
+			} catch (TokenizerException e) {
 				e.printStackTrace();
 				throw new IndexerException();
-			} 
-			catch (Exception e) 
-			{
+			} catch (Exception e) {
 				e.printStackTrace();
 				throw new IndexerException();
 			}
 		}
 	}
-	private void analyzeAndFiltering(TokenStream tStream, String type, String fileId) throws IndexerException
-	{
-		AnalyzerFactory factoryObj=AnalyzerFactory.getInstance();
-		if(factoryObj!=null)
-		{
-			try
-			{
-				if(tStream!=null)
-				{
+
+	private void analyzeAndFiltering(TokenStream tStream, String type,
+			String fileId) throws IndexerException {
+		AnalyzerFactory factoryObj = AnalyzerFactory.getInstance();
+		if (factoryObj != null) {
+			try {
+				if (tStream != null) {
 					tStream.reset();
-					if(type==FieldNames.CONTENT.name()  || type==FieldNames.TITLE.name())
-					{
-						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.CONTENT, tStream);
-						if(termAnlzr!=null)
-						{
-							while(termAnlzr.increment()){							
+					if (type == FieldNames.CONTENT.name()
+							|| type == FieldNames.TITLE.name()) {
+						Analyzer termAnlzr = factoryObj.getAnalyzerForField(
+								FieldNames.CONTENT, tStream);
+						if (termAnlzr != null) {
+							while (termAnlzr.increment()) {
 							}
-							termIndex.createIndexer(tStream,fileId);
+							termIndex.createIndexer(tStream, fileId);
 						}
 					}
-					if(type==FieldNames.PLACE.name())
-					{
-						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.PLACE, tStream);
-						if(termAnlzr!=null)
-						{
-							while(termAnlzr.increment()){							
+					if (type == FieldNames.PLACE.name()) {
+						Analyzer termAnlzr = factoryObj.getAnalyzerForField(
+								FieldNames.PLACE, tStream);
+						if (termAnlzr != null) {
+							while (termAnlzr.increment()) {
 							}
 							placeIndex.createIndexer(tStream, fileId);
 						}
 					}
-					if(type==FieldNames.AUTHOR.name() || type==FieldNames.AUTHORORG.name())
-					{
-						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.PLACE, tStream);
-						if(termAnlzr!=null)
-						{
-							while(termAnlzr.increment()){							
+					if (type == FieldNames.AUTHOR.name()
+							|| type == FieldNames.AUTHORORG.name()) {
+						Analyzer termAnlzr = factoryObj.getAnalyzerForField(
+								FieldNames.PLACE, tStream);
+						if (termAnlzr != null) {
+							while (termAnlzr.increment()) {
 							}
 						}
 						authorIndex.createIndexer(tStream, fileId);
 					}
 
-					if(type==FieldNames.NEWSDATE.name())
-					{
-						Analyzer termAnlzr=factoryObj.getAnalyzerForField(FieldNames.NEWSDATE, tStream);
-						if(termAnlzr!=null)
-						{
-							while(termAnlzr.increment()){							
+					if (type == FieldNames.NEWSDATE.name()) {
+						Analyzer termAnlzr = factoryObj.getAnalyzerForField(
+								FieldNames.NEWSDATE, tStream);
+						if (termAnlzr != null) {
+							while (termAnlzr.increment()) {
 							}
 						}
-						//termIndex.createIndexer(tStream, fileId);
+						// termIndex.createIndexer(tStream, fileId);
 					}
 
-					if(type==FieldNames.CATEGORY.name())
-					{
-						categoyIndex.createIndexer(tStream,fileId);
+					if (type == FieldNames.CATEGORY.name()) {
+						categoyIndex.createIndexer(tStream, fileId);
 					}
 				}
 			}
 
-			catch(Exception ex)
-			{
-				
+			catch (Exception ex) {
+
 				throw new IndexerException();
 			}
 		}
@@ -163,9 +155,11 @@ public class IndexWriter {
 	}
 
 	/**
-	 * Method that indicates that all open resources must be closed
-	 * and cleaned and that the entire indexing operation has been completed.
-	 * @throws IndexerException : In case any error occurs
+	 * Method that indicates that all open resources must be closed and cleaned
+	 * and that the entire indexing operation has been completed.
+	 * 
+	 * @throws IndexerException
+	 *             : In case any error occurs
 	 */
 	public void close() throws IndexerException {
 		writeToDisk(termIndex, IndexType.TERM.name());
@@ -175,18 +169,18 @@ public class IndexWriter {
 
 	}
 
-	private void writeToDisk(IndexCreator objIndex, String diskFileName) throws IndexerException {
-		try
-		{
-			if(!"".equals(indexDir))
-			{
-				List<Integer> indexTermIds  = new ArrayList<Integer>(termIndex.termDictionary.values());
+	private void writeToDisk(IndexCreator objIndex, String diskFileName)
+			throws IndexerException {
+		try {
+			if (!"".equals(indexDir)) {
+				List<Integer> indexTermIds = new ArrayList<Integer>(
+						termIndex.termDictionary.values());
 				Collections.sort(indexTermIds, termIndex.new SortByTermFreq());
-				String SaveIndexDir = indexDir+File.separatorChar + diskFileName;
-				System.out.println(termIndex.termDictionary.size());
+				String SaveIndexDir = indexDir + File.separatorChar
+						+ diskFileName;
+
 				objIndex.setDocCount();
-				FileOutputStream writeIndex =
-						new FileOutputStream(SaveIndexDir);
+				FileOutputStream writeIndex = new FileOutputStream(SaveIndexDir);
 				GZIPOutputStream zipInput = new GZIPOutputStream(writeIndex);
 				ObjectOutputStream indexerOut = new ObjectOutputStream(zipInput);
 				indexerOut.writeObject(objIndex);
@@ -194,11 +188,9 @@ public class IndexWriter {
 				indexerOut.close();
 				writeIndex.close();
 			}
-		}
-		catch(Exception ex)
-		{			
+		} catch (Exception ex) {
 			throw new IndexerException();
 		}
 	}
-	
+
 }

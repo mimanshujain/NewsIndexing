@@ -3,6 +3,8 @@
  */
 package edu.buffalo.cse.irf14.query;
 
+import java.util.Stack;
+
 /**
  * @author nikhillo
  * Static parser that converts raw text to Query objects
@@ -15,7 +17,15 @@ public class QueryParser {
 	 * @return Query object if successfully parsed, null otherwise
 	 */
 	public static Query parse(String userQuery, String defaultOperator) {
-		//TODO: YOU MUST IMPLEMENT THIS METHOD
+		
+		try
+		{
+			
+		}
+		catch(Exception e) //QueryParserException -- Need to define.?
+		{
+			
+		}
 		return null;
 	}
 }

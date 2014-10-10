@@ -23,7 +23,7 @@ public class SearchRunner {
 	 */
 	public SearchRunner(String indexDir, String corpusDir, 
 			char mode, PrintStream stream) {
-		//TODO: IMPLEMENT THIS METHOD
+		
 	}
 	
 	/**
