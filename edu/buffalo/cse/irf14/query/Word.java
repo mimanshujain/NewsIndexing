@@ -6,8 +6,8 @@ public class Word implements QueryExpression {
 
 	private String wordVal;
 	
-	public Word() {
-		wordVal="";
+	public Word(String wordVal) {
+		this.wordVal=wordVal;
 	}
 
 	@Override

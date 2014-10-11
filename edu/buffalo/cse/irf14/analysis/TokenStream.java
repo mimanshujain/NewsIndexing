@@ -16,18 +16,16 @@ import java.util.Map;
  */
 
 public class TokenStream implements Iterator<Token> {
-	// Added Later
-	// private Map<Token, ArrayList<String>> tokenMap;
 
 	Token token;
 	int index;
 	int dummyIndex;
-	List<Token> tokenStreamList ;
+	List<Token> tokenStreamList;
 
 	public TokenStream() {
-		tokenStreamList=new ArrayList<Token>();
-		index=0;
-		dummyIndex=0;
+		tokenStreamList = new ArrayList<Token>();
+		index = 0;
+		dummyIndex = 0;
 	}
 
 	public List<Token> getTokenStreamList() {
@@ -48,7 +46,7 @@ public class TokenStream implements Iterator<Token> {
 	@Override
 	public boolean hasNext() {
 
-		if(index < (tokenStreamList.size()))
+		if (index < (tokenStreamList.size()))
 			return true;
 		else
 			return false;
@@ -62,14 +60,11 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	@Override
 	public Token next() {
-		if(hasNext())
-		{
-			token=(Token)tokenStreamList.get(index++);
+		if (hasNext()) {
+			token = (Token) tokenStreamList.get(index++);
 			return token;
-		}
-		else
-		{
-			token=null;
+		} else {
+			token = null;
 			return token;
 		}
 	}
@@ -81,21 +76,22 @@ public class TokenStream implements Iterator<Token> {
 	 */
 	@Override
 	public void remove() {
-		if(index>0&&index<=tokenStreamList.size())
-		{
-			tokenStreamList.remove((index-1));
+		if (index > 0 && index <= tokenStreamList.size()) {
+			tokenStreamList.remove((index - 1));
 			index--;
-			token=null;
+			token = null;
 		}
 	}
+
 	/**
 	 * Method to reset the stream to bring the iterator back to the beginning of
 	 * the stream. Unless the stream has no tokens, hasNext() after calling
 	 * reset() must always return true.
 	 */
 	public void reset() {
-		index=0;
+		index = 0;
 	}
+
 	/**
 	 * Method to append the given TokenStream to the end of the current stream
 	 * The append must always occur at the end irrespective of where the
@@ -108,7 +104,7 @@ public class TokenStream implements Iterator<Token> {
 	 *            : The stream to be appended
 	 */
 	public void append(TokenStream stream) {
-		if(stream!=null)
+		if (stream != null)
 			tokenStreamList.addAll(stream.getTokenStreamList());
 	}
 
@@ -123,184 +119,142 @@ public class TokenStream implements Iterator<Token> {
 	 *         has been reached or the current Token was removed
 	 */
 	public Token getCurrent() {
-		if(index>0 && index<=tokenStreamList.size()&&token!=null)
-			return  (Token)tokenStreamList.get(index-1);
+		if (index > 0 && index <= tokenStreamList.size() && token != null)
+			return (Token) tokenStreamList.get(index - 1);
 		else
 			return null;
 	}
 
-	//Mimanshu Starts
+	// Mimanshu Starts
 
-	//Method to get the previous token without incrementing
+	// Method to get the previous token without incrementing
 	private String previous() {
-		if(dummyIndex<tokenStreamList.size() && dummyIndex>=0)
+		if (dummyIndex < tokenStreamList.size() && dummyIndex >= 0)
 			return tokenStreamList.get(dummyIndex--).getTermText();
-		else 
-			return null;
-	}
-
-	//Method to get the next token without incrementing
-	private String after()
-	{
-		if(dummyIndex<tokenStreamList.size() && dummyIndex>=0)
-		{
-			return tokenStreamList.get(dummyIndex++).getTermText();
-		}
 		else
 			return null;
 	}
 
-	//Method to get the whole line.
-	public List<String> getWords()
-	{
-		dummyIndex=index-2;
-		List<String> lst=new ArrayList<String>();
-		while(true)
-		{
-			String word=previous();
-			if(word==null || word.contains("."))
-				break;			
-			else
-			{
+	// Method to get the next token without incrementing
+	private String after() {
+		if (dummyIndex < tokenStreamList.size() && dummyIndex >= 0) {
+			return tokenStreamList.get(dummyIndex++).getTermText();
+		} else
+			return null;
+	}
+
+	// Method to get the whole line.
+	public List<String> getWords() {
+		dummyIndex = index - 2;
+		List<String> lst = new ArrayList<String>();
+		while (true) {
+			String word = previous();
+			if (word == null || word.contains("."))
+				break;
+			else {
 				lst.add(word);
 			}
 		}
 		lst.add(getCurrent().getTermText());
 
-		//		if(getCurrent().getTermText().contains(".?"))
-		//			return lst;
+		// if(getCurrent().getTermText().contains(".?"))
+		// return lst;
 
-		dummyIndex=index;
+		dummyIndex = index;
 
-		while(true)
-		{
-			String word=after();
-			if(word==null)
+		while (true) {
+			String word = after();
+			if (word == null)
 				break;
-			else if(word.contains("."))
-			{
+			else if (word.contains(".")) {
 				lst.add(word);
-				word=after();
-				if(word!=null)
-				{
-					if(word.matches("[A-Z]{1}(.*)") && !word.matches("[A-Z]{2}(.*)"))
+				word = after();
+				if (word != null) {
+					if (word.matches("[A-Z]{1}(.*)")
+							&& !word.matches("[A-Z]{2}(.*)"))
 						break;
 					else
 						lst.add(word);
-				}
-				else
+				} else
 					break;
-			}
-			else
+			} else
 				lst.add(word);
 		}
 
 		return lst;
 	}
 
-	//Used to get the previous Token
-	public Token getPrevious(int i)
-	{
-		if(i == -2)
-		{
-			if(index>1 && index<=tokenStreamList.size())
-				return  (Token)tokenStreamList.get(index-2);
+	// Used to get the previous Token
+	public Token getPrevious(int i) {
+		if (i == -2) {
+			if (index > 1 && index <= tokenStreamList.size())
+				return (Token) tokenStreamList.get(index - 2);
 			else
 				return null;
-		}
-		else
-		{
-			if(i>1 && i<=tokenStreamList.size())
-				return  (Token)tokenStreamList.get(i);
+		} else {
+			if (i > 1 && i <= tokenStreamList.size())
+				return (Token) tokenStreamList.get(i);
 			else
 				return null;
 		}
 	}
 
-	//To get the ith next token 
-	public Token getNext(int i)
-	{
-		if(i>=1 && i<=tokenStreamList.size())
-		{
-			if(hasNext(i))
-			{
-				//			currentIndex=(index)+1;
-				token=(Token)tokenStreamList.get(i);
-				if(token!=null)
+	// To get the ith next token
+	public Token getNext(int i) {
+		if (i >= 1 && i <= tokenStreamList.size()) {
+			if (hasNext(i)) {
+				// currentIndex=(index)+1;
+				token = (Token) tokenStreamList.get(i);
+				if (token != null)
 					return token;
-				else 
+				else
 					return null;
 			}
 		}
 		return null;
 	}
 
-	//To check if it is the first element.
-	public boolean isFirst()
-	{
-		if(index==1)
-		{
+	// To check if it is the first element.
+	public boolean isFirst() {
+		if (index == 1) {
 			return true;
-		}
-		else
+		} else
 			return false;
 	}
 
-	//To check if we have the i th next element in the list.
+	// To check if we have the i th next element in the list.
 	public boolean hasNext(int i) {
 
-		if((i) < (tokenStreamList.size()))
+		if ((i) < (tokenStreamList.size()))
 			return true;
 		else
 			return false;
 	}
 
-	//To remove at ith index
-	public void remove(int i)
-	{
-		if(i>0&&i<=tokenStreamList.size())
-		{
-			//			if(i!=index)
-			//			{
-			if(i<index)
-			{
-				tokenStreamList.remove((i-1));
+	// To remove at ith index
+	public void remove(int i) {
+		if (i > 0 && i <= tokenStreamList.size()) {
+			// if(i!=index)
+			// {
+			if (i < index) {
+				tokenStreamList.remove((i - 1));
 				index--;
-				//				token=null;
+				// token=null;
+			} else {
+				tokenStreamList.remove((i - 1));
 			}
-			else
-			{
-				tokenStreamList.remove((i-1));
-			}
-			//			}
+			// }
 		}
 	}
 
-	//To get the current index number
-	public int getIndex()
-	{
+	// To get the current index number
+	public int getIndex() {
 		return index;
 	}
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return tokenStreamList.toString();
 	}
-	//public void updateList(Token tk,int i)
-	//{
-	//	tokenStreamList.set(i, tk);
-	//}
-	//
-	//	// Added later
-	//	private Map<Token, ArrayList<String>> getTokenMap() {
-	//		return getTokenMap();
-	//	}
-
-
-
-	//Mimanshu End
-	/*
-	 * public void setTokenMap(Map<Token, ArrayList<String>> tokenMap) {
-	 * this.tokenMap = tokenMap; }
-	 */
 
 }

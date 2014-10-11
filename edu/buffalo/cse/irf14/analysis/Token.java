@@ -44,7 +44,7 @@ public class Token {
 	 * to suit your class definition and data structure needs.
 	 * @param text
 	 */
-	protected void setTermText(String text) {
+	public void setTermText(String text) {
 		termText = text;
 		termBuffer = (termText != null) ? termText.toCharArray() : null;
 	}

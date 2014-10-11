@@ -2,21 +2,13 @@ package edu.buffalo.cse.irf14.query;
 
 import java.util.Map;
 
-public class NOT implements QueryExpression {
+public class OpeningBracket implements QueryExpression {
 
 	QueryExpression leftOperand;
 	QueryExpression rightOperand;
 	
-	public NOT() {
+	public OpeningBracket() {
 		// TODO Auto-generated constructor stub
-	}
-
-	public void setLeftOperand(QueryExpression leftOperand) {
-		this.leftOperand = leftOperand;
-	}
-
-	public void setRightOperand(QueryExpression rightOperand) {
-		this.rightOperand = rightOperand;
 	}
 
 	@Override
@@ -24,12 +16,11 @@ public class NOT implements QueryExpression {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public void assignOperands(QueryExpression rightEx, QueryExpression leftEx)
 	{
 		rightOperand = rightEx;
 		leftOperand = leftEx;
 	}
-
 }

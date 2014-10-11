@@ -16,7 +16,7 @@ public class CapitalizationFilter extends TokenFilter {
 	 */
 	public CapitalizationFilter(TokenStream stream) {
 		super(stream);
-		
+
 		checkFirstCapital=Pattern.compile(firstCapital);
 		checkAllCapital=Pattern.compile(allCapital);
 		checkCapitalWithDots=Pattern.compile(allCapitalWithDots);
@@ -30,7 +30,7 @@ public class CapitalizationFilter extends TokenFilter {
 	private Pattern checkFirstCapital; 
 	private Pattern checkAllCapital; 
 	private Pattern checkCapitalWithDots; 
-	
+
 	private Matcher matchFirstCapital=null;
 	private Matcher matchAllCapital=null;
 	private Matcher matchCapitalWithDots=null;
@@ -42,7 +42,7 @@ public class CapitalizationFilter extends TokenFilter {
 		allCapital="[A-Z\\,\\-0-9\\'\\<\\>]+";
 		allCapitalWithDots="[A-Z\\,\\-0-9\\.\\'\\<\\>]+";
 	}
-	
+
 	@Override
 	public boolean increment() throws TokenizerException {
 		try
@@ -59,9 +59,9 @@ public class CapitalizationFilter extends TokenFilter {
 				Token token;
 
 				if (tempToken!=null && !"".equals(tempToken) && !tempToken.equals(tempToken.toLowerCase())) {
-					
+
 					//if(tempToken.equals(tempToken.toLowerCase())) return tStream.hasNext();
-							
+
 					matchFirstCapital=checkFirstCapital.matcher(tempToken);
 					matchCapitalWithDots=checkCapitalWithDots.matcher(tempToken);
 					matchAllCapital=checkAllCapital.matcher(tempToken);
@@ -71,7 +71,7 @@ public class CapitalizationFilter extends TokenFilter {
 						if(tempToken.length()>1)
 						{
 							token=tStream.getPrevious(-2);
-							
+
 							if(token!=null)
 							{
 								previousTokenString=token.getTermText();
@@ -85,19 +85,19 @@ public class CapitalizationFilter extends TokenFilter {
 									return tStream.hasNext();
 								}
 							}
-							
+
 							if(tStream.isFirst())
 							{
 								tempToken=transitionalString.toLowerCase();
 								tk.setTermText(tempToken);
-								
+
 							}
 							else
 							{
 								transitionalString=givePreviousUpper(transitionalString, previousTokenString);
-								
+
 								tk.setTermText(transitionalString);
-								
+
 							}
 						}
 						else
@@ -198,51 +198,6 @@ public class CapitalizationFilter extends TokenFilter {
 			}
 		}
 	}
-
-	//	private String giveNextUpperString(String currentValue,int i)
-	//	{
-	//		if(tStream.hasNext(i))
-	//		{
-	//			Token token=tStream.getNext(i);
-	//			if(token!=null)
-	//			{
-	//				String nextTokenString=token.getTermText();
-	//				if(nextTokenString.matches(firstCapital) && !nextTokenString.matches(allCapital) && !nextTokenString.matches(allCapitalWithDots))
-	//				{
-	//					String output=currentValue.substring(0,1).toUpperCase()+currentValue.substring(1);
-	//					currentValue=output+ " "+nextTokenString;
-	//					//tk.setTermText(currentValue);
-	//					token=tStream.next();
-	//					if(token.getTermText().equals(nextTokenString))
-	//						tStream.remove();
-	//					return currentValue;
-	//				}
-	//			}
-	//			else
-	//				return null;
-	//		}
-	//		else
-	//			return null;
-	//
-	//		return currentValue;
-	//	}
-
-	//	private boolean isNextUpper()
-	//	{
-	//		Token token=tStream.getNext(tStream.getIndex());
-	//		if(token!=null)
-	//		{
-	//			String nextTokenString=token.getTermText();
-	//			if(nextTokenString.matches(firstCapital) && !nextTokenString.matches(allCapital) && !nextTokenString.matches(allCapitalWithDots))
-	//			{
-	//				return true;
-	//			}
-	//		}
-	//		return false;
-	//	}
-	/* (non-Javadoc)
-	 * @see edu.buffalo.cse.irf14.analysis.Analyzer#getStream()
-	 */
 	@Override
 	public TokenStream getStream() {
 		// TODO Auto-generated method stub

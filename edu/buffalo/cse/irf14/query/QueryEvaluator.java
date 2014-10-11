@@ -31,7 +31,8 @@ public class QueryEvaluator implements QueryExpression {
 		try {
 			for (String token : inputQuery.split(" ")) {
 				char ch = token.charAt(0);
-				if (ch != '\"' || ch != '(') {
+				char ch2 = token.charAt(token.length()-1);
+				if (ch != '\"' || ch != '(' ) {
 					matPat.reset(token);
 					if(matPat.matches())
 					{
