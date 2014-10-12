@@ -1,11 +1,8 @@
 package edu.buffalo.cse.irf14.query;
 
-import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.naming.ldap.StartTlsRequest;
 
 import edu.buffalo.cse.irf14.analysis.Token;
 import edu.buffalo.cse.irf14.analysis.TokenStream;
@@ -21,7 +18,6 @@ public class QueryEvaluators implements QueryExpression {
 		{
 			if (inputQuery != null && !"".equals(inputQuery)) {
 
-//				inputQuery = inputQuery + " )";
 				Tokenizer tokenStart = new Tokenizer();
 				TokenStream stream =  tokenStart.consume(inputQuery);
 				Token closingToken = new Token();
@@ -36,8 +32,7 @@ public class QueryEvaluators implements QueryExpression {
 					QueryExpression opening = new OpeningBracket();
 					operatorStack.push(opening);				
 
-					int countToken = 0;
-					boolean isWord=false, isQuote = false;
+					boolean isWord=false;
 
 					String tempToken = "";
 
@@ -77,8 +72,7 @@ public class QueryEvaluators implements QueryExpression {
 										tempToken = tempToken + " ";
 										stream.remove(index + 1);
 									}
-								}
-								//							isQuote=true;					
+								}			
 							}
 
 							else if(chStart == '\"' && chEnd == '\"')
@@ -130,7 +124,7 @@ public class QueryEvaluators implements QueryExpression {
 								} 
 								else 
 								{
-									if(isWord == true) //default OR
+									if(isWord == true) 
 									{														
 										operatorStack.push(opFactIntance.getOperatorByType(defaultOperator.toUpperCase()));							
 									}
@@ -235,45 +229,6 @@ public class QueryEvaluators implements QueryExpression {
 									else break;
 								}
 							}
-							//						else if(chStart == '\"' && chEnd != '\"')
-							//						{							
-							//							int index = stream.getIndex();
-							//							int i = 0;
-							//							tempToken = token + " ";
-							//							while(true)
-							//							{
-							//								Token tk = stream.getNext(index);
-							//								if(tk != null && !"".equals(tk.toString()))
-							//								{
-							//									if(tk.toString().contains("\""))
-							//									{
-							//										tempToken = tempToken + tk.toString();
-							//										stream.remove(index + 1);
-							//										break;
-							//									}
-							//									tempToken = tempToken + " ";
-							//									stream.remove(index + 1);
-							//								}
-							//							}
-							//							
-							//							isQuote=true;					
-							//						}
-
-							//						else if(chStart == '\"' && chEnd == '\"')
-							//						{
-							//							wordStack.push(new Word(token));
-							//						}
-
-							//						else if(chEnd == '\"' && isQuote)
-							//						{
-							//							tempToken = tempToken + token;
-							//							wordStack.push(new Word(tempToken));
-							//						}
-							//
-							//						else if(isQuote)
-							//						{
-							//							tempToken = tempToken + token;
-							//						}
 						}
 					}
 					evaluator = wordStack.pop();
