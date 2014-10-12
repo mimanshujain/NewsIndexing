@@ -19,11 +19,11 @@ public class OperatorFactory {
 	{
 		if(type!=null)
 		{
-			if(type==OperatorType.OR.name())
+			if(type.equals(OperatorType.OR.name()))
 				return new OR();
-			if(type==OperatorType.AND.name())
+			if(type.equals(OperatorType.AND.name()))
 				return new AND();
-			if(type==OperatorType.NOT.name())
+			if(type.equals(OperatorType.NOT.name()))
 				return new NOT();
 		}
 		return null;

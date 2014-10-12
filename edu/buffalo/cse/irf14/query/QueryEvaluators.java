@@ -13,25 +13,28 @@ import edu.buffalo.cse.irf14.analysis.Tokenizer;
 
 public class QueryEvaluators implements QueryExpression {
 
-	QueryExpression evluator;
-	
-	public QueryEvaluators(String inputQuery) {
+	QueryExpression evaluator;
+
+	public QueryEvaluators(String inputQuery, String defaultOperator) {
 
 		try
 		{
 			if (inputQuery != null && !"".equals(inputQuery)) {
 
+//				inputQuery = inputQuery + " )";
 				Tokenizer tokenStart = new Tokenizer();
 				TokenStream stream =  tokenStart.consume(inputQuery);
-
+				Token closingToken = new Token();
+				closingToken.setTermText(" )");
+				stream.setTokenStreamList(closingToken);
+				
 				if(stream != null)
 				{
 					Stack<QueryExpression> wordStack = new Stack<QueryExpression>();
 					Stack<QueryExpression> operatorStack = new Stack<QueryExpression>();
 
 					QueryExpression opening = new OpeningBracket();
-					operatorStack.push(opening);
-					inputQuery = inputQuery + ")";
+					operatorStack.push(opening);				
 
 					int countToken = 0;
 					boolean isWord=false, isQuote = false;
@@ -44,130 +47,236 @@ public class QueryEvaluators implements QueryExpression {
 					Matcher matPat=checkPat.matcher("");
 
 					while (stream.hasNext()) 
-					{						
-						String token = stream.next().toString();
-						matPat.reset(token);
-
-						if(matPat.matches())
+					{					
+						Token currentToken = stream.next();
+						if(currentToken != null)
 						{
-							tempToken = matPat.group(2) + matPat.group(1) + matPat.group(3);
-							int index = stream.getIndex();
-							int i = 0;
-							
-							while(true)
-							{
-								Token tk = stream.getNext(index + i);
-								if(tk != null && !"".equals(tk.toString()))
+							String token = currentToken.toString();
+
+							char chStart = token.charAt(0);
+							char chEnd = token.charAt(token.length() - 1);
+
+							if(chStart == '\"' && chEnd != '\"' && chEnd != ')')
+							{							
+								int index = stream.getIndex();
+								int i = 0;
+								tempToken = token + " ";
+								while(true)
 								{
-									if(tk.toString().contains(")"))
+									Token tk = stream.getNext(index);
+									if(tk != null && !"".equals(tk.toString()))
 									{
-										tk.setTermText(matPat.group(1) + tk.toString());
-										break;
-									}
-									else if(tk.toString().toUpperCase() != OperatorType.AND.name() && tk.toString().toUpperCase() != OperatorType.OR.name()
-											&& tk.toString().toUpperCase() != OperatorType.NOT.name())
-									{
-										tk.setTermText(matPat.group(1) + tk.toString());
+										if(tk.toString().contains("\""))
+										{
+											tempToken = tempToken + tk.toString();										
+											stream.remove(index + 1);
+											currentToken.setTermText(tempToken);
+											//stream.setTokenStreamList(currentToken);
+											break;
+										}
+										tempToken = tempToken + " ";
+										stream.remove(index + 1);
 									}
 								}
-								i++;
+								//							isQuote=true;					
 							}
-						}
 
-						char chStart = token.charAt(0);
-						char chEnd = token.charAt(token.length() - 1);
-
-						if (chStart != '\"' && chStart != '(' && chEnd != '\"'
-								&& chEnd == ')' && !isQuote) 
-						{
-							if ((token.toUpperCase() == OperatorType.OR.name()
-									|| token.toUpperCase() == OperatorType.AND.name()
-									|| token.toUpperCase() == OperatorType.NOT.name()) && isWord) 
+							else if(chStart == '\"' && chEnd == '\"')
 							{
+								wordStack.push(new Word(token));
+							}
 
-								operatorStack.push(opFactIntance
-										.getOperatorByType(token.toUpperCase()));
-								isWord=false;
-							} 
-							else 
+							token = currentToken.toString();
+							matPat.reset(token);
+
+							if(matPat.matches())
 							{
-								if(isWord == true) //default OR
-								{														
-									operatorStack.push(opFactIntance.getOperatorByType("OR"));							
+								tempToken = matPat.group(2) + matPat.group(1) + matPat.group(3);
+								int index = stream.getIndex();
+								int i = 0;
+								currentToken.setTermText(tempToken);
+								while(true)
+								{
+									Token tk = stream.getNext(index + i);
+									if(tk != null && !"".equals(tk.toString()))
+									{
+										if(tk.toString().contains(")"))
+										{
+											tk.setTermText(matPat.group(1) + tk.toString());
+											break;
+										}
+										else if(!tk.toString().toUpperCase().equals(OperatorType.AND.name()) && !tk.toString().toUpperCase().equals(OperatorType.OR.name())
+												&& !tk.toString().toUpperCase().equals(OperatorType.NOT.name()))
+										{
+											tk.setTermText(matPat.group(1) + tk.toString());
+										}
+									}
+									i++;
 								}
+							}
+							token = stream.getCurrent().toString();
+							chStart = token.charAt(0);
+							chEnd = token.charAt(token.length() - 1);
 
+							if (chStart != '(' && chEnd != ')') 
+							{
+								if ((token.toUpperCase().equals(OperatorType.OR.name()) || token.toUpperCase().equals(OperatorType.AND.name()) 
+										|| token.toUpperCase().equals(OperatorType.NOT.name())) && isWord) 
+								{
+
+									operatorStack.push(opFactIntance
+											.getOperatorByType(token.toUpperCase()));
+									isWord=false;
+								} 
+								else 
+								{
+									if(isWord == true) //default OR
+									{														
+										operatorStack.push(opFactIntance.getOperatorByType(defaultOperator.toUpperCase()));							
+									}
+
+									wordStack.push(new Word(token));
+									isWord=true;
+								}
+							}
+
+							//Starting with opening Bracket
+							else if(chStart == '(')
+							{
+								operatorStack.push(new OpeningBracket());
+								token = token.substring(1);
 								wordStack.push(new Word(token));
 								isWord=true;
 							}
-						}
 
-						//Starting with opening Bracket
-						else if(chStart == '(')
-						{
-							operatorStack.push(new OpeningBracket());
-							token = token.substring(1);
-							wordStack.push(new Word(token));
-							isWord=true;
-						}
-
-						else if(chEnd == ')')
-						{
-							tempToken = token.substring(0,token.length()-2);
-							wordStack.push(tempToken);
-							QueryExpression closing = new ClosingBracket();
-							QueryExpression qExp;
-
-							while(true)
+							else if(chEnd == ')' && chStart != ' ')
 							{
-								if(!operatorStack.empty())
-								{
-									qExp=operatorStack.pop();
-									if(qExp instanceof OpeningBracket)
-									{
-										closing.assignOperands(wordStack.pop(), qExp);
-										wordStack.push(closing);
-									}
-									else
-									{
-										QueryExpression leftOperand = null;
-										QueryExpression rightOperand = null;
-										//QueryExpression operator = null;
+								tempToken = token.substring(0,token.length()-1);
 
-										if(!wordStack.empty())
+								if(isWord == true) //default OR
+								{														
+									operatorStack.push(opFactIntance.getOperatorByType(defaultOperator.toUpperCase()));							
+								}
+								wordStack.push(new Word(tempToken));
+								QueryExpression closing = new ClosingBracket();
+								QueryExpression qExp;
+
+								while(true)
+								{
+									if(!operatorStack.empty())
+									{
+										qExp=operatorStack.pop();
+										if(qExp != null)
 										{
-											rightOperand = wordStack.pop();
-											leftOperand = wordStack.pop();
-											qExp.assignOperands(rightOperand, leftOperand);
-											wordStack.push(qExp);
+											if(qExp instanceof OpeningBracket)
+											{
+												closing.assignOperands(wordStack.pop(), qExp);
+												wordStack.push(closing);
+												isWord = true;
+												break;
+											}
+											else
+											{
+												QueryExpression leftOperand = null;
+												QueryExpression rightOperand = null;
+												//QueryExpression operator = null;
+
+												if(!wordStack.empty())
+												{
+													rightOperand = wordStack.pop();
+													leftOperand = wordStack.pop();
+													qExp.assignOperands(rightOperand, leftOperand);
+													wordStack.push(qExp);
+												}
+											}
 										}
 									}
+
+									else break;
 								}
+
 							}
 
-						}
+							else if(token == " )")
+							{
+								QueryExpression closing = new ClosingBracket();
+								QueryExpression qExp;
+								
+								while(true)
+								{
+									if(!operatorStack.empty())
+									{
+										qExp=operatorStack.pop();
+										if(qExp != null)
+										{
+											if(qExp instanceof OpeningBracket)
+											{
+												closing.assignOperands(wordStack.pop(), qExp);
+												wordStack.push(closing);
+												break;
+											}
+											else
+											{
+												QueryExpression leftOperand = null;
+												QueryExpression rightOperand = null;
+												//QueryExpression operator = null;
 
-						else if(chStart == '\"' && chEnd != '\"')
-						{							
-							tempToken = token + " ";
-							isQuote=true;					
-						}
+												if(!wordStack.empty())
+												{
+													rightOperand = wordStack.pop();
+													leftOperand = wordStack.pop();
+													qExp.assignOperands(rightOperand, leftOperand);
+													wordStack.push(qExp);
+												}
+											}
+										}
+									}
 
-						else if(chStart == '\"' && chEnd == '\"')
-						{
-							wordStack.push(new Word(token));
-						}
+									else break;
+								}
+							}
+							//						else if(chStart == '\"' && chEnd != '\"')
+							//						{							
+							//							int index = stream.getIndex();
+							//							int i = 0;
+							//							tempToken = token + " ";
+							//							while(true)
+							//							{
+							//								Token tk = stream.getNext(index);
+							//								if(tk != null && !"".equals(tk.toString()))
+							//								{
+							//									if(tk.toString().contains("\""))
+							//									{
+							//										tempToken = tempToken + tk.toString();
+							//										stream.remove(index + 1);
+							//										break;
+							//									}
+							//									tempToken = tempToken + " ";
+							//									stream.remove(index + 1);
+							//								}
+							//							}
+							//							
+							//							isQuote=true;					
+							//						}
 
-						else if(chEnd == '\"' && isQuote)
-						{
-							tempToken = tempToken + token;
-							wordStack.push(new Word(tempToken));
-						}
-						
-						else if(isQuote)
-						{
-							tempToken = tempToken + token;
+							//						else if(chStart == '\"' && chEnd == '\"')
+							//						{
+							//							wordStack.push(new Word(token));
+							//						}
+
+							//						else if(chEnd == '\"' && isQuote)
+							//						{
+							//							tempToken = tempToken + token;
+							//							wordStack.push(new Word(tempToken));
+							//						}
+							//
+							//						else if(isQuote)
+							//						{
+							//							tempToken = tempToken + token;
+							//						}
 						}
 					}
+					evaluator = wordStack.pop();
 				}
 			}
 		}
@@ -178,15 +287,18 @@ public class QueryEvaluators implements QueryExpression {
 	}
 
 	@Override
-	public String queryInterpretor(Map<String, QueryExpression> queryCalculator) {
-		// TODO Auto-generated method stub
-		return null;
+	public String queryInterpretor() //Map<String, QueryExpression> queryCalculator
+	{
+		String preAnswer = evaluator.queryInterpretor();
+		String postAnswer = "{" + preAnswer.substring(1,preAnswer.length()-1) + "}";
+		return postAnswer;	
 	}
 
 	@Override
 	public void assignOperands(QueryExpression rightEx, QueryExpression leftEx) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
+

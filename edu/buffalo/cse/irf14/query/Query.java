@@ -7,12 +7,7 @@ package edu.buffalo.cse.irf14.query;
  */
 public class Query {
 	
-	String strRep;
-	
-	public Query()
-	{
-		strRep="";
-	}
+	String strRep="";
 	
 	public Query(String strRep)
 	{
@@ -23,9 +18,6 @@ public class Query {
 	 * Method to convert given parsed query into string
 	 */
 	public String toString() {
-		String strRep="";
-		
-		
 		return strRep;
 	}
 }

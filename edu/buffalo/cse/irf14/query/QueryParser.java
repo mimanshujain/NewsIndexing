@@ -20,12 +20,19 @@ public class QueryParser {
 		
 		try
 		{
-			
+			return new Query(new QueryEvaluators(userQuery.trim(), defaultOperator).queryInterpretor());
 		}
 		catch(Exception e) //QueryParserException -- Need to define.?
 		{
 			
 		}
 		return null;
+	}
+	
+	public static void main(String[] args)
+	{
+		String inputQuery = "Category:War AND Author:Dutt AND Place:Baghdad AND prisoners detainees rebels		";
+		QueryEvaluators eval = new QueryEvaluators(inputQuery.trim(), "OR");
+		System.out.println(eval.queryInterpretor());
 	}
 }

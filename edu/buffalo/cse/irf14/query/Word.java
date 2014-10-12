@@ -5,16 +5,27 @@ import java.util.Map;
 public class Word implements QueryExpression {
 
 	private String wordVal;
-	
+//	private String indexType;
+//	
 	public Word(String wordVal) {
-		this.wordVal=wordVal;
+		
+		if(!wordVal.contains(":"))
+		{
+			this.wordVal = "Term:" + wordVal;
+		}
+		else
+			this.wordVal = wordVal;
 	}
 
 	@Override
-	public String queryInterpretor(Map<String, QueryExpression> queryCalculator) {
+	public void assignOperands(QueryExpression rightEx, QueryExpression leftEx) {
+		// TODO Auto-generated method stub
 		
-		
-		return null;
+	}
+
+	@Override
+	public String queryInterpretor() {
+		return wordVal;
 	}
 
 }

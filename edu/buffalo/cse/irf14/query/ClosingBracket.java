@@ -12,16 +12,15 @@ public class ClosingBracket implements QueryExpression {
 	}
 
 	@Override
-	public String queryInterpretor(Map<String, QueryExpression> queryCalculator) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
 	public void assignOperands(QueryExpression rightEx, QueryExpression leftEx)
 	{
 		rightOperand = rightEx;
 		leftOperand = leftEx;
+	}
+
+	@Override
+	public String queryInterpretor() {
+		return leftOperand.queryInterpretor() + rightOperand.queryInterpretor() + " ]";
 	}
 
 }

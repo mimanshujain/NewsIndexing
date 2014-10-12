@@ -18,18 +18,17 @@ public class AND implements QueryExpression {
 	public void setRightOperand(QueryExpression rightOperand) {
 		this.rightOperand = rightOperand;
 	}
-
-	@Override
-	public String queryInterpretor(Map<String, QueryExpression> queryCalculator) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	@Override
 	public void assignOperands(QueryExpression rightEx, QueryExpression leftEx)
 	{
 		rightOperand = rightEx;
 		leftOperand = leftEx;
+	}
+
+	@Override
+	public String queryInterpretor() {
+		return leftOperand.queryInterpretor() + " AND " + rightOperand.queryInterpretor();
 	}
 
 }
