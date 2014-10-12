@@ -54,7 +54,6 @@ public class QueryEvaluators implements QueryExpression {
 							if(chStart == '\"' && chEnd != '\"' && chEnd != ')')
 							{							
 								int index = stream.getIndex();
-								int i = 0;
 								tempToken = token + " ";
 								while(true)
 								{
@@ -75,10 +74,10 @@ public class QueryEvaluators implements QueryExpression {
 								}			
 							}
 
-							else if(chStart == '\"' && chEnd == '\"')
-							{
-								wordStack.push(new Word(token));
-							}
+//							else if(chStart == '\"' && chEnd == '\"')
+//							{
+//								wordStack.push(new Word(token));
+//							}
 
 							token = currentToken.toString();
 							matPat.reset(token);
@@ -130,6 +129,12 @@ public class QueryEvaluators implements QueryExpression {
 									}
 
 									wordStack.push(new Word(token));
+									if(operatorStack.peek() instanceof NOT)
+									{
+										QueryExpression not = operatorStack.pop();
+										not.assignOperands(wordStack.pop(), wordStack.pop());
+										wordStack.push(not);
+									}
 									isWord=true;
 								}
 							}

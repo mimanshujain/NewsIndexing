@@ -29,6 +29,7 @@ public class NOT implements QueryExpression {
 	@Override
 	public String queryInterpretor() {
 		return leftOperand.queryInterpretor() + " AND <" + rightOperand.queryInterpretor() + ">";
+//		return leftOperand.queryInterpretor() + "AND <"  + rightOperand
 	}
 
 }

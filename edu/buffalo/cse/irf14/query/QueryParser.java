@@ -2,9 +2,6 @@
  * 
  */
 package edu.buffalo.cse.irf14.query;
-
-import java.util.Stack;
-
 /**
  * @author nikhillo
  * Static parser that converts raw text to Query objects
@@ -31,7 +28,7 @@ public class QueryParser {
 	
 	public static void main(String[] args)
 	{
-		String inputQuery = "Category:War AND Author:Dutt AND Place:Baghdad AND prisoners detainees rebels		";
+		String inputQuery = "A NOT B NOT (C NOT D AND E)";
 		QueryEvaluators eval = new QueryEvaluators(inputQuery.trim(), "OR");
 		System.out.println(eval.queryInterpretor());
 	}
