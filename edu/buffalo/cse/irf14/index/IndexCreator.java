@@ -1,5 +1,6 @@
 package edu.buffalo.cse.irf14.index;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,18 +14,30 @@ import edu.buffalo.cse.irf14.analysis.TokenStream;
 public class IndexCreator implements java.io.Serializable
 {
 	private static final long serialVersionUID = 1L;
+	private static final Object[] String = null;
 	Map<Integer, Postings> termPostings;
 	Map<String, Integer> termDictionary;
 	String type;
 	int termId=0;
 	public int docCount=0;
 	transient Set<String> docIdSet;
-
+	DocumentVector docVector;
+	
+	
 	public IndexCreator(String type){
 		termPostings=new HashMap<Integer, Postings>();
 		termDictionary=new HashMap<String, Integer>();
 		docIdSet=new HashSet<String>();
 		this.type=type;
+		docVector = new DocumentVector();
+	}
+
+	public DocumentVector getDocVector() {
+		return docVector;
+	}
+
+	public void setDocVector(DocumentVector docVector) {
+		this.docVector = docVector;
 	}
 
 	public void setType(String type) {
@@ -180,5 +193,22 @@ public class IndexCreator implements java.io.Serializable
 	public int getDocCount() {
 
 		return docCount;
+	}
+	
+	public void calculateIDF(int totalDocs)
+	{
+		if(termDictionary != null && termPostings != null)
+		{
+
+			String[] str = termDictionary.keySet().toArray(new String[termDictionary.size()]);
+			for(String term : str)
+			{
+				if(termPostings.containsKey(term))
+				{
+					Postings p = termPostings.get(term);
+					p.calculateIdf(totalDocs);
+				}
+			}
+		}
 	}
 }

@@ -1,6 +1,10 @@
 package edu.buffalo.cse.irf14.query;
 
 import java.util.Map;
+import java.util.Set;
+
+import edu.buffalo.cse.irf14.index.IndexReader;
+import edu.buffalo.cse.irf14.index.IndexType;
 
 public class ClosingBracket implements QueryExpression {
 
@@ -21,6 +25,17 @@ public class ClosingBracket implements QueryExpression {
 	@Override
 	public String queryInterpretor() {
 		return leftOperand.queryInterpretor() + rightOperand.queryInterpretor() + " ]";
+	}
+
+	@Override
+	public Set<String> fetchPostings(Map<IndexType, IndexReader> fetcherMap) {
+		// TODO Auto-generated method stub
+		return rightOperand.fetchPostings(fetcherMap);
+	}
+
+	@Override
+	public String getQueryWords() {
+			return rightOperand.getQueryWords();
 	}
 
 }

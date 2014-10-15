@@ -39,21 +39,26 @@ public class IndexWriter {
 		categoyIndex = new IndexCreator(IndexType.CATEGORY.name());
 		placeIndex = new IndexCreator(IndexType.PLACE.name());
 
-		// docId=1;
 		if (indexDir != null)
 			this.indexDir = indexDir;
 		else
 			this.indexDir = "";
 	}
 
-	static String docId;
+	static int docId;
+	static DocumentVector docVector;
+	static
+	{
+		docId = 0;
+		docVector = new DocumentVector();
+	}
+	
 	String indexDir;
 
 	IndexCreator termIndex;
 	IndexCreator authorIndex;
 	IndexCreator categoyIndex;
 	IndexCreator placeIndex;
-
 	/**
 	 * Method to add the given Document to the index This method should take
 	 * care of reading the filed values, passing them through corresponding
@@ -68,7 +73,7 @@ public class IndexWriter {
 	 * @throws IOException
 	 */
 	public void addDocument(Document d) throws IndexerException {
-
+		docId++;
 		Tokenizer tokenizeFields = new Tokenizer();
 
 		TokenStream termStream;
@@ -106,7 +111,7 @@ public class IndexWriter {
 								FieldNames.CONTENT, tStream);
 						if (termAnlzr != null) {
 							while (termAnlzr.increment()) {
-							}
+							}							
 							termIndex.createIndexer(tStream, fileId);
 						}
 					}
@@ -143,6 +148,8 @@ public class IndexWriter {
 					if (type == FieldNames.CATEGORY.name()) {
 						categoyIndex.createIndexer(tStream, fileId);
 					}
+					
+					docVector.setDocumentVector(tStream, fileId);
 				}
 			}
 
@@ -162,6 +169,17 @@ public class IndexWriter {
 	 *             : In case any error occurs
 	 */
 	public void close() throws IndexerException {
+		
+		termIndex.calculateIDF(docId);
+		categoyIndex.calculateIDF(docId);
+		placeIndex.calculateIDF(docId);
+		authorIndex.calculateIDF(docId);
+		
+		termIndex.setDocVector(docVector);
+		categoyIndex.setDocVector(docVector);
+		placeIndex.setDocVector(docVector);
+		authorIndex.setDocVector(docVector);
+		
 		writeToDisk(termIndex, IndexType.TERM.name());
 		writeToDisk(categoyIndex, IndexType.CATEGORY.name());
 		writeToDisk(placeIndex, IndexType.PLACE.name());

@@ -1,6 +1,10 @@
 package edu.buffalo.cse.irf14.query;
 
 import java.util.Map;
+import java.util.Set;
+
+import edu.buffalo.cse.irf14.index.IndexReader;
+import edu.buffalo.cse.irf14.index.IndexType;
 
 public class OR implements QueryExpression {
 
@@ -31,5 +35,18 @@ public class OR implements QueryExpression {
 		
 		return leftOperand.queryInterpretor() + " OR " + rightOperand.queryInterpretor();
 		
+	}
+
+	@Override
+	public Set<String> fetchPostings(Map<IndexType, IndexReader> fetcherMap) {
+		Set<String> sLeft = leftOperand.fetchPostings(fetcherMap);
+		Set<String> sRight = rightOperand.fetchPostings(fetcherMap);
+		sLeft.addAll(sRight);
+		return sLeft;
+	}
+
+	@Override
+	public String getQueryWords() {
+		return leftOperand.getQueryWords() + "$" + rightOperand.getQueryWords();
 	}
 }

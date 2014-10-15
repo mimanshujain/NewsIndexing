@@ -1,5 +1,7 @@
 package edu.buffalo.cse.irf14.query;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,6 +9,8 @@ import java.util.regex.Pattern;
 import edu.buffalo.cse.irf14.analysis.Token;
 import edu.buffalo.cse.irf14.analysis.TokenStream;
 import edu.buffalo.cse.irf14.analysis.Tokenizer;
+import edu.buffalo.cse.irf14.index.IndexReader;
+import edu.buffalo.cse.irf14.index.IndexType;
 
 public class QueryEvaluators implements QueryExpression {
 
@@ -258,6 +262,17 @@ public class QueryEvaluators implements QueryExpression {
 	public void assignOperands(QueryExpression rightEx, QueryExpression leftEx) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Set<String> fetchPostings(Map<IndexType, IndexReader> fetcherMap) {
+		
+		return evaluator.fetchPostings(fetcherMap);
+	}
+
+	@Override
+	public String getQueryWords() {
+		return evaluator.getQueryWords();
 	}
 
 }

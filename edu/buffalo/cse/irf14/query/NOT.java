@@ -1,6 +1,10 @@
 package edu.buffalo.cse.irf14.query;
 
 import java.util.Map;
+import java.util.Set;
+
+import edu.buffalo.cse.irf14.index.IndexReader;
+import edu.buffalo.cse.irf14.index.IndexType;
 
 public class NOT implements QueryExpression {
 
@@ -29,7 +33,19 @@ public class NOT implements QueryExpression {
 	@Override
 	public String queryInterpretor() {
 		return leftOperand.queryInterpretor() + " AND <" + rightOperand.queryInterpretor() + ">";
-//		return leftOperand.queryInterpretor() + "AND <"  + rightOperand
+	}
+
+	@Override
+	public Set<String> fetchPostings(Map<IndexType, IndexReader> fetcherMap) {
+		Set<String> sLeft = leftOperand.fetchPostings(fetcherMap);
+		Set<String> sRight = rightOperand.fetchPostings(fetcherMap);
+		sLeft.removeAll(sRight);
+		return sLeft;
+	}
+
+	@Override
+	public String getQueryWords() {
+		return leftOperand.getQueryWords() + "$" + rightOperand.getQueryWords();
 	}
 
 }
