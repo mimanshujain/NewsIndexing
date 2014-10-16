@@ -48,4 +48,12 @@ public class NOT implements QueryExpression {
 		return leftOperand.getQueryWords() + "$" + rightOperand.getQueryWords();
 	}
 
+	@Override
+	public Map<Integer, Double> getQueryVector() {
+		Map<Integer, Double> leftWordVector = leftOperand.getQueryVector();
+		Map<Integer, Double> rightWordVector = leftOperand.getQueryVector();
+		leftWordVector.keySet().containsAll(rightWordVector.keySet());
+		return leftWordVector;
+	}
+
 }

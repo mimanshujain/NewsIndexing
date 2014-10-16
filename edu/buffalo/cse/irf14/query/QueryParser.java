@@ -40,10 +40,11 @@ public class QueryParser {
 
 	public static void main(String[] args)
 	{
-		String inputQuery = "(black OR blue) AND bruises";
+		String inputQuery = "Category:War AND Author:Dutt AND Place:Baghdad AND prisoners detainees";
 		QueryEvaluators eval = new QueryEvaluators(inputQuery.trim(), "OR");
-		//System.out.println(eval.queryInterpretor());
+		System.out.println(eval.queryInterpretor());
 		String queryWords = eval.getQueryWords();
+		System.out.println(queryWords.toString());
 		String indexDir = System.getProperty("Index.dir");
 		IndexReader termReader = new IndexReader(indexDir, IndexType.TERM);
 		IndexReader placeReader = new IndexReader(indexDir, IndexType.PLACE);

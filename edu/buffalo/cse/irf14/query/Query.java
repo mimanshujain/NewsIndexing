@@ -1,5 +1,7 @@
 package edu.buffalo.cse.irf14.query;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,9 +15,14 @@ import edu.buffalo.cse.irf14.index.*;
 public class Query {
 
 	QueryExpression evaluateQuery = null;
+	Map<String,Double> queryVector;
+	Set<String> docIdList;
+	
 	public Query(QueryExpression evaluateQuery)
 	{
 		this.evaluateQuery=evaluateQuery;
+		queryVector =  new HashMap<String,Double>();
+		docIdList = null;
 	}
 
 	/**
@@ -27,22 +34,27 @@ public class Query {
 		return null;
 	}
 
-	public Set<String> getDocIdSet(Map<IndexType,IndexReader> fetcherMap)
+	public  void setDocIdSet(Map<IndexType,IndexReader> fetcherMap)
 	{
 		try
 		{
 			if(evaluateQuery != null)
 			{
-				return evaluateQuery.fetchPostings(fetcherMap);
+				docIdList = evaluateQuery.fetchPostings(fetcherMap);
 			}
-			else 
-				return null;
 		}
 		catch(Exception ex)
 		{
 			ex.printStackTrace();
 		}
-		return null;
+	}
+
+	public Map<String, Double> getQueryVector() {
+		return queryVector;
+	}
+
+	private void setQueryVector(Map<String, Double> queryVector) {
+		
 	}
 
 	public String[] getQueryTerms()

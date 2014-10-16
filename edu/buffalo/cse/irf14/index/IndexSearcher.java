@@ -15,8 +15,8 @@ public class IndexSearcher {
 		return objQuery;
 	}
 
-	public String[] getQueryTerms() {
-		
+	public String[] getQueryTerms() 
+	{		
 		if(objQuery != null)
 		{
 			queryTerms = objQuery.getQueryTerms();
@@ -26,6 +26,6 @@ public class IndexSearcher {
 		
 		return queryTerms;
 	}
-
+	
 
 }

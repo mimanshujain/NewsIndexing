@@ -2,6 +2,7 @@ package edu.buffalo.cse.irf14;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,12 @@ public class SearchRunner {
 	private char mode;
 	PrintStream stream;
 	IndexSearcher searcher;
-
+	Map<IndexType,IndexReader> fetcher;
+	IndexReader termReader;
+	IndexReader placeReader;
+	IndexReader  authReader;
+	IndexReader catReader;
+	
 	/**
 	 * Default (and only public) constructor
 	 * @param indexDir : The directory where the index resides
@@ -39,13 +45,22 @@ public class SearchRunner {
 
 		System.setProperty("Index.dir", indexDir);
 		System.setProperty("corpus.dir", corpusDir);
-		indexDir = System.getProperty("Index.dir");
 
 		searcher = null;
 
 		this.mode = mode;
 		this .stream = stream;
 
+		fetcher = new HashMap<IndexType, IndexReader>();
+		termReader = new IndexReader(indexDir, IndexType.TERM);
+		placeReader = new IndexReader(indexDir, IndexType.PLACE);
+		authReader= new IndexReader(indexDir, IndexType.AUTHOR);
+		catReader = new IndexReader(indexDir, IndexType.CATEGORY);
+		
+		fetcher.put(IndexType.TERM, termReader);
+		fetcher.put(IndexType.PLACE, placeReader);
+		fetcher.put(IndexType.CATEGORY, catReader);
+		fetcher.put(IndexType.AUTHOR, authReader);
 	}
 
 	/**
@@ -58,8 +73,11 @@ public class SearchRunner {
 		objQuery = QueryParser.parse(userQuery, "OR");
 
 		if(objQuery != null)
-			searcher = new IndexSearcher(objQuery);
-
+		{
+			searcher = new IndexSearcher(objQuery);		
+		}
+		
+		
 	}
 
 	/**

@@ -13,11 +13,11 @@ public class Word implements QueryExpression {
 	private String wordVal;
 	private String indexType;
 	private Map<String, Integer> postings;
-	
+	IndexReader reader;
 	public Word(String wordVal) {
-	
+
 		this.wordVal =  wordVal;
-		
+
 		if(!wordVal.contains(":"))
 		{
 			indexType = "Term";
@@ -29,19 +29,20 @@ public class Word implements QueryExpression {
 			this.wordVal = wordVal.substring(index+1, wordVal.length());
 		}
 		postings = null;
+		reader = null;
 	}
 
 	@Override
 	public void assignOperands(QueryExpression rightEx, QueryExpression leftEx) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public String queryInterpretor() {
 		return indexType + ":" + wordVal;
 	}
-	
+
 	public Set<String> fetchPostings(Map<IndexType,IndexReader> fetcherMap)
 	{
 		try
@@ -63,13 +64,13 @@ public class Word implements QueryExpression {
 			{
 				reader = fetcherMap.get(IndexType.PLACE);
 			}
-				
+
 			if(reader != null)
 			{
 				postings = reader.getPostings(wordVal);
 				return postings.keySet();
 			}
-			
+
 		}
 		catch(Exception ex)
 		{
@@ -85,6 +86,22 @@ public class Word implements QueryExpression {
 	@Override
 	public String getQueryWords() {
 		return wordVal;
+	}
+
+	@Override
+	public Map<Integer, Double> getQueryVector() {
+		try
+		{
+			if(reader != null)
+			{
+				return reader.getTemVector(wordVal);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

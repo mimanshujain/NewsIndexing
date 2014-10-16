@@ -38,4 +38,10 @@ public class OpeningBracket implements QueryExpression {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Map<Integer, Double> getQueryVector() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

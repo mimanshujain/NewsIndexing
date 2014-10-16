@@ -96,6 +96,7 @@ public class IndexWriter {
 				throw new IndexerException();
 			}
 		}
+		docVector.normalizeVector(d.getField(FieldNames.FILEID)[0]);
 	}
 
 	private void analyzeAndFiltering(TokenStream tStream, String type,

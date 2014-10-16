@@ -1,6 +1,9 @@
 package edu.buffalo.cse.irf14.index;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -9,10 +12,10 @@ import edu.buffalo.cse.irf14.analysis.TokenStream;
 
 public class DocumentVector {
 
-	Map<String, Map<String,Integer>> documentVector;
+	Map<String, Map<String,Double>> documentVector;
 
 	public DocumentVector() {
-		documentVector = new HashMap<String, Map<String,Integer>>();
+		documentVector = new HashMap<String, Map<String,Double>>();
 	}
 
 	public void setDocumentVector(TokenStream tStream, String docId) throws IndexerException
@@ -29,10 +32,10 @@ public class DocumentVector {
 				{
 					if(documentVector.containsKey(docId))
 					{
-						Map<String, Integer> vector = documentVector.get(docId);
+						Map<String, Double> vector = documentVector.get(docId);
 						if(vector != null)
 						{
-							int termFreq=1;
+							double termFreq=1;
 							if(vector.containsKey(term))
 							{
 								termFreq = vector.get(term);
@@ -50,8 +53,8 @@ public class DocumentVector {
 					}
 					else
 					{
-						Map<String, Integer> vector = new HashMap<String, Integer>();
-						vector.put(term, 1);
+						Map<String, Double> vector = new HashMap<String, Double>();
+						vector.put(term, 1.0);
 						try {
 							documentVector.put(docId, vector);				
 						}
@@ -61,8 +64,40 @@ public class DocumentVector {
 						}						
 					}
 				}
+			}		
+			normalizeVector(docId);
+		}
+	}
+	
+	public void normalizeVector(String docId) throws IndexerException
+	{
+		if(documentVector != null )
+		{
+			Map<String, Double> vector = documentVector.get(docId);
+			Iterator<Double> it = vector.values().iterator();
+			double squareTotal = 0.0;
+			
+			while(it.hasNext()){
+				squareTotal = squareTotal + Math.pow(it.next(), 2);
+			}
+			Iterator<String> normalizeIt = vector.keySet().iterator();
+			
+			double rootOfTotal = Math.sqrt(squareTotal);
+			
+			while(normalizeIt.hasNext())
+			{
+				String key = normalizeIt.next();
+				if(vector.containsKey(key))
+				{
+					vector.put(key, (vector.get(key)/rootOfTotal));
+				}
 			}
 		}
+	}
+
+	private void While(boolean hasNext) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

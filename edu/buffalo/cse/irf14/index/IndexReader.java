@@ -208,5 +208,9 @@ public class IndexReader {
 		return o;
 	}
 
+	public Map<Integer, Double> getTemVector(String term)
+	{
+		return objCreator.getTemVector(term);
+	}
 
 }

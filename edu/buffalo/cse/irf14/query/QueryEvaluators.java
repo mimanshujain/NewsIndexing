@@ -15,7 +15,7 @@ import edu.buffalo.cse.irf14.index.IndexType;
 public class QueryEvaluators implements QueryExpression {
 
 	QueryExpression evaluator;
-
+	private static int counter = 0;
 	public QueryEvaluators(String inputQuery, String defaultOperator) {
 
 		try
@@ -24,10 +24,12 @@ public class QueryEvaluators implements QueryExpression {
 
 				Tokenizer tokenStart = new Tokenizer();
 				TokenStream stream =  tokenStart.consume(inputQuery);
+				preProcessQuery(stream);
+				stream.reset();
 				Token closingToken = new Token();
 				closingToken.setTermText(" )");
 				stream.setTokenStreamList(closingToken);
-				
+
 				if(stream != null)
 				{
 					Stack<QueryExpression> wordStack = new Stack<QueryExpression>();
@@ -77,11 +79,6 @@ public class QueryEvaluators implements QueryExpression {
 									}
 								}			
 							}
-
-//							else if(chStart == '\"' && chEnd == '\"')
-//							{
-//								wordStack.push(new Word(token));
-//							}
 
 							token = currentToken.toString();
 							matPat.reset(token);
@@ -204,7 +201,7 @@ public class QueryEvaluators implements QueryExpression {
 							{
 								QueryExpression closing = new ClosingBracket();
 								QueryExpression qExp;
-								
+
 								while(true)
 								{
 									if(!operatorStack.empty())
@@ -250,6 +247,48 @@ public class QueryEvaluators implements QueryExpression {
 		}
 	}
 
+	private void preProcessQuery(TokenStream tStream)
+	{
+		if(tStream != null)
+		{
+			counter = 0;
+			int count = 0;
+			
+			while (tStream.hasNext()) 
+			{					
+				Token tk = tStream.next();
+				if(tk != null)
+				{
+					if(!tk.toString().toUpperCase().equals(OperatorType.AND.name()) && !tk.toString().toUpperCase().equals(OperatorType.OR.name())
+							&& !tk.toString().toUpperCase().equals(OperatorType.NOT.name()))
+					{
+						counter++;		
+						count = counter;
+					}
+					else 
+						counter = 0;
+				}
+
+				if(counter == 0 && count > 2 && tStream.hasNext())
+				{
+					int index = tStream.getIndex();
+					Token t = tStream.getPrevious(index-count-1);
+					t.setTermText("("+t.toString());
+					t = tStream.getPrevious(index-2);
+					t.setTermText(t.toString()+")");
+				}
+				else if(counter > 2 && !tStream.hasNext())
+				{
+					int index = tStream.getIndex();
+					Token t = tStream.getPrevious(index-count);
+					t.setTermText("("+t.toString());
+					t = tStream.getPrevious(index-1);
+					t.setTermText(t.toString()+")");
+				}
+			}
+		}
+	}
+
 	@Override
 	public String queryInterpretor() //Map<String, QueryExpression> queryCalculator
 	{
@@ -266,13 +305,19 @@ public class QueryEvaluators implements QueryExpression {
 
 	@Override
 	public Set<String> fetchPostings(Map<IndexType, IndexReader> fetcherMap) {
-		
+
 		return evaluator.fetchPostings(fetcherMap);
 	}
 
 	@Override
 	public String getQueryWords() {
 		return evaluator.getQueryWords();
+	}
+
+	@Override
+	public Map<Integer, Double> getQueryVector() {
+		// TODO Auto-generated method stub
+		return evaluator.getQueryVector();
 	}
 
 }

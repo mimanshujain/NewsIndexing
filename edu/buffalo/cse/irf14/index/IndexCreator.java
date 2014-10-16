@@ -29,7 +29,7 @@ public class IndexCreator implements java.io.Serializable
 		termDictionary=new HashMap<String, Integer>();
 		docIdSet=new HashSet<String>();
 		this.type=type;
-		docVector = new DocumentVector();
+		docVector = null;
 	}
 
 	public DocumentVector getDocVector() {
@@ -48,6 +48,32 @@ public class IndexCreator implements java.io.Serializable
 		return type;
 	}
 
+	public Map<Integer, Double> getTemVector(String term)
+	{
+		Map<Integer, Double> termVector = new HashMap<Integer, Double>();
+		if(termDictionary!=null)
+		{
+			if(termDictionary.containsKey(term))
+			{
+				int key=termDictionary.get(term);
+				
+				if(termPostings!=null)
+				{
+					if(termPostings.containsKey(key))
+					{
+						Postings p=termPostings.get(key);
+						if(p!=null)
+						{
+							termVector.put(key, p.getIdf());
+							return termVector;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	public Map<String, Integer> getTermDictionary(String term) {
 
 		if(termDictionary!=null)
@@ -199,7 +225,6 @@ public class IndexCreator implements java.io.Serializable
 	{
 		if(termDictionary != null && termPostings != null)
 		{
-
 			String[] str = termDictionary.keySet().toArray(new String[termDictionary.size()]);
 			for(String term : str)
 			{
