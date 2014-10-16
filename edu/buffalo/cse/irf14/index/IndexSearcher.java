@@ -1,5 +1,7 @@
 package edu.buffalo.cse.irf14.index;
 
+import java.util.Map;
+
 import edu.buffalo.cse.irf14.query.Query;
 
 public class IndexSearcher {
@@ -27,5 +29,8 @@ public class IndexSearcher {
 		return queryTerms;
 	}
 	
-
+	public void executeQuery(Map<IndexType,IndexReader> fetcherMap)
+	{
+		objQuery.executeQuery(fetcherMap);
+	}
 }

@@ -112,8 +112,18 @@ public class IndexCreator implements java.io.Serializable
 			{
 				for(Token tk : tokenStreamList)
 				{
-					makePosting(tk.toString(), docId);
-				}
+					String[] strBreakMultiChar = tk.toString().split(" ");
+					if(strBreakMultiChar.length > 1)
+					{
+						makePosting(tk.toString(), docId);
+						for(String str : strBreakMultiChar)
+						{
+							makePosting(str, docId);
+						}
+					}
+					else
+						makePosting(tk.toString(), docId);
+				}				
 			}
 		}
 		catch(Exception ex)

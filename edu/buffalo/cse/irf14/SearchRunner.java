@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.buffalo.cse.irf14.index.DocumentVector;
 import edu.buffalo.cse.irf14.index.IndexCreator;
 import edu.buffalo.cse.irf14.index.IndexReader;
 import edu.buffalo.cse.irf14.index.IndexSearcher;
@@ -32,7 +33,7 @@ public class SearchRunner {
 	IndexReader placeReader;
 	IndexReader  authReader;
 	IndexReader catReader;
-	
+	DocumentVector docVector;
 	/**
 	 * Default (and only public) constructor
 	 * @param indexDir : The directory where the index resides
@@ -45,7 +46,7 @@ public class SearchRunner {
 
 		System.setProperty("Index.dir", indexDir);
 		System.setProperty("corpus.dir", corpusDir);
-
+		
 		searcher = null;
 
 		this.mode = mode;
@@ -61,6 +62,7 @@ public class SearchRunner {
 		fetcher.put(IndexType.PLACE, placeReader);
 		fetcher.put(IndexType.CATEGORY, catReader);
 		fetcher.put(IndexType.AUTHOR, authReader);
+		docVector = termReader.getDocVector();
 	}
 
 	/**
@@ -72,11 +74,11 @@ public class SearchRunner {
 
 		objQuery = QueryParser.parse(userQuery, "OR");
 
-		if(objQuery != null)
+		if(objQuery != null && fetcher != null)
 		{
-			searcher = new IndexSearcher(objQuery);		
+			searcher = new IndexSearcher(objQuery);
+			searcher.executeQuery(fetcher);
 		}
-		
 		
 	}
 

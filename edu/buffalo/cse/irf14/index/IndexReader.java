@@ -172,6 +172,10 @@ public class IndexReader {
 		return null;
 	}
 
+	public DocumentVector getDocVector() {
+		return objCreator.getDocVector();
+	}
+	
 	/**
 	 * Method to implement a simple boolean AND query on the given index
 	 * @param terms The ordered set of terms to AND, similar to getPostings()

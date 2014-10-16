@@ -1,7 +1,5 @@
 package edu.buffalo.cse.irf14.index;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,8 +8,13 @@ import java.util.Map;
 import edu.buffalo.cse.irf14.analysis.Token;
 import edu.buffalo.cse.irf14.analysis.TokenStream;
 
-public class DocumentVector {
+public class DocumentVector implements java.io.Serializable
+{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Map<String, Map<String,Double>> documentVector;
 
 	public DocumentVector() {
@@ -64,8 +67,7 @@ public class DocumentVector {
 						}						
 					}
 				}
-			}		
-			normalizeVector(docId);
+			}					
 		}
 	}
 	

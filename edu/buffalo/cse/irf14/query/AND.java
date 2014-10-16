@@ -5,7 +5,6 @@ import java.util.Set;
 
 import edu.buffalo.cse.irf14.index.IndexReader;
 import edu.buffalo.cse.irf14.index.IndexType;
-import edu.buffalo.cse.irf14.index.Postings;
 
 public class AND implements QueryExpression {
 

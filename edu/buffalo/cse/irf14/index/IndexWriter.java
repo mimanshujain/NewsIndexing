@@ -177,9 +177,9 @@ public class IndexWriter {
 		authorIndex.calculateIDF(docId);
 		
 		termIndex.setDocVector(docVector);
-		categoyIndex.setDocVector(docVector);
-		placeIndex.setDocVector(docVector);
-		authorIndex.setDocVector(docVector);
+//		categoyIndex.setDocVector(docVector);
+//		placeIndex.setDocVector(docVector);
+//		authorIndex.setDocVector(docVector);
 		
 		writeToDisk(termIndex, IndexType.TERM.name());
 		writeToDisk(categoyIndex, IndexType.CATEGORY.name());

@@ -41,7 +41,12 @@ public class OR implements QueryExpression {
 	public Set<String> fetchPostings(Map<IndexType, IndexReader> fetcherMap) {
 		Set<String> sLeft = leftOperand.fetchPostings(fetcherMap);
 		Set<String> sRight = rightOperand.fetchPostings(fetcherMap);
-		sLeft.addAll(sRight);
+		String[] rightElements = sRight.toArray(new String[sRight.size()]);
+		
+		for(String str : rightElements)
+		{
+			sLeft.add(str);			
+		}
 		return sLeft;
 	}
 
