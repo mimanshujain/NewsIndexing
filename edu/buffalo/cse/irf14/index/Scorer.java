@@ -67,10 +67,16 @@ public class Scorer {
 								{
 									double freq = result.get(docId);
 									freq = freq + docProdValue;
+									if(freq > 1)
+										freq = 1;
 									result.put(docId, freq);
 								}
 								else
+								{
+									if(docProdValue > 1)
+										docProdValue = 1;
 									result.put(docId, docProdValue);
+								}
 							}						 
 						}
 					}			

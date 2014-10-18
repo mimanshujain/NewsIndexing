@@ -51,7 +51,7 @@ public class IndexCreator implements java.io.Serializable
 		return type;
 	}
 
-	public Map<String, Double> getTemVector(String term, float weight)
+	public Map<String, Double> getTemVector(String term, double weight)
 	{
 		Map<String, Double> termVector = new HashMap<String, Double>();
 		if(termDictionary!=null)
@@ -115,7 +115,7 @@ public class IndexCreator implements java.io.Serializable
 			{
 				for(Token tk : tokenStreamList)
 				{
-					if(tk.toString().contains("laser printers"))
+					if(tk.toString().contains("adob") || tk.toString().contains("Adobe"))
 					{
 						System.out.println(tk.toString());
 					}

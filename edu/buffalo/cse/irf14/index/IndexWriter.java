@@ -102,6 +102,7 @@ public class IndexWriter {
 	private void analyzeAndFiltering(TokenStream tStream, String type,
 			String fileId) throws IndexerException {
 		AnalyzerFactory factoryObj = AnalyzerFactory.getInstance();
+		double weight = 1;
 		if (factoryObj != null) {
 			try {
 				if (tStream != null) {
@@ -150,7 +151,13 @@ public class IndexWriter {
 						categoyIndex.createIndexer(tStream, fileId);
 					}
 					
-					docVector.setDocumentVector(tStream, fileId);
+					if(type.equals(FieldNames.TITLE.name()))
+						weight = 4;
+					else if(type.equals(FieldNames.AUTHOR.name()) || type.equals(FieldNames.CATEGORY.name())
+							|| type.equals(FieldNames.PLACE.name()))
+						weight = 100
+						;
+					docVector.setDocumentVector(tStream, fileId, weight);
 				}
 			}
 

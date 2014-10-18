@@ -212,7 +212,7 @@ public class IndexReader {
 		return o;
 	}
 
-	public Map<String, Double> getTemVector(String term, float weight)
+	public Map<String, Double> getTemVector(String term, double weight)
 	{
 		return objCreator.getTemVector(term,weight);
 	}

@@ -257,7 +257,7 @@ public class Word implements QueryExpression {
 					}
 					else
 					{
-						tempResult = reader.getTemVector(term , counter/3);
+						tempResult = reader.getTemVector(term , counter/1.2);
 						if(tempResult != null)
 						{
 							results.putAll(tempResult);

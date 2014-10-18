@@ -21,7 +21,7 @@ public class DocumentVector implements java.io.Serializable
 		documentVector = new HashMap<String, Map<String,Double>>();
 	}
 
-	public void setDocumentVector(TokenStream tStream, String docId) throws IndexerException
+	public void setDocumentVector(TokenStream tStream, String docId, double weight) throws IndexerException
 	{
 		if(tStream != null)
 		{
@@ -31,7 +31,7 @@ public class DocumentVector implements java.io.Serializable
 			{
 				String term = token.toString();
 				
-				if(term.contains("laser"))
+				if(term.contains("adob") || term.contains("Adobe"))
 				{
 					System.out.println(term);
 				}
@@ -43,16 +43,16 @@ public class DocumentVector implements java.io.Serializable
 						Map<String, Double> vector = documentVector.get(docId);
 						if(vector != null)
 						{
-							double termFreq=1;
+							double termFreq=weight;
 							if(vector.containsKey(term))
 							{
 								termFreq = vector.get(term);
-								termFreq = termFreq + 1;								
+								termFreq = termFreq + weight;								
 							}
 							updateVector(term, vector, termFreq);
 							documentVector.put(docId, vector);
 							
-							updateMultiWord(term, vector);
+							updateMultiWord(term, vector, weight);
 						}
 					}
 					else
@@ -60,7 +60,7 @@ public class DocumentVector implements java.io.Serializable
 						Map<String, Double> vector = new HashMap<String, Double>();
 						vector.put(term, 1.0);
 						
-						updateMultiWord(term, vector);
+						updateMultiWord(term, vector, weight);
 						
 						try {
 							documentVector.put(docId, vector);				
@@ -75,17 +75,17 @@ public class DocumentVector implements java.io.Serializable
 		}
 	}
 
-	private void updateMultiWord(String term, Map<String, Double> vector) {
+	private void updateMultiWord(String term, Map<String, Double> vector, double weight) {
 		String[] strBreakMultiChar = term.split(" ");
 		if(strBreakMultiChar.length > 1)
 		{
-			double subTermFreq = 1;
+			double subTermFreq = weight;
 			for(String str : strBreakMultiChar)
 			{
 				if(vector.containsKey(str))
 				{
 					subTermFreq = vector.get(str);
-					subTermFreq = subTermFreq + 1;											
+					subTermFreq = subTermFreq + weight;											
 				}								
 				updateVector(str, vector, subTermFreq);
 			}

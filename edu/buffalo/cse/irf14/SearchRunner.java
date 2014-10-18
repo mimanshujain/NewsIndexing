@@ -3,6 +3,7 @@ package edu.buffalo.cse.irf14;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -83,7 +84,15 @@ public class SearchRunner {
 		}
 		Scorer score = new Scorer(ScoringModel.TFIDF);
 		TreeMap<String, Double> relevancyScore = score.getOrderedDocuments(objQuery, docVector);
-		System.out.println(relevancyScore.toString());
+		
+		Iterator<String> iterDocId = relevancyScore.keySet().iterator();
+		
+		while(iterDocId.hasNext())
+		{
+			String docId = iterDocId.next();
+			
+			System.out.println("Document Id:: " + docId + "  Score:: "  + relevancyScore.get(docId));
+		}
 	}
 
 	/**
