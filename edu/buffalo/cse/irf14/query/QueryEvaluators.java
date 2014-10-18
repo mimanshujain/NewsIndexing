@@ -315,9 +315,9 @@ public class QueryEvaluators implements QueryExpression {
 	}
 
 	@Override
-	public Map<Integer, Double> getQueryVector() {
+	public Map<String, Double> getQueryVector(Map<IndexType,IndexReader> fetcherMap) {
 		// TODO Auto-generated method stub
-		return evaluator.getQueryVector();
+		return evaluator.getQueryVector(fetcherMap);
 	}
 
 }

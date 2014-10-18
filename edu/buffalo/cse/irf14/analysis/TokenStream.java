@@ -22,6 +22,12 @@ public class TokenStream implements Iterator<Token> {
 	int dummyIndex;
 	List<Token> tokenStreamList;
 
+	
+	public int sizeOfStream()
+	{
+		return tokenStreamList.size();
+	}
+	
 	public TokenStream() {
 		tokenStreamList = new ArrayList<Token>();
 		index = 0;

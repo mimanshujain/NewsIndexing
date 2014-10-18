@@ -21,11 +21,10 @@ public class CapitalizationFilter extends TokenFilter {
 		checkAllCapital=Pattern.compile(allCapital);
 		checkCapitalWithDots=Pattern.compile(allCapitalWithDots);
 	}
-	//^[A-Z][a-zA-Z0-9-,]?
-	//[A-Z]+
-	private static String firstCapital; 			//="[A-Z]{1}(.*)";
-	private static String allCapital	;			//="[A-Z\\,\\-0-9]+";
-	private static String allCapitalWithDots;		//="[A-Z\\,\\-0-9\\.]+";
+
+	private static String firstCapital; 			
+	private static String allCapital	;			
+	private static String allCapitalWithDots;	
 
 	private Pattern checkFirstCapital; 
 	private Pattern checkAllCapital; 
@@ -34,8 +33,7 @@ public class CapitalizationFilter extends TokenFilter {
 	private Matcher matchFirstCapital=null;
 	private Matcher matchAllCapital=null;
 	private Matcher matchCapitalWithDots=null;
-	//	private nextValue;
-	//	private static final String ="[A-Z.]+";
+
 
 	static {
 		firstCapital="^[A-Z][^A-Z]+";
@@ -49,6 +47,8 @@ public class CapitalizationFilter extends TokenFilter {
 		{			
 			if(tStream.hasNext())
 			{
+				if(tStream.sizeOfStream() == 1) return false;
+				
 				Token tk=tStream.next();
 
 				if(tk==null) return tStream.hasNext();
@@ -57,10 +57,8 @@ public class CapitalizationFilter extends TokenFilter {
 				String transitionalString=tempToken;
 				String previousTokenString="";
 				Token token;
-
+				
 				if (tempToken!=null && !"".equals(tempToken) && !tempToken.equals(tempToken.toLowerCase())) {
-
-					//if(tempToken.equals(tempToken.toLowerCase())) return tStream.hasNext();
 
 					matchFirstCapital=checkFirstCapital.matcher(tempToken);
 					matchCapitalWithDots=checkCapitalWithDots.matcher(tempToken);
@@ -95,21 +93,16 @@ public class CapitalizationFilter extends TokenFilter {
 							else
 							{
 								transitionalString=givePreviousUpper(transitionalString, previousTokenString);
-
 								tk.setTermText(transitionalString);
-
 							}
 						}
 						else
 						{
-							//tempToken=tempToken.toLowerCase();
 							tempToken=transitionalString.toLowerCase();
 							tk.setTermText(tempToken);
 						}
-						//return tStream.hasNext();
 					}
 					else if(matchAllCapital.matches() || matchCapitalWithDots.matches())
-						//					else if(tempToken.matches(allCapital) || tempToken.matches(allCapitalWithDots))
 					{
 						if(tempToken.length()>1)
 						{
@@ -139,7 +132,6 @@ public class CapitalizationFilter extends TokenFilter {
 							tk.setTermText(tempToken);
 						}
 
-						//return tStream.hasNext();
 					}
 
 					return tStream.hasNext();
@@ -168,9 +160,6 @@ public class CapitalizationFilter extends TokenFilter {
 		}
 		else
 			return currentValue;
-		//		}
-		//		else
-		//			return currentValue;
 
 		return currentValue;
 	}
@@ -200,7 +189,6 @@ public class CapitalizationFilter extends TokenFilter {
 	}
 	@Override
 	public TokenStream getStream() {
-		// TODO Auto-generated method stub
 		return tStream;
 	}
 

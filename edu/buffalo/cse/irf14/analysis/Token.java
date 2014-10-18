@@ -13,12 +13,19 @@ package edu.buffalo.cse.irf14.analysis;
  */
 public class Token {
 	//The backing string representation -- can contain extraneous information
+	
+	public Token()
+	{
+		termText = "";
+	}
+	
+	public Token(String termText)
+	{
+		setTermText(termText);
+	}
+	
 	private String termText;
 	
-	//Newely Added
-//	private int termId;
-//	private int docFrequency;
-//	private int totalFrequency;
 	private boolean isThisDate=false, isTime=false;
 	
 	public boolean isTime() {
@@ -35,9 +42,7 @@ public class Token {
 
 	//The char array backing termText
 	private char[] termBuffer;
-	
-	//public String doc;
-	
+
 	/**
 	 * Method to set the termText to given text.
 	 * This is a sample implementation and you CAN change this
@@ -111,8 +116,6 @@ public class Token {
 	 */
 	@Override
 	public String toString() {
-		//TODO: YOU MUST IMPLEMENT THIS METHOD
-		
 		return termText;
 	}
 	

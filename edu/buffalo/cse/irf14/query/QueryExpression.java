@@ -10,6 +10,6 @@ public interface QueryExpression {
 	public String queryInterpretor();
 	public void assignOperands(QueryExpression rightEx, QueryExpression leftEx);
 	public Set<String> fetchPostings(Map<IndexType,IndexReader> fetcherMap);
-	public Map<Integer, Double> getQueryVector();
+	public Map<String, Double> getQueryVector(Map<IndexType,IndexReader> fetcherMap);
 	public String getQueryWords();
 }

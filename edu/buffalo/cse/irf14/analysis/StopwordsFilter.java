@@ -27,6 +27,7 @@ public class StopwordsFilter extends TokenFilter {
 			{
 				Token tk=tStream.next();
 				String tempToken = tk.getTermText();
+
 				if (tempToken!=null && !"".equals(tempToken)) {
 //					List<String>lst= 
 					if(Arrays.asList(stopWordsList).contains(tempToken))

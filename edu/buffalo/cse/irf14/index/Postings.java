@@ -9,6 +9,10 @@ public class Postings implements java.io.Serializable
 
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4789969057481055848L;
 	Integer totalFreq;
 	int collectionFreq;
 	int docFreq;

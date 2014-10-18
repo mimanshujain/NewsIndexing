@@ -39,8 +39,8 @@ public class ClosingBracket implements QueryExpression {
 	}
 
 	@Override
-	public Map<Integer, Double> getQueryVector() {
-		return rightOperand.getQueryVector();
+	public Map<String, Double> getQueryVector(Map<IndexType,IndexReader> fetcherMap) {
+		return rightOperand.getQueryVector(fetcherMap);
 	}
 
 }

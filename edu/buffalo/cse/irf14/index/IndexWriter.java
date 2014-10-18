@@ -143,7 +143,7 @@ public class IndexWriter {
 							while (termAnlzr.increment()) {
 							}
 						}
-						// termIndex.createIndexer(tStream, fileId);
+						termIndex.createIndexer(tStream, fileId);
 					}
 
 					if (type == FieldNames.CATEGORY.name()) {

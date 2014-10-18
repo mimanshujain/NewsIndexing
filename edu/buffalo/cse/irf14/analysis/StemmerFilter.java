@@ -33,6 +33,7 @@ public class StemmerFilter extends TokenFilter {
 						st.add(tempToken.toCharArray(), tempToken.toCharArray().length);
 						st.stem();
 						tempToken=st.toString();
+
 						if("".equals(tempToken.trim())) {
 							tStream.remove();
 						}

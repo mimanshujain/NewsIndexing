@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import edu.buffalo.cse.irf14.index.DocumentVector;
 import edu.buffalo.cse.irf14.index.IndexCreator;
@@ -12,6 +13,7 @@ import edu.buffalo.cse.irf14.index.IndexReader;
 import edu.buffalo.cse.irf14.index.IndexSearcher;
 import edu.buffalo.cse.irf14.index.IndexType;
 import edu.buffalo.cse.irf14.index.Postings;
+import edu.buffalo.cse.irf14.index.Scorer;
 import edu.buffalo.cse.irf14.query.Query;
 import edu.buffalo.cse.irf14.query.QueryParser;
 
@@ -79,7 +81,9 @@ public class SearchRunner {
 			searcher = new IndexSearcher(objQuery);
 			searcher.executeQuery(fetcher);
 		}
-		
+		Scorer score = new Scorer(ScoringModel.TFIDF);
+		TreeMap<String, Double> relevancyScore = score.getOrderedDocuments(objQuery, docVector);
+		System.out.println(relevancyScore.toString());
 	}
 
 	/**

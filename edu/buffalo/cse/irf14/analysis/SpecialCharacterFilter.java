@@ -54,6 +54,7 @@ private Pattern checkSpl=null;
 				if(tk!=null)
 				{
 					String tempToken = tk.getTermText();
+
 					if (!tempToken.equals(null) && !tempToken.equals("") && !tempToken.matches("[a-zA-Z0-9]*")) {
 						matchSplCharacter = checkSplChrMinusMathSym.matcher(tempToken.trim());
 						String temp = "";

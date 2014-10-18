@@ -44,16 +44,15 @@ public class SymbolFilter extends TokenFilter {
 			{ "why's", "why is" }, { "ma'am", "madam" },
 			{ "Y'all", "You all" }, { "Y'all'd've", "You all should have" } };
 
-	//	private static final String removePunc = "(.*)(\\b)(.*)";
-	private static  String removePunc ;//= "(.*[^!?.]+)(.*)";
-	private static  String expandApos;// = "(.*)(\\'.*)";
-	private static  String alphaAlpha;// = "^([A-Za-z]+)([-]+)([A-Za-z]+)$";
-	private static  String alphaNum;// = "([a-zA-Z]+)(\\-)([0-9]+)";
-	private static  String numAlpha;// = "([0-9]+)(\\-)([a-zA-Z]+)";
-	private static  String expandWithN;// = "(.*)(n)(\\'.*)";
-	private static  String doubleAposwithN;// = "(.*)(n)(\\'.*)(\\'.*)";
-	private static  String doubleAposwithD;// = "(.*)(\\'d*)(\\'.*)";
-	private static  String onlySpecial;//="([a-zA-Z0-9]+)";
+	private static  String removePunc ;
+	private static  String expandApos;
+	private static  String alphaAlpha;
+	private static  String alphaNum;
+	private static  String numAlpha;
+	private static  String expandWithN;
+	private static  String doubleAposwithN;
+	private static  String doubleAposwithD;
+	private static  String onlySpecial;
 	private  static String doubleSpecial;
 
 	static
@@ -69,7 +68,6 @@ public class SymbolFilter extends TokenFilter {
 	}
 	String contractionWord = "";
 
-//	private Pattern checkSymbol = null;
 	private Pattern checkPunc=null;
 	private Pattern checkExpandApos=null;
 	private Pattern checkAlphaAlpha=null;
@@ -91,6 +89,7 @@ public class SymbolFilter extends TokenFilter {
 				if(tk!=null)
 				{
 					String tempToken = tk.getTermText();	
+
 					if (!tempToken.equals(null) && !tk.getTermText().isEmpty()) {	
 
 						//checkSymbol = Pattern.compile(removePunc);

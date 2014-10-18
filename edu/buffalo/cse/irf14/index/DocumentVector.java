@@ -30,7 +30,12 @@ public class DocumentVector implements java.io.Serializable
 			for(Token token : tokenStreamList)
 			{
 				String term = token.toString();
-
+				
+				if(term.contains("laser"))
+				{
+					System.out.println(term);
+				}
+				
 				if(documentVector != null && term != null)
 				{
 					if(documentVector.containsKey(docId))
@@ -44,20 +49,19 @@ public class DocumentVector implements java.io.Serializable
 								termFreq = vector.get(term);
 								termFreq = termFreq + 1;								
 							}
-							try {
-								vector.put(term, termFreq);				
-							}
-							catch(NullPointerException e)
-							{
-								e.printStackTrace();
-							}
+							updateVector(term, vector, termFreq);
 							documentVector.put(docId, vector);
+							
+							updateMultiWord(term, vector);
 						}
 					}
 					else
 					{
 						Map<String, Double> vector = new HashMap<String, Double>();
 						vector.put(term, 1.0);
+						
+						updateMultiWord(term, vector);
+						
 						try {
 							documentVector.put(docId, vector);				
 						}
@@ -68,6 +72,34 @@ public class DocumentVector implements java.io.Serializable
 					}
 				}
 			}					
+		}
+	}
+
+	private void updateMultiWord(String term, Map<String, Double> vector) {
+		String[] strBreakMultiChar = term.split(" ");
+		if(strBreakMultiChar.length > 1)
+		{
+			double subTermFreq = 1;
+			for(String str : strBreakMultiChar)
+			{
+				if(vector.containsKey(str))
+				{
+					subTermFreq = vector.get(str);
+					subTermFreq = subTermFreq + 1;											
+				}								
+				updateVector(str, vector, subTermFreq);
+			}
+		}
+	}
+
+	private void updateVector(String term, Map<String, Double> vector,
+			double termFreq) {
+		try {
+			vector.put(term, termFreq);				
+		}
+		catch(NullPointerException e)
+		{
+			e.printStackTrace();
 		}
 	}
 	
@@ -95,6 +127,16 @@ public class DocumentVector implements java.io.Serializable
 				}
 			}
 		}
+	}
+	
+	public Map<String, Double>getDocVector(String docId)
+	{
+		if(documentVector.containsKey(docId))
+		{
+			return documentVector.get(docId);
+		}
+		else
+			return null;
 	}
 
 	private void While(boolean hasNext) {

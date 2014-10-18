@@ -50,7 +50,7 @@ public class Runner {
 		String docId="";
 		
 		try {
-			//Traversing all the sub directories
+//			//Traversing all the sub directories
 //			for (String cat : catDirectories) {
 //				//Mapping every folder inside the directory
 //				dir = new File(ipDir+ File.separator+ cat);
@@ -85,20 +85,20 @@ public class Runner {
 //
 //			writer.close();
 			PrintStream stream = new PrintStream(new File(indexDir+ File.separator+ "ScoreResult"));
-			String userQuery = "(black OR blue) AND bruisess";
+			String userQuery = "adobe";
 			SearchRunner searcher = new SearchRunner(indexDir, ipDir, 'Q', stream);
 			searcher.query(userQuery, ScoringModel.TFIDF);
 			
 			long lEndTime = System.currentTimeMillis();
 			long difference = lEndTime - lStartTime;
 			 
-//			System.out.println("Elapsed milliseconds: " + difference);
+			System.out.println("Elapsed milliseconds: " + difference);
 			
 		} 
 //		catch (IndexerException e) {
 //
 //		}
-		catch (FileNotFoundException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

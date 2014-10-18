@@ -1,5 +1,7 @@
 package edu.buffalo.cse.irf14.query;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,9 +40,17 @@ public class AND implements QueryExpression {
 	@Override
 	public Set<String> fetchPostings(Map<IndexType, IndexReader> fetcherMap) {
 		Set<String> sLeft = leftOperand.fetchPostings(fetcherMap);
+
+		if(sLeft == null || sLeft.isEmpty() ) return null;
+
 		Set<String> sRight = rightOperand.fetchPostings(fetcherMap);
-		sLeft.retainAll(sRight);
-		return sLeft;
+		if(sRight != null)
+		{
+			sLeft.retainAll(sRight);
+			return sLeft;
+		}
+
+		return null;
 	}
 
 	@Override
@@ -48,11 +58,26 @@ public class AND implements QueryExpression {
 		return leftOperand.getQueryWords() + "$" + rightOperand.getQueryWords();
 	}
 
-	@Override
-	public Map<Integer, Double> getQueryVector() {
-		Map<Integer, Double> leftWordVector = leftOperand.getQueryVector();
-		Map<Integer, Double> rightWordVector = leftOperand.getQueryVector();
-		leftWordVector.keySet().containsAll(rightWordVector.keySet());
+	public Map<String, Double> getQueryVector(Map<IndexType,IndexReader> fetcherMap) {
+		Map<String, Double> leftWordVector = leftOperand.getQueryVector(fetcherMap);
+		Map<String, Double> rightWordVector = rightOperand.getQueryVector(fetcherMap);
+
+		if(leftWordVector.isEmpty())
+			leftWordVector = new HashMap<String, Double>();
+		if(rightWordVector.isEmpty())
+			rightWordVector = new HashMap<String, Double>();
+
+		if(leftWordVector != null && rightWordVector != null)
+		{
+			leftWordVector.keySet().addAll(rightWordVector.keySet());
+
+			for (Iterator<String> s = leftWordVector.keySet().iterator(); s.hasNext(); ) {
+				String ss = s.next();
+				Double f = leftWordVector.get(ss) + rightWordVector.get(ss);
+				leftWordVector.put(ss, f);
+			}	
+		}
+
 		return leftWordVector;
 	}
 

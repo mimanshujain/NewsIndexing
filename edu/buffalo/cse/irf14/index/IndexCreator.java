@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.buffalo.cse.irf14.analysis.Analyzer;
+import edu.buffalo.cse.irf14.analysis.AnalyzerFactory;
+import edu.buffalo.cse.irf14.analysis.TermAnalyer;
 import edu.buffalo.cse.irf14.analysis.Token;
 import edu.buffalo.cse.irf14.analysis.TokenStream;
+import edu.buffalo.cse.irf14.document.FieldNames;
 
 public class IndexCreator implements java.io.Serializable
 {
@@ -22,7 +26,6 @@ public class IndexCreator implements java.io.Serializable
 	public int docCount=0;
 	transient Set<String> docIdSet;
 	DocumentVector docVector;
-	
 	
 	public IndexCreator(String type){
 		termPostings=new HashMap<Integer, Postings>();
@@ -48,9 +51,9 @@ public class IndexCreator implements java.io.Serializable
 		return type;
 	}
 
-	public Map<Integer, Double> getTemVector(String term)
+	public Map<String, Double> getTemVector(String term, float weight)
 	{
-		Map<Integer, Double> termVector = new HashMap<Integer, Double>();
+		Map<String, Double> termVector = new HashMap<String, Double>();
 		if(termDictionary!=null)
 		{
 			if(termDictionary.containsKey(term))
@@ -64,7 +67,7 @@ public class IndexCreator implements java.io.Serializable
 						Postings p=termPostings.get(key);
 						if(p!=null)
 						{
-							termVector.put(key, p.getIdf());
+							termVector.put(term, p.getIdf()/weight);
 							return termVector;
 						}
 					}
@@ -112,13 +115,47 @@ public class IndexCreator implements java.io.Serializable
 			{
 				for(Token tk : tokenStreamList)
 				{
+					if(tk.toString().contains("laser printers"))
+					{
+						System.out.println(tk.toString());
+					}
+					
 					String[] strBreakMultiChar = tk.toString().split(" ");
 					if(strBreakMultiChar.length > 1)
 					{
 						makePosting(tk.toString(), docId);
+						
+						TokenStream tempStream = new TokenStream();
+						
 						for(String str : strBreakMultiChar)
 						{
-							makePosting(str, docId);
+							tempStream.setTokenStreamList(new Token(str));
+							AnalyzerFactory factoryObj = AnalyzerFactory.getInstance();
+							Analyzer termAnlzr = null;
+							
+							if(IndexType.TERM.name().equalsIgnoreCase(type))
+							{
+								termAnlzr = factoryObj.getAnalyzerForField(
+										FieldNames.CONTENT, tempStream);
+							}
+							else if(IndexType.AUTHOR.name().equalsIgnoreCase(type))
+							{
+								termAnlzr = factoryObj.getAnalyzerForField(
+										FieldNames.PLACE, tempStream);
+							}
+							else if(IndexType.PLACE.name().equalsIgnoreCase(type))
+							{
+								termAnlzr = factoryObj.getAnalyzerForField(
+										FieldNames.PLACE, tempStream);
+							}
+							
+							if (termAnlzr != null) {
+								while (termAnlzr.increment()) {
+								}
+							}			
+							if(tempStream.hasNext())
+								makePosting(tempStream.next().toString(), docId);
+							tempStream.remove();
 						}
 					}
 					else
@@ -137,7 +174,7 @@ public class IndexCreator implements java.io.Serializable
 	private void makePosting(String term, String docId) throws IndexerException
 	{
 		if(term!= null && !term.isEmpty())
-		{
+		{			
 			Postings p;
 			int key=testDict(term);
 			if(key!=-1)
@@ -238,9 +275,9 @@ public class IndexCreator implements java.io.Serializable
 			String[] str = termDictionary.keySet().toArray(new String[termDictionary.size()]);
 			for(String term : str)
 			{
-				if(termPostings.containsKey(term))
+				if(termPostings.containsKey(termDictionary.get(term)))
 				{
-					Postings p = termPostings.get(term);
+					Postings p = termPostings.get(termDictionary.get(term));
 					p.calculateIdf(totalDocs);
 				}
 			}

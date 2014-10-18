@@ -14,13 +14,20 @@ import edu.buffalo.cse.irf14.index.*;
 public class Query {
 
 	QueryExpression evaluateQuery = null;
-	Map<Integer,Double> queryVector;
+	Map<String,Double> queryVector;
 	Set<String> docIdList;
 	
+	public Set<String> getDocIdList() {
+		return docIdList;
+	}
+
+	/**
+	 * Constructor
+	 */
 	public Query(QueryExpression evaluateQuery)
 	{
 		this.evaluateQuery=evaluateQuery;
-		queryVector =  new HashMap<Integer,Double>();
+		queryVector =  new HashMap<String,Double>();
 		docIdList = null;
 	}
 
@@ -40,7 +47,15 @@ public class Query {
 			if(evaluateQuery != null)
 			{
 				docIdList = evaluateQuery.fetchPostings(fetcherMap);
-				queryVector = evaluateQuery.getQueryVector();
+				if(docIdList != null)
+				{
+					if(docIdList.size() > 0)
+						queryVector = evaluateQuery.getQueryVector(fetcherMap);
+					else
+						queryVector = null;
+				}
+				else
+					queryVector = null;
 			}
 		}
 		catch(Exception ex)
@@ -49,7 +64,7 @@ public class Query {
 		}
 	}
 
-	public Map<Integer, Double> getQueryVector() {
+	public Map<String, Double> getQueryVector() {
 		return queryVector;
 	}
 
