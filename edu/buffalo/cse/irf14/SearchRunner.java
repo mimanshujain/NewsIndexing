@@ -82,16 +82,28 @@ public class SearchRunner {
 			searcher = new IndexSearcher(objQuery);
 			searcher.executeQuery(fetcher);
 		}
-		Scorer score = new Scorer(ScoringModel.TFIDF);
-		TreeMap<String, Double> relevancyScore = score.getOrderedDocuments(objQuery, docVector);
+		Scorer TFIDFscore = new Scorer(ScoringModel.TFIDF);
+		Scorer OKAPIscore = new Scorer(ScoringModel.OKAPI);
 		
-		Iterator<String> iterDocId = relevancyScore.keySet().iterator();
+		TreeMap<String, Double> TFIDFrelevancyScore = TFIDFscore.getOrderedDocuments(objQuery, docVector);
+		TreeMap<String, Double> OKAPIrelevancyScore = OKAPIscore.getOrderedDocuments(objQuery, docVector);
 		
+		Iterator<String> iterDocId = TFIDFrelevancyScore.keySet().iterator();
+		System.out.println("TFID Score and Ranking");
 		while(iterDocId.hasNext())
 		{
 			String docId = iterDocId.next();
 			
-			System.out.println("Document Id:: " + docId + "  Score:: "  + relevancyScore.get(docId));
+			System.out.println("Document Id:: " + docId + "  Score:: "  + TFIDFrelevancyScore.get(docId));
+		}
+		
+		iterDocId = OKAPIrelevancyScore.keySet().iterator();
+		System.out.println("OKAPI Score and Ranking");
+		while(iterDocId.hasNext())
+		{
+			String docId = iterDocId.next();
+			
+			System.out.println("Document Id:: " + docId + "  Score:: "  + OKAPIrelevancyScore.get(docId));
 		}
 	}
 

@@ -16,7 +16,7 @@ public class Scorer {
 
 	ScoringModel model;
 	TreeMap<String, Double> dotProdResult;
-	
+
 	public Scorer(ScoringModel model) {
 		this.model = model;
 	}
@@ -28,7 +28,7 @@ public class Scorer {
 
 		else if(model.name() == "OKAPI")
 		{
-
+			return relevencyOKAPI(objQuery, docVector);
 		}
 		return null;
 	}
@@ -36,7 +36,7 @@ public class Scorer {
 	private TreeMap<String, Double> relevencyTFIDF(Query objQuery, DocumentVector docVector) {
 
 		HashMap<String, Double> result = new HashMap<String, Double>();
-		
+
 		try
 		{
 			Map<String,Double> queryVector = objQuery.getQueryVector();
@@ -91,10 +91,79 @@ public class Scorer {
 		}
 		return dotProdResult;
 	}
-	
+
+	private TreeMap<String, Double> relevencyOKAPI(Query objQuery, DocumentVector docVector) {
+
+		HashMap<String, Double> result = new HashMap<String, Double>();
+		Map<String,Double> queryVector = objQuery.getQueryVector();
+		Set<String> docIdSet = objQuery.getDocIdList();
+		double k1 = 1.2, b = 0.75, k3 = 2;
+		double avgDocLength = docVector.calculateAvgDocLength();
+		
+		try 
+		{
+			if(queryVector != null && docIdSet != null && !queryVector.isEmpty() && !docIdSet.isEmpty())
+			{
+				double idfSummation = 0.0;
+
+				Iterator<String> docIterator = docIdSet.iterator();
+
+				while(docIterator.hasNext())
+				{
+					String docId = docIterator.next();
+					Map<String, Double> vector = docVector.getUnNormalized(docId);
+					int docLength = docVector.getDocLength(docId);
+					
+					if(vector != null)
+					{
+						Iterator<String> iterateQuery = queryVector.keySet().iterator();
+						while(iterateQuery.hasNext())
+						{
+							String term = iterateQuery.next();
+							double idf = queryVector.get(term);
+							double docTermFreq = vector.get(term);
+							
+							double OKAPIscore = (idf*(1+k1)*docTermFreq)/(k1*((1 - b) + b*(docLength/avgDocLength)) + docTermFreq);
+							
+							if(objQuery.getQueryTerms().length > 10)
+							{
+								int termQueryFrq = termFreqQuery(objQuery,term);
+								double extraScore = ((k3 + 1)*termQueryFrq)/(k3 + termQueryFrq);
+								OKAPIscore = OKAPIscore*extraScore;
+							}
+							
+							result.put(docId, OKAPIscore);
+						}
+					}
+				}
+			}
+			dotProdResult = new TreeMap<String, Double>(new ValueComparator(result));
+			dotProdResult.putAll(result);
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		return null;
+	}
+
+	private int termFreqQuery(Query objQuery, String term)
+	{
+		String[] queryTerms = objQuery.getQueryTerms();
+		int counter = 0;
+
+		for(String str : queryTerms)
+		{
+			if(str.equals(term))
+				counter++;
+		}
+
+		return counter;
+	}
+
 	public class ValueComparator implements Comparator<String> {
 		HashMap<String, Double> map;
-		
+
 		public ValueComparator(HashMap<String, Double> map)
 		{
 			this.map = map;
@@ -103,9 +172,9 @@ public class Scorer {
 		public int compare(String o1, String o2) {
 			double f1 = map.get(o1);
 			double f2 = map.get(o2);
-			
+
 			double result = f2 - f1;
-			
+
 			if(result > 0)
 				return 1;
 			else if (result < 0)

@@ -85,7 +85,7 @@ public class Runner {
 //
 //			writer.close();
 			PrintStream stream = new PrintStream(new File(indexDir+ File.separator+ "ScoreResult"));
-			String userQuery = "adobe";
+			String userQuery = "NATO";
 			SearchRunner searcher = new SearchRunner(indexDir, ipDir, 'Q', stream);
 			searcher.query(userQuery, ScoringModel.TFIDF);
 			
