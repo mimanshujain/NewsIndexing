@@ -57,7 +57,7 @@ public class QueryEvaluators implements QueryExpression {
 							char chStart = token.charAt(0);
 							char chEnd = token.charAt(token.length() - 1);
 
-							if(chStart == '\"' && chEnd != '\"' && chEnd != ')')
+							if(token.contains("\"")&& chEnd != '\"' && chEnd != ')')
 							{							
 								int index = stream.getIndex();
 								tempToken = token + " ";
@@ -253,7 +253,7 @@ public class QueryEvaluators implements QueryExpression {
 		{
 			counter = 0;
 			int count = 0;
-			
+
 			while (tStream.hasNext()) 
 			{					
 				Token tk = tStream.next();
@@ -273,17 +273,23 @@ public class QueryEvaluators implements QueryExpression {
 				{
 					int index = tStream.getIndex();
 					Token t = tStream.getPrevious(index-count-1);
-					t.setTermText("("+t.toString());
-					t = tStream.getPrevious(index-2);
-					t.setTermText(t.toString()+")");
+					if(t != null)
+					{
+						t.setTermText("("+t.toString());
+						t = tStream.getPrevious(index-2);
+						t.setTermText(t.toString()+")");
+					}
 				}
 				else if(counter > 2 && !tStream.hasNext())
 				{
 					int index = tStream.getIndex();
 					Token t = tStream.getPrevious(index-count);
-					t.setTermText("("+t.toString());
-					t = tStream.getPrevious(index-1);
-					t.setTermText(t.toString()+")");
+					if(t != null)
+					{
+						t.setTermText("("+t.toString());
+						t = tStream.getPrevious(index-1);
+						t.setTermText(t.toString()+")");
+					}
 				}
 			}
 		}

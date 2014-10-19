@@ -105,7 +105,6 @@ public class IndexReader {
 		}
 		return null;
 	}
-
 	/**
 	 * Method to get the top k terms from the index in terms of the total number
 	 * of occurrences.

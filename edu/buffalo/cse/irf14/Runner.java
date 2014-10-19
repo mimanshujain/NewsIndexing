@@ -5,6 +5,7 @@ package edu.buffalo.cse.irf14;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilePermission;
 import java.io.PrintStream;
 
 import edu.buffalo.cse.irf14.SearchRunner.ScoringModel;
@@ -33,7 +34,7 @@ public class Runner {
 	 */
 	public static void main(String[] args) {
 		long lStartTime = System.currentTimeMillis();
-		
+
 		String ipDir = args[0];
 		String indexDir = args[1];
 		//This is taking all the directories in File variable
@@ -46,58 +47,62 @@ public class Runner {
 
 		Document d = null;
 		IndexWriter writer = new IndexWriter(indexDir);
-		
+
 		String docId="";
-		
+
 		try {
-//			//Traversing all the sub directories
-//			for (String cat : catDirectories) {
-//				//Mapping every folder inside the directory
-//				dir = new File(ipDir+ File.separator+ cat);
-//				//Taking all the files in files variables
-//				files = dir.list();
-//
-//				if (files == null)
-//					continue;
-//				
-//				for (String f : files) {
-//					try {
-//
-//						d = Parser.parse(dir.getAbsolutePath() + File.separator +f);
-//						if (d != null)
-//						{
-//							//writeToFile(d);
-//							docId=d.getField(FieldNames.FILEID)[0];
-//							writer.addDocument(d);
-//						}
-//
-//						if(d==null)
-//							throw new ParserException();
-//
-//					} 
-//					catch (ParserException e) {
-//						System.out.println("Inside Runner Parser: "+docId);
-//						
-//					} 
-//				}
-//
-//			}
-//
-//			writer.close();
+			//			//Traversing all the sub directories
+			//			for (String cat : catDirectories) {
+			//				//Mapping every folder inside the directory
+			//				dir = new File(ipDir+ File.separator+ cat);
+			//				//Taking all the files in files variables
+			//				files = dir.list();
+			//
+			//				if (files == null)
+			//					continue;
+			//				
+			//				for (String f : files) {
+			//					try {
+			//
+			//						d = Parser.parse(dir.getAbsolutePath() + File.separator +f);
+			//						if (d != null)
+			//						{
+			//							//writeToFile(d);
+			//							docId=d.getField(FieldNames.FILEID)[0];
+			//
+			//							writer.addDocument(d);
+			//						}
+			//
+			//						if(d==null)
+			//							throw new ParserException();
+			//
+			//					} 
+			//					catch (ParserException e) {
+			//						System.out.println("Inside Runner Parser: "+docId);
+			//						
+			//					} 
+			//				}
+			//
+			//			}
+			//
+			//			writer.close();
+			String path = indexDir+File.separator+"corpus";
 			PrintStream stream = new PrintStream(new File(indexDir+ File.separator+ "ScoreResult"));
-			String userQuery = "NATO";
-			SearchRunner searcher = new SearchRunner(indexDir, ipDir, 'Q', stream);
+			String userQuery = "trade deficit foreign exchange trade surplus balance of trade";
+			SearchRunner searcher = new SearchRunner(indexDir, path, 'Q', stream);
 			searcher.query(userQuery, ScoringModel.TFIDF);
-			
+
+//			searcher.query(new File(indexDir+File.separator+"queries.txt"));
+
 			long lEndTime = System.currentTimeMillis();
 			long difference = lEndTime - lStartTime;
-			 
+
 			System.out.println("Elapsed milliseconds: " + difference);
-			
+
 		} 
-//		catch (IndexerException e) {
-//
-//		}
+		//		catch (IndexerException e) {
+		//
+		//		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}

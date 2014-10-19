@@ -16,6 +16,7 @@ import java.util.zip.GZIPOutputStream;
 
 import edu.buffalo.cse.irf14.analysis.Analyzer;
 import edu.buffalo.cse.irf14.analysis.AnalyzerFactory;
+import edu.buffalo.cse.irf14.analysis.Token;
 import edu.buffalo.cse.irf14.analysis.TokenStream;
 import edu.buffalo.cse.irf14.analysis.Tokenizer;
 import edu.buffalo.cse.irf14.analysis.TokenizerException;
@@ -74,16 +75,40 @@ public class IndexWriter {
 	 */
 	public void addDocument(Document d) throws IndexerException {
 		docId++;
-		Tokenizer tokenizeFields = new Tokenizer();
 
+		Tokenizer tokenizeFields = new Tokenizer();
+		Tokenizer tokenizeAuth1 = new Tokenizer(" and ");
+		Tokenizer tokenizeAuth2 = new Tokenizer(" AND ");
+		
 		TokenStream termStream;
-		for (FieldNames fn : FieldNames.values()) {
+		for (FieldNames fn : FieldNames.values()) 
+		{
 			try {
-				if (d.getField(fn) != null && d.getField(fn).length > 0
-						&& fn != FieldNames.FILEID) {
+				if (d.getField(fn) != null && d.getField(fn).length > 0 && fn != FieldNames.FILEID) {
 					String str = d.getField(fn)[0];
-					if (!str.equals(null) && !"".equals(str)) {
-						termStream = tokenizeFields.consume(str);
+					
+					if (!str.equals(null) && !"".equals(str)) 
+					{
+						if(fn == FieldNames.AUTHOR)
+						{
+							if(str.contains(" AND "))
+							{
+								termStream = tokenizeAuth2.consume(str);
+							}
+							else if(str.contains(" and "))
+							{
+								termStream = tokenizeAuth1.consume(str);
+							}
+							else
+							{
+								termStream = new TokenStream();
+								termStream.setTokenStreamList(new Token(str));
+							}
+						}
+						else
+						{
+							termStream = tokenizeFields.consume(str);
+						}
 						analyzeAndFiltering(termStream, fn.name(),
 								d.getField(FieldNames.FILEID)[0]);
 					}
@@ -113,8 +138,9 @@ public class IndexWriter {
 								FieldNames.CONTENT, tStream);
 						if (termAnlzr != null) {
 							while (termAnlzr.increment()) {
-							}							
+							}		
 							termIndex.createIndexer(tStream, fileId);
+							
 						}
 					}
 					if (type == FieldNames.PLACE.name()) {
@@ -155,8 +181,7 @@ public class IndexWriter {
 						weight = 4;
 					else if(type.equals(FieldNames.AUTHOR.name()) || type.equals(FieldNames.CATEGORY.name())
 							|| type.equals(FieldNames.PLACE.name()))
-						weight = 100
-						;
+						weight = 100;
 					docVector.setDocumentVector(tStream, fileId, weight);
 				}
 			}

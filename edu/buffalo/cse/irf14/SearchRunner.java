@@ -2,12 +2,19 @@ package edu.buffalo.cse.irf14;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.xml.bind.ParseConversionEvent;
+
+import edu.buffalo.cse.irf14.document.Document;
+import edu.buffalo.cse.irf14.document.FieldNames;
+import edu.buffalo.cse.irf14.document.Parser;
+import edu.buffalo.cse.irf14.document.ParserException;
 import edu.buffalo.cse.irf14.index.DocumentVector;
 import edu.buffalo.cse.irf14.index.IndexCreator;
 import edu.buffalo.cse.irf14.index.IndexReader;
@@ -15,8 +22,10 @@ import edu.buffalo.cse.irf14.index.IndexSearcher;
 import edu.buffalo.cse.irf14.index.IndexType;
 import edu.buffalo.cse.irf14.index.Postings;
 import edu.buffalo.cse.irf14.index.Scorer;
+import edu.buffalo.cse.irf14.query.EvaluateParser;
 import edu.buffalo.cse.irf14.query.Query;
 import edu.buffalo.cse.irf14.query.QueryParser;
+import edu.buffalo.cse.irf14.query.QueryParserException;
 
 /**
  * Main class to run the searcher.
@@ -49,7 +58,7 @@ public class SearchRunner {
 
 		System.setProperty("Index.dir", indexDir);
 		System.setProperty("corpus.dir", corpusDir);
-		
+
 		searcher = null;
 
 		this.mode = mode;
@@ -60,7 +69,7 @@ public class SearchRunner {
 		placeReader = new IndexReader(indexDir, IndexType.PLACE);
 		authReader= new IndexReader(indexDir, IndexType.AUTHOR);
 		catReader = new IndexReader(indexDir, IndexType.CATEGORY);
-		
+
 		fetcher.put(IndexType.TERM, termReader);
 		fetcher.put(IndexType.PLACE, placeReader);
 		fetcher.put(IndexType.CATEGORY, catReader);
@@ -74,7 +83,7 @@ public class SearchRunner {
 	 * @param model : Scoring Model to use for ranking results
 	 */
 	public void query(String userQuery, ScoringModel model) {
-
+		long lStartTime = System.currentTimeMillis();
 		objQuery = QueryParser.parse(userQuery, "OR");
 
 		if(objQuery != null && fetcher != null)
@@ -82,29 +91,112 @@ public class SearchRunner {
 			searcher = new IndexSearcher(objQuery);
 			searcher.executeQuery(fetcher);
 		}
-		Scorer TFIDFscore = new Scorer(ScoringModel.TFIDF);
-		Scorer OKAPIscore = new Scorer(ScoringModel.OKAPI);
-		
-		TreeMap<String, Double> TFIDFrelevancyScore = TFIDFscore.getOrderedDocuments(objQuery, docVector);
-		TreeMap<String, Double> OKAPIrelevancyScore = OKAPIscore.getOrderedDocuments(objQuery, docVector);
-		
-		Iterator<String> iterDocId = TFIDFrelevancyScore.keySet().iterator();
-		System.out.println("TFID Score and Ranking");
-		while(iterDocId.hasNext())
+		Scorer score = new Scorer(model);
+		score.getOrderedDocuments(objQuery, docVector);
+		//		Scorer OKAPIscore = new Scorer(ScoringModel.OKAPI);
+
+		TreeMap<String, Double> relevancyScore = score.getOrderedDocuments(objQuery, docVector);
+		//		TreeMap<String, Double> OKAPIrelevancyScore = OKAPIscore.getOrderedDocuments(objQuery, docVector);
+		stream.println(userQuery);
+		long lEndTime = System.currentTimeMillis();
+		long difference = lEndTime - lStartTime;
+		stream.println("The Time taken to execute the query(in ms) :: " + difference);
+
+		printResult(relevancyScore);
+	}
+
+	private void printResult(TreeMap<String, Double> relevancyScore) 
+	{
+		if(relevancyScore!= null && !relevancyScore.isEmpty())
 		{
-			String docId = iterDocId.next();
-			
-			System.out.println("Document Id:: " + docId + "  Score:: "  + TFIDFrelevancyScore.get(docId));
+			Iterator<String> iterDocId = relevancyScore.keySet().iterator();
+			StringBuilder sb = new StringBuilder();
+			//		String time = "TFID Score and Ranking-Total :: " + relevancyScore.size(); 
+			int counter = 1;
+			Document d = null;
+
+			while(iterDocId.hasNext())
+			{
+				if(counter > 10)
+					break;
+				String docId = iterDocId.next();
+				boolean isTitle = false;
+				sb.append(System.getProperty("line.separator"));
+				sb.append("Rank: " + counter+"\n");
+				sb.append(System.getProperty("line.separator"));
+				try {
+					d = Parser.parse(System.getProperty("corpus.dir")+File.separator+docId);
+					if(d!=null)
+					{
+						if(d.getField(FieldNames.TITLE) != null)
+						{
+							sb.append("Title: "+d.getField(FieldNames.TITLE)[0] + "\n");
+							sb.append(System.getProperty("line.separator"));
+							isTitle = true;
+						}
+						else
+						{
+							sb.append("No Title for this doc\n");
+						}
+						
+						String[] qTerms = objQuery.getQueryTerms();
+						String ss = qTerms.toString();
+						qTerms = ss.split("$");
+						
+						StringBuilder snip = new StringBuilder();
+						if(d.getField(FieldNames.CONTENT) != null)
+						{
+							String content = d.getField(FieldNames.CONTENT)[0];
+							for(String str : qTerms)
+							{
+								if(content.contains(str))
+								{
+									int index = content.indexOf(str);
+									if(index > 6)
+									{
+										snip.append(content.substring(index - 5, index + 5)+ "...");
+									}
+									else if(index < 6)
+									{
+										snip.append(content.substring(index, index + 5)+ "...");
+									}
+								}
+							}
+							
+							if(snip.length() < 10)
+							{
+								snip.append(content.substring(0,20));
+							}
+						}
+						sb.append(snip);sb.append("\n");
+						sb.append(System.getProperty("line.separator"));
+						sb.append("\n\nRelevency Score: "+relevancyScore.get(docId));
+						sb.append(System.getProperty("line.separator"));
+						sb.append(System.getProperty("line.separator"));
+					}
+				} 
+				catch (ParserException e) {	
+					e.printStackTrace();
+				}
+				counter++;
+
+//				System.out.println("Document Id:: " + docId + "  Score:: "  + relevancyScore.get(docId));
+			}
+			stream.println(sb.toString());
+			stream.println("\n");
 		}
-		
-		iterDocId = OKAPIrelevancyScore.keySet().iterator();
-		System.out.println("OKAPI Score and Ranking");
-		while(iterDocId.hasNext())
-		{
-			String docId = iterDocId.next();
-			
-			System.out.println("Document Id:: " + docId + "  Score:: "  + OKAPIrelevancyScore.get(docId));
-		}
+
+		//		counter = 1;
+		//		Iterator<String> okapiTerate = OKAPIrelevancyScore.keySet().iterator();
+		//		System.out.println("\nOKAPI Score and Ranking-Total :: " + OKAPIrelevancyScore.size());
+		//		while(okapiTerate.hasNext())
+		//		{
+		//			if(counter > 10)
+		//				break;
+		//			String docId = okapiTerate.next();
+		//			counter++;
+		//			System.out.println("Document Id:: " + docId + "  Score:: "  + OKAPIrelevancyScore.get(docId));
+		//		}
 	}
 
 	/**
@@ -112,7 +204,68 @@ public class SearchRunner {
 	 * @param queryFile : The file from which queries are to be read and executed
 	 */
 	public void query(File queryFile) {
-		
+		try {
+			EvaluateParser.parseQueries(queryFile);
+			int numQ = EvaluateParser.numQ;
+			String[] result = new String[numQ];
+			int counter = 0;
+			//			List<TreeMap<String, Double>> listRes = new ArrayList<TreeMap<String,Double>>();
+			Map<String,TreeMap<String, Double>> res = new HashMap<String, TreeMap<String,Double>>();
+			for(String query : EvaluateParser.query)
+			{
+				Query obj= QueryParser.parse(query, "OR");
+
+				if(obj != null && fetcher != null)
+				{
+					searcher = new IndexSearcher(obj);
+					searcher.executeQuery(fetcher);
+				}
+
+				Scorer TFIDFscore = new Scorer(ScoringModel.TFIDF);
+				//				Scorer OKAPIscore = new Scorer(ScoringModel.OKAPI);
+
+				TreeMap<String, Double> TFIDFrelevancyScore = TFIDFscore.getOrderedDocuments(obj, docVector);
+				//				TreeMap<String, Double> OKAPIrelevancyScore = OKAPIscore.getOrderedDocuments(obj, docVector);
+
+				if(!TFIDFrelevancyScore.isEmpty())
+				{
+					res.put(EvaluateParser.qid[counter], TFIDFrelevancyScore);
+				}
+				counter++;
+			}
+			counter = 0;
+			Iterator<String> it = res.keySet().iterator();
+			stream.append("numResults="+res.size());
+			//			stream.append('\n');
+			stream.println("\n");
+			while(it.hasNext())
+			{
+				String id =it.next();
+				TreeMap<String, Double> TFIDFrelevancyScore = res.get(id);
+				Iterator<String> it2 = TFIDFrelevancyScore.keySet().iterator();
+				StringBuilder sb = new StringBuilder();
+				int count = 0;
+				while(it2.hasNext())
+				{
+					if(count++<10)
+					{
+						String doc = it2.next();
+						sb.append(doc+"#"+TFIDFrelevancyScore.get(doc)+", ");
+					}
+					else
+						break;
+				}
+				sb.append(" ");
+				String fin = sb.toString().replaceAll(",  " ,"}");
+				stream.append(id+":{"+fin);
+				stream.println("\n");
+			}		
+
+		} catch (QueryParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	/**

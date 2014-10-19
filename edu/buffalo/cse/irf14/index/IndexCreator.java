@@ -67,7 +67,7 @@ public class IndexCreator implements java.io.Serializable
 						Postings p=termPostings.get(key);
 						if(p!=null)
 						{
-							termVector.put(term, p.getIdf()/weight);
+							termVector.put(term, p.getIdf() * weight);
 							return termVector;
 						}
 					}

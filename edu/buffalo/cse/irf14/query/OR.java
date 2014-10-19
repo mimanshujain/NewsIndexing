@@ -64,7 +64,8 @@ public class OR implements QueryExpression {
 	}
 
 	@Override
-	public Map<String, Double> getQueryVector(Map<IndexType,IndexReader> fetcherMap) {
+	public Map<String, Double> getQueryVector(Map<IndexType,IndexReader> fetcherMap) 
+	{
 		Map<String, Double> leftWordVector = leftOperand.getQueryVector(fetcherMap);
 		Map<String, Double> rightWordVector = rightOperand.getQueryVector(fetcherMap);
 		
@@ -75,20 +76,20 @@ public class OR implements QueryExpression {
 
 		if(leftWordVector != null && rightWordVector != null)
 		{
-			leftWordVector.keySet().addAll(rightWordVector.keySet());
 			
-			for (Iterator<String> s = leftWordVector.keySet().iterator(); s.hasNext(); ) {
+			for (Iterator<String> s = rightWordVector.keySet().iterator(); s.hasNext(); ) {
 				String ss = s.next();
-				Double f = leftWordVector.get(ss) + rightWordVector.get(ss);
-				leftWordVector.put(ss, f);
-			}
-			
-//			
+				if(!leftWordVector.containsKey(ss))
+				{
+					leftWordVector.put(ss, rightWordVector.get(ss));
+				}	
+				else if(leftWordVector.containsKey(ss))
+				{
+					Double f = leftWordVector.get(ss) + rightWordVector.get(ss);
+					leftWordVector.put(ss, f);
+				}		
+			}	
 		}
-//		else if(leftWordVector != null && rightWordVector == null)
-//			return leftWordVector;
-//		else if(leftWordVector == null && rightWordVector != null)
-//			return leftWordVector;
 		
 		return leftWordVector;
 	}

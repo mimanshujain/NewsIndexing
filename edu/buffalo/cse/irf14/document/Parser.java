@@ -55,7 +55,7 @@ public class Parser {
 		Document docParser = null;
 		try {
 			if (filename == null || filename.equals("")) {
-				System.out.println(filename + " dASas");
+				System.out.println(filename);
 				throw new ParserException();
 			}
 			File parsingOp = new File(filename);
@@ -100,7 +100,7 @@ public class Parser {
 
 							else if (matchAuth.find()) {
 								docParser.setField(FieldNames.AUTHOR,
-										matchAuth.group(2));
+										matchAuth.group(1));
 								authorFlag = 1;
 							}
 						} else {

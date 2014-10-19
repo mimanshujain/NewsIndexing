@@ -72,14 +72,18 @@ public class DocumentVector implements java.io.Serializable
 					else
 					{
 						Map<String, Double> vector = new HashMap<String, Double>();
+						Map<String, Double> secVec = new HashMap<String, Double>();
 						
 						vector.put(term, 1.0);
+						secVec.put(term, 1.0);
 						
 						updateMultiWord(term, vector, weight);
+						updateMultiWord(term, secVec, 1);
 						
 						try {
 							documentVector.put(docId, vector);		
-							unNormalized.put(docId, vector);
+							unNormalized.put(docId, secVec);
+							
 							String[] strBreak = term.split(" ");
 							int length = strBreak.length;
 							docLength.put(docId, length);

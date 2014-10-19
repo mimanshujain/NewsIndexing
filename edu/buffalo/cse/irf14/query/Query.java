@@ -68,9 +68,6 @@ public class Query {
 		return queryVector;
 	}
 
-//	private void setQueryVector(Map<String, Double> queryVector) {
-//		
-//	}
 
 	public String[] getQueryTerms()
 	{
