@@ -30,7 +30,6 @@ import edu.buffalo.cse.irf14.query.QueryParserException;
 /**
  * Main class to run the searcher.
  * As before implement all TODO methods unless marked for bonus
- * @author nikhillo
  *
  */
 public class SearchRunner {
@@ -93,10 +92,8 @@ public class SearchRunner {
 		}
 		Scorer score = new Scorer(model);
 		score.getOrderedDocuments(objQuery, docVector);
-		//		Scorer OKAPIscore = new Scorer(ScoringModel.OKAPI);
 
 		TreeMap<String, Double> relevancyScore = score.getOrderedDocuments(objQuery, docVector);
-		//		TreeMap<String, Double> OKAPIrelevancyScore = OKAPIscore.getOrderedDocuments(objQuery, docVector);
 		stream.println(userQuery);
 		long lEndTime = System.currentTimeMillis();
 		long difference = lEndTime - lStartTime;
@@ -111,7 +108,6 @@ public class SearchRunner {
 		{
 			Iterator<String> iterDocId = relevancyScore.keySet().iterator();
 			StringBuilder sb = new StringBuilder();
-			//		String time = "TFID Score and Ranking-Total :: " + relevancyScore.size(); 
 			int counter = 1;
 			Document d = null;
 
@@ -120,7 +116,6 @@ public class SearchRunner {
 				if(counter > 10)
 					break;
 				String docId = iterDocId.next();
-				boolean isTitle = false;
 				sb.append(System.getProperty("line.separator"));
 				sb.append("Rank: " + counter+"\n");
 				sb.append(System.getProperty("line.separator"));
@@ -132,17 +127,16 @@ public class SearchRunner {
 						{
 							sb.append("Title: "+d.getField(FieldNames.TITLE)[0] + "\n");
 							sb.append(System.getProperty("line.separator"));
-							isTitle = true;
 						}
 						else
 						{
 							sb.append("No Title for this doc\n");
 						}
-						
+
 						String[] qTerms = objQuery.getQueryTerms();
 						String ss = qTerms.toString();
 						qTerms = ss.split("$");
-						
+
 						StringBuilder snip = new StringBuilder();
 						if(d.getField(FieldNames.CONTENT) != null)
 						{
@@ -162,7 +156,7 @@ public class SearchRunner {
 									}
 								}
 							}
-							
+
 							if(snip.length() < 10)
 							{
 								snip.append(content.substring(0,20));
@@ -180,23 +174,11 @@ public class SearchRunner {
 				}
 				counter++;
 
-//				System.out.println("Document Id:: " + docId + "  Score:: "  + relevancyScore.get(docId));
 			}
 			stream.println(sb.toString());
 			stream.println("\n");
 		}
 
-		//		counter = 1;
-		//		Iterator<String> okapiTerate = OKAPIrelevancyScore.keySet().iterator();
-		//		System.out.println("\nOKAPI Score and Ranking-Total :: " + OKAPIrelevancyScore.size());
-		//		while(okapiTerate.hasNext())
-		//		{
-		//			if(counter > 10)
-		//				break;
-		//			String docId = okapiTerate.next();
-		//			counter++;
-		//			System.out.println("Document Id:: " + docId + "  Score:: "  + OKAPIrelevancyScore.get(docId));
-		//		}
 	}
 
 	/**
@@ -207,9 +189,7 @@ public class SearchRunner {
 		try {
 			EvaluateParser.parseQueries(queryFile);
 			int numQ = EvaluateParser.numQ;
-			String[] result = new String[numQ];
 			int counter = 0;
-			//			List<TreeMap<String, Double>> listRes = new ArrayList<TreeMap<String,Double>>();
 			Map<String,TreeMap<String, Double>> res = new HashMap<String, TreeMap<String,Double>>();
 			for(String query : EvaluateParser.query)
 			{
@@ -222,11 +202,8 @@ public class SearchRunner {
 				}
 
 				Scorer TFIDFscore = new Scorer(ScoringModel.TFIDF);
-				//				Scorer OKAPIscore = new Scorer(ScoringModel.OKAPI);
 
 				TreeMap<String, Double> TFIDFrelevancyScore = TFIDFscore.getOrderedDocuments(obj, docVector);
-				//				TreeMap<String, Double> OKAPIrelevancyScore = OKAPIscore.getOrderedDocuments(obj, docVector);
-
 				if(!TFIDFrelevancyScore.isEmpty())
 				{
 					res.put(EvaluateParser.qid[counter], TFIDFrelevancyScore);
@@ -236,7 +213,6 @@ public class SearchRunner {
 			counter = 0;
 			Iterator<String> it = res.keySet().iterator();
 			stream.append("numResults="+res.size());
-			//			stream.append('\n');
 			stream.println("\n");
 			while(it.hasNext())
 			{
@@ -262,7 +238,7 @@ public class SearchRunner {
 			}		
 
 		} catch (QueryParserException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -272,7 +248,7 @@ public class SearchRunner {
 	 * General cleanup method
 	 */
 	public void close() {
-		//TODO : IMPLEMENT THIS METHOD
+
 	}
 
 	/**
