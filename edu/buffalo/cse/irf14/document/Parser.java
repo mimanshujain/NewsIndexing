@@ -55,7 +55,6 @@ public class Parser {
 		Document docParser = null;
 		try {
 			if (filename == null || filename.equals("")) {
-				System.out.println(filename);
 				throw new ParserException();
 			}
 			File parsingOp = new File(filename);

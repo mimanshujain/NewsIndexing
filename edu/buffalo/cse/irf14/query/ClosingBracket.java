@@ -1,5 +1,6 @@
 package edu.buffalo.cse.irf14.query;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,6 +42,18 @@ public class ClosingBracket implements QueryExpression {
 	@Override
 	public Map<String, Double> getQueryVector(Map<IndexType,IndexReader> fetcherMap) {
 		return rightOperand.getQueryVector(fetcherMap);
+	}
+
+	@Override
+	public Map <String, List<String>> executeWildCard(Map<IndexType, IndexReader> fetcherMap) {
+		
+		return rightOperand.executeWildCard(fetcherMap);
+	}
+
+	@Override
+	public Set<String> fetchWildPostings(Map<IndexType, IndexReader> fetcherMap) {
+		// TODO Auto-generated method stub
+		return rightOperand.fetchWildPostings(fetcherMap);
 	}
 
 }

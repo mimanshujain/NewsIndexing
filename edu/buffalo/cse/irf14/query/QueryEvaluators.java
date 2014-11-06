@@ -1,5 +1,6 @@
 package edu.buffalo.cse.irf14.query;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -296,7 +297,7 @@ public class QueryEvaluators implements QueryExpression {
 	}
 
 	@Override
-	public String queryInterpretor() //Map<String, QueryExpression> queryCalculator
+	public String queryInterpretor()
 	{
 		String preAnswer = evaluator.queryInterpretor();
 		String postAnswer = "{" + preAnswer.substring(1,preAnswer.length()-1) + "}";
@@ -324,6 +325,18 @@ public class QueryEvaluators implements QueryExpression {
 	public Map<String, Double> getQueryVector(Map<IndexType,IndexReader> fetcherMap) {
 		// TODO Auto-generated method stub
 		return evaluator.getQueryVector(fetcherMap);
+	}
+
+	@Override
+	public Map <String, List<String>> executeWildCard(Map<IndexType, IndexReader> fetcherMap) {
+		// TODO Auto-generated method stub
+		return evaluator.executeWildCard(fetcherMap);
+	}
+
+	@Override
+	public Set<String> fetchWildPostings(Map<IndexType, IndexReader> fetcherMap) {
+		// TODO Auto-generated method stub
+		return evaluator.fetchWildPostings(fetcherMap);
 	}
 
 }

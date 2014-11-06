@@ -51,48 +51,48 @@ public class Runner {
 		String docId="";
 
 		try {
-			//			//Traversing all the sub directories
-			//			for (String cat : catDirectories) {
-			//				//Mapping every folder inside the directory
-			//				dir = new File(ipDir+ File.separator+ cat);
-			//				//Taking all the files in files variables
-			//				files = dir.list();
-			//
-			//				if (files == null)
-			//					continue;
-			//				
-			//				for (String f : files) {
-			//					try {
-			//
-			//						d = Parser.parse(dir.getAbsolutePath() + File.separator +f);
-			//						if (d != null)
-			//						{
-			//							//writeToFile(d);
-			//							docId=d.getField(FieldNames.FILEID)[0];
-			//
-			//							writer.addDocument(d);
-			//						}
-			//
-			//						if(d==null)
-			//							throw new ParserException();
-			//
-			//					} 
-			//					catch (ParserException e) {
-			//						System.out.println("Inside Runner Parser: "+docId);
-			//						
-			//					} 
-			//				}
-			//
-			//			}
-			//
-			//			writer.close();
+//						//Traversing all the sub directories
+//						for (String cat : catDirectories) {
+//							//Mapping every folder inside the directory
+//							dir = new File(ipDir+ File.separator+ cat);
+//							//Taking all the files in files variables
+//							files = dir.list();
+//			
+//							if (files == null)
+//								continue;
+//							
+//							for (String f : files) {
+//								try {
+//			
+//									d = Parser.parse(dir.getAbsolutePath() + File.separator +f);
+//									if (d != null)
+//									{
+//										//writeToFile(d);
+//										docId=d.getField(FieldNames.FILEID)[0];
+//			
+//										writer.addDocument(d);
+//									}
+//			
+//									if(d==null)
+//										throw new ParserException();
+//			
+//								} 
+//								catch (ParserException e) {
+//									System.out.println("Inside Runner Parser: "+docId);
+//									
+//								} 
+//							}
+//			
+//						}
+//			
+//			writer.close();
 			String path = indexDir+File.separator+"corpus";
-			PrintStream stream = new PrintStream(new File(indexDir+ File.separator+ "ScoreResult"));
-			String userQuery = "trade deficit foreign exchange trade surplus balance of trade";
+			PrintStream stream = new PrintStream(new File(indexDir+ File.separator+ "ScoreResult.txt"));
+			String userQuery = "de*bt";
 			SearchRunner searcher = new SearchRunner(indexDir, path, 'Q', stream);
 			searcher.query(userQuery, ScoringModel.TFIDF);
-
-//			searcher.query(new File(indexDir+File.separator+"queries.txt"));
+//
+////			searcher.query(new File(indexDir+File.separator+"queries.txt"));
 
 			long lEndTime = System.currentTimeMillis();
 			long difference = lEndTime - lStartTime;

@@ -171,6 +171,7 @@ public class Scorer {
 		{
 			this.map = map;
 		}
+		
 		@Override
 		public int compare(String o1, String o2) {
 			double f1 = map.get(o1);

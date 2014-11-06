@@ -82,24 +82,36 @@ public class SearchRunner {
 	 * @param model : Scoring Model to use for ranking results
 	 */
 	public void query(String userQuery, ScoringModel model) {
-		long lStartTime = System.currentTimeMillis();
-		objQuery = QueryParser.parse(userQuery, "OR");
-
-		if(objQuery != null && fetcher != null)
+		try
 		{
-			searcher = new IndexSearcher(objQuery);
-			searcher.executeQuery(fetcher);
+			long lStartTime = System.currentTimeMillis();
+			objQuery = QueryParser.parse(userQuery, "OR");
+			if(objQuery != null && fetcher != null)
+			{
+				searcher = new IndexSearcher(objQuery);
+				if(!userQuery.contains("*"))
+					searcher.executeQuery(fetcher);
+				else
+				{
+					searcher.executeWildQuery(fetcher);
+					int i;
+				}
+			}
+			Scorer score = new Scorer(model);
+			//		score.getOrderedDocuments(objQuery, docVector);
+
+			TreeMap<String, Double> relevancyScore = score.getOrderedDocuments(objQuery, docVector);
+			stream.println(userQuery);
+			long lEndTime = System.currentTimeMillis();
+			long difference = lEndTime - lStartTime;
+			stream.println("The Time taken to execute the query(in ms) :: " + difference);
+
+			printResult(relevancyScore);
 		}
-		Scorer score = new Scorer(model);
-		score.getOrderedDocuments(objQuery, docVector);
-
-		TreeMap<String, Double> relevancyScore = score.getOrderedDocuments(objQuery, docVector);
-		stream.println(userQuery);
-		long lEndTime = System.currentTimeMillis();
-		long difference = lEndTime - lStartTime;
-		stream.println("The Time taken to execute the query(in ms) :: " + difference);
-
-		printResult(relevancyScore);
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private void printResult(TreeMap<String, Double> relevancyScore) 
@@ -110,6 +122,7 @@ public class SearchRunner {
 			StringBuilder sb = new StringBuilder();
 			int counter = 1;
 			Document d = null;
+			String[] qTerms = objQuery.getQueryTerms();
 
 			while(iterDocId.hasNext())
 			{
@@ -133,34 +146,54 @@ public class SearchRunner {
 							sb.append("No Title for this doc\n");
 						}
 
-						String[] qTerms = objQuery.getQueryTerms();
-						String ss = qTerms.toString();
-						qTerms = ss.split("$");
-
-						StringBuilder snip = new StringBuilder();
+						StringBuilder snip = new StringBuilder("..");
 						if(d.getField(FieldNames.CONTENT) != null)
 						{
 							String content = d.getField(FieldNames.CONTENT)[0];
+							int lastValid = 0;
 							for(String str : qTerms)
 							{
+								int lastIndex = 0;
 								if(content.contains(str))
 								{
-									int index = content.indexOf(str);
-									if(index > 6)
+									while(lastIndex !=-1)
 									{
-										snip.append(content.substring(index - 5, index + 5)+ "...");
-									}
-									else if(index < 6)
-									{
-										snip.append(content.substring(index, index + 5)+ "...");
+										int index = content.indexOf(str, lastIndex+1);
+										if(index != -1)
+										{
+											if(index >= 10)
+											{
+												snip.append(content.substring(index - 7, index + str.length()+10)+ "..");
+											}
+											else
+											{
+												snip.append(content.substring(index, index + str.length()+10)+ "..");
+											}
+											lastValid = index;
+										}
+										lastIndex = index;
 									}
 								}
 							}
 
-							if(snip.length() < 10)
+							if(snip.length() == 0)
 							{
-								snip.append(content.substring(0,20));
+								if(content.length()>30)
+									snip.append(content.substring(lastValid,30));
+								else
+									snip.append(content);
 							}
+							else if(snip.length() < 10 && snip.length()!=0)
+							{
+								if(content.length()>20)
+									snip.append(content.substring(lastValid,20));
+								else
+									snip.append(".."+content);
+							}
+//							else if(snip.length() > 30)
+//							{
+//								
+//							}
 						}
 						sb.append(snip);sb.append("\n");
 						sb.append(System.getProperty("line.separator"));
@@ -188,7 +221,7 @@ public class SearchRunner {
 	public void query(File queryFile) {
 		try {
 			EvaluateParser.parseQueries(queryFile);
-			int numQ = EvaluateParser.numQ;
+//			int numQ = EvaluateParser.numQ;
 			int counter = 0;
 			Map<String,TreeMap<String, Double>> res = new HashMap<String, TreeMap<String,Double>>();
 			for(String query : EvaluateParser.query)
@@ -251,13 +284,18 @@ public class SearchRunner {
 
 	}
 
+	//	private int[] findAllIndex(String content, String str)
+	//	{
+	//		int[] index;
+	//	}
+
 	/**
 	 * Method to indicate if wildcard queries are supported
 	 * @return true if supported, false otherwise
 	 */
 	public static boolean wildcardSupported() {
 		//TODO: CHANGE THIS TO TRUE ONLY IF WILDCARD BONUS ATTEMPTED
-		return false;
+		return true;
 	}
 
 	/**
@@ -266,7 +304,10 @@ public class SearchRunner {
 	 * possible expansions as values if exist, null otherwise
 	 */
 	public Map<String, List<String>> getQueryTerms() {
-		//TODO:IMPLEMENT THIS METHOD IFF WILDCARD BONUS ATTEMPTED
+		if(objQuery!=null)
+		{
+			return objQuery.executeWild(fetcher);
+		}
 		return null;
 
 	}

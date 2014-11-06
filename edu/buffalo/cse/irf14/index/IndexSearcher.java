@@ -33,4 +33,9 @@ public class IndexSearcher {
 	{
 		objQuery.executeQuery(fetcherMap);
 	}
+	
+	public void executeWildQuery(Map<IndexType,IndexReader> fetcherMap)
+	{
+		objQuery.executeWildQuery(fetcherMap);
+	}
 }

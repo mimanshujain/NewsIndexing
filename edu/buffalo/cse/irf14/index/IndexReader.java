@@ -21,6 +21,9 @@ import java.util.zip.GZIPOutputStream;
  * Class that emulates reading data back from a written index
  */
 public class IndexReader {
+	
+	IndexCreator objCreator;
+	
 	/**
 	 * Default constructor
 	 * @param indexDir : The root directory from which the index is to be read.
@@ -30,18 +33,27 @@ public class IndexReader {
 	 */
 	public IndexReader(String indexDir, IndexType type) {
 
-		if (indexDir!=null)
-			this.indexDir=indexDir;
-		else
-			this.indexDir="";
+		try
+		{
+			if(indexDir != null && type != null && !indexDir.equals("") && !type.equals(""))
+			{
+				this.indexDir=indexDir;
+				indexType=type.name();
+				objCreator=readFromDisk();
+			}
+			else
+			{
+				this.indexDir = "";
+				indexType = "";
+			}
+		}
+		catch(Exception e)
+		{
 
-		indexType=type.name();
-		objCreator=readFromDisk();
-		//		lst=new ArrayList<Integer>;
+		}
 	}
 	String indexDir;
 	String indexType;
-	IndexCreator objCreator;
 	List<Integer> orderedTerms;
 	/**
 	 * Get total number of terms from the "key" dictionary associated with this 
@@ -72,6 +84,7 @@ public class IndexReader {
 	public int getTotalValueTerms() {
 
 		try{
+			if(objCreator != null)
 			return objCreator.getDocCount();
 		}
 		catch(Exception ex)
@@ -126,14 +139,16 @@ public class IndexReader {
 				{
 					if(i<k)
 					{
-						Postings p = objCreator.termPostings.get(termId);
-						terms.add(p.termString);
+						if(objCreator.termPostings.containsKey(termId))
+						{
+							Postings p = objCreator.termPostings.get(termId);
+							terms.add(p.termString);
+						}
 					}
 					else
 						break;
 					i++;
 				}
-
 
 				return terms;
 			}
@@ -153,14 +168,17 @@ public class IndexReader {
 			if(!"".equals(indexDir))
 			{
 				String ReadIndexDir = indexDir+File.separatorChar + indexType;
-				FileInputStream readIndex =
-						new FileInputStream(ReadIndexDir);
-				GZIPInputStream  unzipOut = new GZIPInputStream(readIndex);
-				ObjectInputStream  indexerIn = new ObjectInputStream(unzipOut);
-				objCreator = (IndexCreator) indexerIn.readObject();
-				orderedTerms = (List<Integer>)indexerIn.readObject();
-				indexerIn.close();
-				return objCreator;
+				if(ReadIndexDir != null && !"".equals(ReadIndexDir))
+				{
+					FileInputStream readIndex =
+							new FileInputStream(ReadIndexDir);
+					GZIPInputStream  unzipOut = new GZIPInputStream(readIndex);
+					ObjectInputStream  indexerIn = new ObjectInputStream(unzipOut);
+					objCreator = (IndexCreator) indexerIn.readObject();
+					orderedTerms = (List<Integer>)indexerIn.readObject();
+					indexerIn.close();
+					return objCreator;
+				}
 			}
 		}
 		catch(Exception ex)
@@ -174,7 +192,7 @@ public class IndexReader {
 	public DocumentVector getDocVector() {
 		return objCreator.getDocVector();
 	}
-	
+
 	/**
 	 * Method to implement a simple boolean AND query on the given index
 	 * @param terms The ordered set of terms to AND, similar to getPostings()
@@ -214,6 +232,11 @@ public class IndexReader {
 	public Map<String, Double> getTemVector(String term, double weight)
 	{
 		return objCreator.getTemVector(term,weight);
+	}
+	
+	public Map<String, Integer> getDictionary()
+	{
+		return objCreator.termDictionary;
 	}
 
 }

@@ -1,5 +1,6 @@
 package edu.buffalo.cse.irf14.query;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,5 +12,7 @@ public interface QueryExpression {
 	public void assignOperands(QueryExpression rightEx, QueryExpression leftEx);
 	public Set<String> fetchPostings(Map<IndexType,IndexReader> fetcherMap);
 	public Map<String, Double> getQueryVector(Map<IndexType,IndexReader> fetcherMap);
+	public Map <String, List<String>> executeWildCard(Map<IndexType,IndexReader> fetcherMap);
+	public Set<String> fetchWildPostings(Map<IndexType,IndexReader> fetcherMap);
 	public String getQueryWords();
 }

@@ -1,7 +1,9 @@
 package edu.buffalo.cse.irf14.query;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +43,7 @@ public class OR implements QueryExpression {
 
 	@Override
 	public Set<String> fetchPostings(Map<IndexType, IndexReader> fetcherMap) {
-		
+
 		Set<String> sLeft = leftOperand.fetchPostings(fetcherMap);
 		Set<String> sRight = rightOperand.fetchPostings(fetcherMap);
 
@@ -60,7 +62,7 @@ public class OR implements QueryExpression {
 
 	@Override
 	public String getQueryWords() {
-		return leftOperand.getQueryWords() + "$" + rightOperand.getQueryWords();
+		return leftOperand.getQueryWords() + " $ " + rightOperand.getQueryWords();
 	}
 
 	@Override
@@ -68,7 +70,7 @@ public class OR implements QueryExpression {
 	{
 		Map<String, Double> leftWordVector = leftOperand.getQueryVector(fetcherMap);
 		Map<String, Double> rightWordVector = rightOperand.getQueryVector(fetcherMap);
-		
+
 		if(leftWordVector.isEmpty())
 			leftWordVector = new HashMap<String, Double>();
 		if(rightWordVector.isEmpty())
@@ -76,7 +78,7 @@ public class OR implements QueryExpression {
 
 		if(leftWordVector != null && rightWordVector != null)
 		{
-			
+
 			for (Iterator<String> s = rightWordVector.keySet().iterator(); s.hasNext(); ) {
 				String ss = s.next();
 				if(!leftWordVector.containsKey(ss))
@@ -90,7 +92,51 @@ public class OR implements QueryExpression {
 				}		
 			}	
 		}
-		
+
 		return leftWordVector;
+	}
+
+	@Override
+	public Map <String, List<String>> executeWildCard(Map<IndexType, IndexReader> fetcherMap) {
+		Map <String, List<String>> resultL = leftOperand.executeWildCard(fetcherMap);
+		Map <String, List<String>> resultR = rightOperand.executeWildCard(fetcherMap);
+		if(resultL!=null && resultR!=null)
+		{
+//			resultL.add("This is a seperator");
+//			resultL.addAll(resultR);
+//			return resultL;
+			resultL.putAll(resultR);
+			return resultL;
+		}
+		else if(resultL!=null && resultR==null)
+		{			
+			return resultL;
+		}
+		else if(resultL==null && resultR!=null)
+		{
+//			List<String> result = new ArrayList<String>();
+//			result.add("This is a seperator");
+//			result.addAll(resultR);
+			return resultR;
+		}
+		return null;
+	}
+
+	@Override
+	public Set<String> fetchWildPostings(Map<IndexType, IndexReader> fetcherMap) {
+		Set<String> sLeft = leftOperand.fetchWildPostings(fetcherMap);
+		Set<String> sRight = rightOperand.fetchWildPostings(fetcherMap);
+
+		if(sLeft != null && sRight != null)
+		{
+			sLeft.addAll(sRight);
+			return sLeft;
+		}
+		else if(sLeft != null && sRight == null)
+			return sLeft;
+		else	if(sLeft == null && sRight != null)	
+			return sRight;
+
+		return null;
 	}
 }

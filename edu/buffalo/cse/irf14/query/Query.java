@@ -1,6 +1,7 @@
 package edu.buffalo.cse.irf14.query;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,6 +65,54 @@ public class Query {
 		}
 	}
 
+	public  void executeWildQuery(Map<IndexType,IndexReader> fetcherMap)
+	{
+		try
+		{
+			if(evaluateQuery != null)
+			{
+				docIdList = evaluateQuery.fetchWildPostings(fetcherMap);
+				if(docIdList != null)
+				{
+					if(docIdList.size() > 0)
+						queryVector = evaluateQuery.getQueryVector(fetcherMap);
+					else
+						queryVector = null;
+				}
+				else
+					queryVector = null;
+			}
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
+	public  Map <String, List<String>> executeWild(Map<IndexType,IndexReader> fetcherMap)
+	{
+		try
+		{
+			if(evaluateQuery != null)
+			{
+				Map <String, List<String>> wordWild;
+				wordWild = evaluateQuery.executeWildCard(fetcherMap);
+				if(wordWild != null)
+				{
+					return wordWild;
+				}
+				else
+					return null;
+			}
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 	public Map<String, Double> getQueryVector() {
 		return queryVector;
 	}
@@ -75,7 +124,11 @@ public class Query {
 		{
 			if(evaluateQuery != null)
 			{
-				return evaluateQuery.getQueryWords().split("$");
+				String query = evaluateQuery.getQueryWords().toString();
+//				query.replaceAll(" $ ", " ");
+				String[] queryWords = query.split(" \\$ ");
+				
+				return queryWords;
 			}
 		}
 		catch(Exception ex)
